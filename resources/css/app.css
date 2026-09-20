@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        /* Fallback por defecto para clientes / usuarios estándar */
+        --brand-primary: #2787F5;
+        --brand-primary-rgb: 39 135 245;
+        --brand-primary-hover: #1f6cc4;
+        --brand-primary-dark: #1657a2;
+        --brand-primary-subtle: #ebf1f7;
+        --brand-secondary: #6c757d;
+        --brand-secondary-rgb: 108 117 125;
+        --brand-secondary-hover: #5a6268;
+        --brand-secondary-subtle: #f5f6f8;
+        --brand-tertiary: #00B4D8;
+        --brand-tertiary-rgb: 0 180 216;
+        --brand-tertiary-hover: #0096b4;
+        --brand-tertiary-subtle: #e6f8fb;
+        --brand-accent: #DFB136;
+        --brand-accent-rgb: 223 177 54;
+        --brand-accent-hover: #c99e2e;
+        --brand-accent-subtle: #fdf8eb;
+    }
+
+    html.is-super-admin {
+        /* Color oficial de marca por defecto para el Super Admin: Cardinal Red (#CB2128), Radiant Aurum (#DFB136), Sapphire (#1D4ED8), Amber (#F59E0B) */
+        --brand-primary: #CB2128;
+        --brand-primary-rgb: 203 33 40;
+        --brand-primary-hover: #ad171d;
+        --brand-primary-dark: #8c1116;
+        --brand-primary-subtle: #fdf2f2;
+        --brand-secondary: #DFB136;
+        --brand-secondary-rgb: 223 177 54;
+        --brand-secondary-hover: #c99e2e;
+        --brand-secondary-subtle: #fefbf3;
+        --brand-tertiary: #1D4ED8;
+        --brand-tertiary-rgb: 29 78 216;
+        --brand-tertiary-hover: #173fae;
+        --brand-tertiary-subtle: #eff4fe;
+        --brand-accent: #F59E0B;
+        --brand-accent-rgb: 245 158 11;
+        --brand-accent-hover: #d97706;
+        --brand-accent-subtle: #fef8eb;
+    }
+
+    html {
+        font-size: 16px;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        font-size: 1rem; /* 16px base */
+        line-height: 1.6;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Bricolage Grotesque', sans-serif;
+        letter-spacing: -0.02em;
+    }
+
+    /* Asegurar que los inputs, selects y textareas tengan mínimo 16px para legibilidad */
+    input, select, textarea, button {
+        font-size: 1rem;
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       Ocultar barras nativas del SO para dar paso a la auténtica
+       barra flotante interactiva de Locomotive Scroll (<LocomotiveScrollbar />).
+       El scroll nativo a 60fps (rueda, touch, teclado) se preserva al 100%.
+       ───────────────────────────────────────────────────────────────────────── */
+    html,
+    body,
+    * {
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+    }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar,
+    *::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        background: transparent !important;
+    }
+}
+
+@layer utilities {
+    .no-scrollbar::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        background: transparent !important;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none !important;
+        scrollbar-width: none !important;
+    }
+}

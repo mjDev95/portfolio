@@ -1,0 +1,335 @@
+/*!
+ * Fluid Design System — Portfolio Edition
+ * ----------------------------------------------------------------------------
+ * ----------------------------------------------------------------------------
+ */
+
+/* ─────────────────────────────────────────
+   1. DESIGN TOKENS FLUIDOS
+   ───────────────────────────────────────── */
+:root {
+    /* Padding externo lateral: 16px en móvil → 80px en pantallas grandes */
+    --fluid-gutter-x: clamp(1rem, 5vw, 5rem);
+    --fluid-gutter-y: 0rem;
+
+    /* Gaps entre columnas / filas dentro de la grilla */
+    --fluid-col-gap: clamp(0.75rem, 2.5vw, 2.5rem);
+    --fluid-row-gap: clamp(1rem, 3vw, 3rem);
+
+    /* Ancho máximo del contenedor principal */
+    --fluid-max-width: 1360px;
+
+    /* Escala de espaciado fluido para uso general (paddings/margins/gaps) */
+    --fluid-s-2xs: clamp(0.25rem, 0.5vw, 0.5rem);   /* ~4–8px    */
+    --fluid-s-xs:  clamp(0.5rem, 1vw, 0.75rem);     /* ~8–12px   */
+    --fluid-s-sm:  clamp(0.75rem, 1.5vw, 1.25rem);  /* ~12–20px  */
+    --fluid-s-md:  clamp(1rem, 2.5vw, 2rem);        /* ~16–32px  */
+    --fluid-s-lg:  clamp(1.5rem, 4vw, 3.5rem);      /* ~24–56px  */
+    --fluid-s-xl:  clamp(2rem, 6vw, 5rem);          /* ~32–80px  */
+    --fluid-s-2xl: clamp(3rem, 8vw, 7.5rem);        /* ~48–120px */
+    --fluid-s-3xl: clamp(4rem, 12vw, 11rem);        /* ~64–176px */
+
+    /* Escala tipográfica fluida (independiente de .h1-.h6, para uso en prosa) */
+    --fluid-text-xs:   clamp(0.75rem, 0.6vw + 0.65rem, 0.85rem);
+    --fluid-text-sm:   clamp(0.875rem, 0.5vw + 0.8rem, 1rem);
+    --fluid-text-base: clamp(1rem, 0.4vw + 0.95rem, 1.125rem);
+    --fluid-text-lg:   clamp(1.15rem, 1vw + 1rem, 1.4rem);
+    --fluid-text-xl:   clamp(1.4rem, 2vw + 1rem, 1.9rem);
+
+    /* Paleta de color propia del portafolio (sin acoplamiento a Elementor) */
+    --fluid-color-primary:   #111111;
+    --fluid-color-secondary: #888888;
+    --fluid-color-accent:    #f52727;
+    --fluid-color-muted:     #aaaaaa;
+    --fluid-color-light:     #f9f9f9;
+    --fluid-color-white:     #ffffff;
+    --fluid-color-dark:      #0a0a0a;
+}
+
+/* Modos de densidad de layout (afecta únicamente los gaps de la grilla) */
+[data-layout="compact"] {
+    --fluid-col-gap: clamp(0.5rem, 1.5vw, 1.25rem);
+    --fluid-row-gap: clamp(0.75rem, 2vw, 1.5rem);
+}
+
+[data-layout="airy"] {
+    --fluid-col-gap: clamp(1.25rem, 3vw, 3.5rem);
+    --fluid-row-gap: clamp(1.5rem, 4vw, 5rem);
+}
+
+/* ─────────────────────────────────────────
+   2. CONTAINERS (Fluid & Centered)
+   ───────────────────────────────────────── */
+.container,
+.container-fluid {
+    width: 100%;
+    max-width: var(--fluid-max-width);
+    padding-inline: var(--fluid-gutter-x);
+    margin-inline: auto;
+    box-sizing: border-box;
+}
+
+.container-fluid {
+    max-width: 100%;
+}
+
+/* ─────────────────────────────────────────
+   3. GRID LIGERA (CSS Grid, sintaxis Bootstrap-like)
+   ───────────────────────────────────────── */
+.row {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: var(--fluid-col-gap);
+    row-gap: var(--fluid-row-gap);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.row > * {
+    box-sizing: border-box;
+    grid-column: span 12; /* Ocupan toda la fila en móvil por defecto */
+}
+
+.col      { grid-column: span 1; }
+.col-auto { grid-column: auto; width: auto; justify-self: start; }
+.col-3    { grid-column: span 3; }
+.col-4    { grid-column: span 4; }
+.col-6    { grid-column: span 6; }
+.col-8    { grid-column: span 8; }
+.col-9    { grid-column: span 9; }
+.col-12   { grid-column: span 12; }
+
+@media (min-width: 768px) {
+    .col-md-3  { grid-column: span 3; }
+    .col-md-4  { grid-column: span 4; }
+    .col-md-6  { grid-column: span 6; }
+    .col-md-8  { grid-column: span 8; }
+    .col-md-9  { grid-column: span 9; }
+    .col-md-12 { grid-column: span 12; }
+}
+
+@media (min-width: 992px) {
+    .col-lg-3  { grid-column: span 3; }
+    .col-lg-4  { grid-column: span 4; }
+    .col-lg-6  { grid-column: span 6; }
+    .col-lg-8  { grid-column: span 8; }
+    .col-lg-9  { grid-column: span 9; }
+    .col-lg-12 { grid-column: span 12; }
+}
+
+/* ─────────────────────────────────────────
+   4. GAP UTILITIES
+   ───────────────────────────────────────── */
+.g-0  { --fluid-col-gap: 0; --fluid-row-gap: 0; }
+.g-1  { --fluid-col-gap: var(--fluid-s-xs); --fluid-row-gap: var(--fluid-s-xs); }
+.g-2  { --fluid-col-gap: var(--fluid-s-sm); --fluid-row-gap: var(--fluid-s-sm); }
+.g-3  { --fluid-col-gap: var(--fluid-s-md); --fluid-row-gap: var(--fluid-s-md); }
+.g-4  { --fluid-col-gap: var(--fluid-s-lg); --fluid-row-gap: var(--fluid-s-lg); }
+.g-5  { --fluid-col-gap: var(--fluid-s-xl); --fluid-row-gap: var(--fluid-s-xl); }
+
+.gap-0 { gap: 0 !important; }
+.gap-1 { gap: var(--fluid-s-xs) !important; }
+.gap-2 { gap: var(--fluid-s-sm) !important; }
+.gap-3 { gap: var(--fluid-s-md) !important; }
+.gap-4 { gap: var(--fluid-s-lg) !important; }
+.gap-5 { gap: var(--fluid-s-xl) !important; }
+
+/* ─────────────────────────────────────────
+   5. SPACING UTILITIES (fluidas, sin overrides por breakpoint)
+   ───────────────────────────────────────── */
+.p-0  { padding: 0 !important; }
+.p-xs { padding: var(--fluid-s-xs) !important; }
+.p-sm { padding: var(--fluid-s-sm) !important; }
+.p-md { padding: var(--fluid-s-md) !important; }
+.p-lg { padding: var(--fluid-s-lg) !important; }
+.p-xl { padding: var(--fluid-s-xl) !important; }
+
+.px-0  { padding-inline: 0 !important; }
+.px-xs { padding-inline: var(--fluid-s-xs) !important; }
+.px-sm { padding-inline: var(--fluid-s-sm) !important; }
+.px-md { padding-inline: var(--fluid-s-md) !important; }
+.px-lg { padding-inline: var(--fluid-s-lg) !important; }
+.px-xl { padding-inline: var(--fluid-s-xl) !important; }
+
+.py-0  { padding-block: 0 !important; }
+.py-xs { padding-block: var(--fluid-s-xs) !important; }
+.py-sm { padding-block: var(--fluid-s-sm) !important; }
+.py-md { padding-block: var(--fluid-s-md) !important; }
+.py-lg { padding-block: var(--fluid-s-lg) !important; }
+.py-xl { padding-block: var(--fluid-s-xl) !important; }
+.py-2xl { padding-block: var(--fluid-s-2xl) !important; }
+
+.pt-0 { padding-top: 0 !important; }
+.pt-sm { padding-top: var(--fluid-s-sm) !important; }
+.pt-md { padding-top: var(--fluid-s-md) !important; }
+.pt-lg { padding-top: var(--fluid-s-lg) !important; }
+.pt-xl { padding-top: var(--fluid-s-xl) !important; }
+
+.pb-0 { padding-bottom: 0 !important; }
+.pb-sm { padding-bottom: var(--fluid-s-sm) !important; }
+.pb-md { padding-bottom: var(--fluid-s-md) !important; }
+.pb-lg { padding-bottom: var(--fluid-s-lg) !important; }
+.pb-xl { padding-bottom: var(--fluid-s-xl) !important; }
+
+.m-0 { margin: 0 !important; }
+.my-0 { margin-block: 0 !important; }
+.my-sm { margin-block: var(--fluid-s-sm) !important; }
+.my-md { margin-block: var(--fluid-s-md) !important; }
+.my-lg { margin-block: var(--fluid-s-lg) !important; }
+
+.mt-0 { margin-top: 0 !important; }
+.mt-sm { margin-top: var(--fluid-s-sm) !important; }
+.mt-md { margin-top: var(--fluid-s-md) !important; }
+.mt-lg { margin-top: var(--fluid-s-lg) !important; }
+.mt-xl { margin-top: var(--fluid-s-xl) !important; }
+.mt-auto { margin-top: auto !important; }
+
+.mb-0 { margin-bottom: 0 !important; }
+.mb-sm { margin-bottom: var(--fluid-s-sm) !important; }
+.mb-md { margin-bottom: var(--fluid-s-md) !important; }
+.mb-lg { margin-bottom: var(--fluid-s-lg) !important; }
+.mb-xl { margin-bottom: var(--fluid-s-xl) !important; }
+.mb-auto { margin-bottom: auto !important; }
+
+/* ─────────────────────────────────────────
+   6. TEXT UTILITIES
+   ───────────────────────────────────────── */
+.text-start   { text-align: left !important; }
+.text-center  { text-align: center !important; }
+.text-end     { text-align: right !important; }
+
+.text-lowercase  { text-transform: lowercase !important; }
+.text-uppercase  { text-transform: uppercase !important; }
+.text-capitalize { text-transform: capitalize !important; }
+
+.fw-light  { font-weight: 300 !important; }
+.fw-normal { font-weight: 400 !important; }
+.fw-medium { font-weight: 500 !important; }
+.fw-bold   { font-weight: 700 !important; }
+
+.fst-italic { font-style: italic !important; }
+
+.text-decoration-none { text-decoration: none !important; }
+
+.text-wrap    { white-space: normal !important; }
+.text-nowrap  { white-space: nowrap !important; }
+.text-break   { overflow-wrap: break-word !important; word-break: break-word !important; }
+.text-balance { text-wrap: balance; }
+.text-pretty  { text-wrap: pretty; }
+
+.lh-1    { line-height: 1 !important; }
+.lh-sm   { line-height: 1.25 !important; }
+.lh-base { line-height: 1.5 !important; }
+.lh-lg   { line-height: 2 !important; }
+
+.list-unstyled { list-style: none !important; padding-left: 0 !important; margin-bottom: 0; }
+
+/* ─────────────────────────────────────────
+   7. ESCALA TIPOGRÁFICA FLUIDA (H1-H6 + prosa)
+   ───────────────────────────────────────── */
+.h1, h1 { font-size: clamp(2.4rem, 6vw, 4.5rem) !important; font-weight: 300; line-height: 1.05; letter-spacing: -0.02em; }
+.h2, h2 { font-size: clamp(1.8rem, 4.5vw, 3.2rem) !important; font-weight: 300; line-height: 1.1; letter-spacing: -0.01em; }
+.h3, h3 { font-size: clamp(1.4rem, 3vw, 2.2rem) !important; font-weight: 400; line-height: 1.2; }
+.h4, h4 { font-size: clamp(1.15rem, 2vw, 1.6rem) !important; font-weight: 400; line-height: 1.25; }
+.h5, h5 { font-size: clamp(0.95rem, 1.5vw, 1.2rem) !important; font-weight: 500; line-height: 1.3; }
+.h6, h6 { font-size: clamp(0.75rem, 1.2vw, 0.85rem) !important; font-weight: 600; line-height: 1.4; letter-spacing: 0.1em; }
+
+.text-fluid-xs   { font-size: var(--fluid-text-xs); }
+.text-fluid-sm   { font-size: var(--fluid-text-sm); }
+.text-fluid-base { font-size: var(--fluid-text-base); }
+.text-fluid-lg   { font-size: var(--fluid-text-lg); }
+.text-fluid-xl   { font-size: var(--fluid-text-xl); }
+
+/* ─────────────────────────────────────────
+   8. COLOR UTILITIES
+   ───────────────────────────────────────── */
+.text-primary   { color: var(--fluid-color-primary) !important; }
+.text-secondary { color: var(--fluid-color-secondary) !important; }
+.text-muted     { color: var(--fluid-color-muted) !important; }
+.text-white     { color: var(--fluid-color-white) !important; }
+.text-accent    { color: var(--fluid-color-accent) !important; }
+
+.bg-primary     { background-color: var(--fluid-color-primary) !important; }
+.bg-secondary   { background-color: var(--fluid-color-secondary) !important; }
+.bg-light       { background-color: var(--fluid-color-light) !important; }
+.bg-white       { background-color: var(--fluid-color-white) !important; }
+.bg-dark        { background-color: var(--fluid-color-dark) !important; }
+.bg-transparent { background-color: transparent !important; }
+
+/* ─────────────────────────────────────────
+   9. SIZING / POSITION / OVERFLOW / MEDIA
+   ───────────────────────────────────────── */
+.w-100 { width: 100% !important; }
+.w-auto { width: auto !important; }
+.h-100 { height: 100% !important; }
+.h-auto { height: auto !important; }
+
+.position-relative { position: relative !important; }
+.position-absolute { position: absolute !important; }
+.position-fixed    { position: fixed !important; }
+.position-sticky   { position: sticky !important; }
+
+.inset-0  { inset: 0 !important; }
+.top-0    { top: 0 !important; }
+.bottom-0 { bottom: 0 !important; }
+.left-0   { left: 0 !important; }
+.right-0  { right: 0 !important; }
+
+.z-index-1  { z-index: 1 !important; }
+.z-index-10 { z-index: 10 !important; }
+.z-index-50 { z-index: 50 !important; }
+
+.object-fit-cover   { object-fit: cover !important; }
+.object-fit-contain { object-fit: contain !important; }
+
+/* overflow-hidden es opt-in por elemento: nunca se aplica globalmente a
+   html/body/#barba-wrapper para no romper el scroll virtual de Lenis. */
+.overflow-hidden  { overflow: hidden !important; }
+.overflow-auto    { overflow: auto !important; }
+.overflow-x-hidden{ overflow-x: hidden !important; }
+.overflow-y-auto  { overflow-y: auto !important; }
+
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* ─────────────────────────────────────────
+   10. COMPATIBILIDAD LENIS + BARBA.JS
+   -----------------------------------------
+   Lenis reemplaza el scroll nativo del elemento <html>. Cualquier
+   `overflow: hidden` u `overflow-x: hidden` puesto globalmente en html/body
+   rompe el cálculo de altura virtual de Lenis y el scroll deja de funcionar.
+   Del mismo modo, Barba.js necesita que el contenedor de navegación
+   (`[data-barba="container"]`) NO tenga `position: fixed` propio, ya que
+   ambos contenedores (saliente/entrante) deben poder coexistir apilados
+   durante la transición.
+   ───────────────────────────────────────── */
+html.lenis,
+html.lenis body {
+    height: auto;
+}
+
+html.lenis-smooth {
+    scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+    overflow: hidden;
+}
+
+[data-barba="wrapper"] {
+    position: relative;
+    width: 100%;
+    /* Nunca overflow:hidden aquí: Lenis necesita medir la altura real del documento. */
+}
+
+[data-barba="container"] {
+    position: relative;
+    width: 100%;
+}

@@ -1,0 +1,141 @@
+/*!
+ * Public site chrome — cursor, transition wipe, base body reset.
+ * Bootstrap 5 semantic tokens (--bs-*) centered on 2 customizable brand colors:
+ * primary (brand/CTA) & secondary (support/borders).
+ */
+
+:root {
+    /* 2 Colores de Marca Principales (Bootstrap 5) */
+    --bs-primary: #0d6efd;
+    --bs-secondary: #6c757d;
+
+    /* Colores de Estado Opcionales de Bootstrap */
+    --bs-success: #198754;
+    --bs-danger: #dc3545;
+    --bs-warning: #ffc107;
+    --bs-info: #0dcaf0;
+
+    /* Lienzo Estructural y Elevaciones */
+    --bs-body-bg: #080b0e;
+    --bs-surface-bg: #11161d;
+    --bs-body-color: #f8fafc;
+    --bs-secondary-color: #94a3b8;
+    --bs-border-color: rgba(255, 255, 255, 0.08);
+
+    /* Puente de compatibilidad con sistema fluido y animaciones GSAP */
+    --fluid-color-primary: var(--bs-primary);
+    --fluid-color-secondary: var(--bs-secondary);
+    --fluid-color-accent: var(--bs-primary);
+    --fluid-color-dark: var(--bs-body-bg);
+    --fluid-color-muted: var(--bs-secondary-color);
+    --fluid-color-light: var(--bs-body-color);
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    font-family: 'Figtree', ui-sans-serif, system-ui, sans-serif;
+}
+
+a { 
+    color: inherit; 
+}
+
+/* ─────────────────────────────────────────
+   Componentes y Botones
+   ───────────────────────────────────────── */
+
+/* Botones principales y llamadas a la acción (CTA) */
+.btn-primary,
+button[type="submit"]:not(.btn-secondary),
+.btn-cta {
+    background-color: var(--bs-primary);
+    color: #ffffff;
+    border: none;
+    transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover,
+button[type="submit"]:not(.btn-secondary):hover,
+.btn-cta:hover {
+    filter: brightness(1.1);
+}
+
+/* Botones secundarios */
+.btn-secondary {
+    background-color: var(--bs-secondary);
+    color: #ffffff;
+    border: none;
+    transition: filter 0.2s ease;
+}
+
+.btn-secondary:hover {
+    filter: brightness(1.1);
+}
+
+/* Tarjetas de proyectos y contenedores elevados */
+.project-card,
+[data-flip-card],
+.card-surface {
+    background-color: var(--bs-surface-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.75rem;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.project-card:hover,
+[data-flip-card]:hover,
+.card-surface:hover {
+    border-color: var(--bs-primary);
+}
+
+/* Textos secundarios y metadatos */
+.text-secondary,
+.text-muted,
+.text-secondary-color {
+    color: var(--bs-secondary-color) !important;
+}
+
+/* Badges */
+.badge-primary {
+    background-color: var(--bs-primary);
+    color: #ffffff;
+}
+
+.badge-secondary {
+    background-color: var(--bs-secondary);
+    color: #ffffff;
+}
+
+/* ─────────────────────────────────────────
+   Efectos y Microinteracciones
+   ───────────────────────────────────────── */
+
+/* Magnetic cursor */
+#magnetic-cursor {
+    top: 0;
+    left: 0;
+    width: 24px;
+    height: 24px;
+    pointer-events: none;
+    will-change: transform;
+    transform: translate3d(-50%, -50%, 0);
+}
+
+.magnetic-cursor__dot {
+    width: 100%;
+    height: 100%;
+    border-radius: 999px;
+    background: var(--bs-body-color);
+    mix-blend-mode: difference;
+    transition: width 0.2s ease, height 0.2s ease;
+}
+
+/* Transition wipe (Barba page transitions) */
+#transition-wipe {
+    background-color: var(--bs-body-bg);
+    transform: translateY(101%);
+    pointer-events: none;
+}
