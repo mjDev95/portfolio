@@ -10,11 +10,16 @@
 
 @section('content')
 <article class="container py-2xl" style="min-height: 100vh;">
-    <div class="mb-lg">
+    <div class="mb-lg d-flex flex-wrap align-items-center justify-content-between gap-3">
         <a href="{{ route('public.content.index', $cpt->public_route_slug) }}"
            class="text-muted text-decoration-none text-fluid-sm d-inline-flex align-items-center gap-1.5" data-magnetic>
             <span>&larr;</span> Volver a {{ $cpt->name }}
         </a>
+        <x-breadcrumbs :items="[
+            ['label' => 'Inicio', 'url' => route('home')],
+            ['label' => $cpt->name, 'url' => route('public.content.index', $cpt->public_route_slug)],
+            ['label' => $content->title, 'url' => null]
+        ]" />
     </div>
 
     <header class="mb-xl" data-reveal>

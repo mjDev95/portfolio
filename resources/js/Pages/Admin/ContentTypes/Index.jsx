@@ -85,13 +85,12 @@ export default function Index({ contentTypes = [], isAdmin: propIsAdmin }) {
         <>
             <Head title="Tipos de Contenido Personalizados — Admin" />
 
-            <div className="py-8">
-                <div className="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
-                    {/* ── A. Header Principal (Alineado con Dashboard / Preferences) ── */}
+            <div className="w-full space-y-8">
+                {/* ── A. Header Principal (Alineado con Dashboard / Preferences) ── */}
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <div className="flex items-center gap-3">
-                                <h1 className="font-heading text-2xl font-bold tracking-tight text-[#293951] dark:text-[#ffffff] sm:text-3xl">
+                                <h1 className="font-heading text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
                                     Tipos de Contenido (CPT)
                                 </h1>
                                 <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-sm font-medium text-emerald-600 dark:text-emerald-400">
@@ -99,7 +98,7 @@ export default function Index({ contentTypes = [], isAdmin: propIsAdmin }) {
                                     {isAdmin ? 'Gestión Global' : 'Módulos Activos'}
                                 </span>
                             </div>
-                            <p className="mt-1.5 text-base text-[#95aac9] dark:text-[#a7a6a8]">
+                            <p className="mt-1.5 text-base text-slate-500 dark:text-slate-400">
                                 {isAdmin
                                     ? 'Diseña y asigna modelos de datos a clientes con campos personalizados y control de visibilidad.'
                                     : 'Módulos y tipos de publicaciones personalizados asignados a tu cuenta.'}
@@ -111,7 +110,7 @@ export default function Index({ contentTypes = [], isAdmin: propIsAdmin }) {
                                 href="/"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[#293951] shadow-sm transition hover:bg-[#ebf1f7] dark:bg-[#1e2126] dark:text-[#ffffff] dark:hover:bg-[#282d35]"
+                                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-brand-primary dark:border-slate-700 dark:bg-[#161b24] dark:text-slate-300 dark:hover:text-brand-primary"
                             >
                                 <ExternalLink className="h-4 w-4" />
                                 Ver Sitio Público
@@ -120,7 +119,7 @@ export default function Index({ contentTypes = [], isAdmin: propIsAdmin }) {
                             {isAdmin && (
                                 <Link
                                     href={route('admin.content-types.create')}
-                                    className="inline-flex items-center gap-2 rounded-xl bg-brand-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
+                                    className="inline-flex items-center gap-2 rounded-xl bg-brand-primary px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-brand-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
                                 >
                                     <Plus className="h-4 w-4" />
                                     Nuevo Tipo de Contenido
@@ -129,84 +128,84 @@ export default function Index({ contentTypes = [], isAdmin: propIsAdmin }) {
                         </div>
                     </div>
 
-                    {/* ── B. Tarjetas de Métricas (Idénticas al Dashboard, SIN BORDES) ─ */}
+                    {/* ── B. Tarjetas de Métricas ─ */}
                     <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
-                        <div className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:bg-[#1e2126]">
+                        <div className="group relative overflow-hidden rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:border-slate-800/80 dark:bg-[#161b24]">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm font-semibold uppercase tracking-wider text-[#95aac9] dark:text-[#a7a6a8]">
+                                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                                     Total Módulos
                                 </span>
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#ebf1f7] text-brand-primary transition-colors dark:bg-[#16191c] dark:text-brand-primary">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary transition-colors">
                                     <Boxes className="h-5 w-5" />
                                 </div>
                             </div>
                             <div className="mt-3 flex items-baseline gap-2">
-                                <span className="text-3xl font-bold tracking-tight text-[#293951] dark:text-[#ffffff]">
+                                <span className="font-heading text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
                                     {totalTypes}
                                 </span>
-                                <span className="text-sm text-[#95aac9] dark:text-[#a7a6a8]">
+                                <span className="text-xs text-slate-400 dark:text-slate-500">
                                     {isAdmin ? 'modelos en sistema' : 'módulos disponibles'}
                                 </span>
                             </div>
-                            <div className="mt-3 flex items-center justify-between border-t border-[#f5f7fa] pt-3 text-sm dark:border-[#16191c]">
-                                <span className="text-[#95aac9] dark:text-[#a7a6a8]">
+                            <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3 text-xs dark:border-slate-800">
+                                <span className="text-slate-500 dark:text-slate-400">
                                     Catálogo Universal
                                 </span>
-                                <span className="inline-flex items-center rounded-lg bg-[#ebf1f7] px-2 py-0.5 text-xs font-medium text-brand-primary dark:bg-[#16191c] dark:text-brand-primary">
+                                <span className="inline-flex items-center rounded-full bg-brand-primary/10 px-2 py-0.5 text-xs font-medium text-brand-primary">
                                     Dinámicos
                                 </span>
                             </div>
                         </div>
 
-                        <div className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:bg-[#1e2126]">
+                        <div className="group relative overflow-hidden rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:border-slate-800/80 dark:bg-[#161b24]">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm font-semibold uppercase tracking-wider text-[#95aac9] dark:text-[#a7a6a8]">
+                                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                                     Activos en la Web
                                 </span>
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 transition-colors dark:bg-emerald-950/40 dark:text-emerald-400">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600 transition-colors dark:text-emerald-400">
                                     <Globe className="h-5 w-5" />
                                 </div>
                             </div>
                             <div className="mt-3 flex items-baseline gap-2">
-                                <span className="text-3xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
+                                <span className="font-heading text-3xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
                                     {publicTypes}
                                 </span>
-                                <span className="text-sm text-[#95aac9] dark:text-[#a7a6a8]">
+                                <span className="text-xs text-slate-400 dark:text-slate-500">
                                     visibles al público
                                 </span>
                             </div>
-                            <div className="mt-3 flex items-center justify-between border-t border-[#f5f7fa] pt-3 text-sm dark:border-[#16191c]">
-                                <span className="text-[#95aac9] dark:text-[#a7a6a8]">
+                            <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3 text-xs dark:border-slate-800">
+                                <span className="text-slate-500 dark:text-slate-400">
                                     Con presencia web
                                 </span>
-                                <span className="inline-flex items-center rounded-lg bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
+                                <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-600 ring-1 ring-emerald-500/20 dark:text-emerald-400">
                                     Públicos
                                 </span>
                             </div>
                         </div>
 
-                        <div className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:bg-[#1e2126]">
+                        <div className="group relative overflow-hidden rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:border-slate-800/80 dark:bg-[#161b24]">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm font-semibold uppercase tracking-wider text-[#95aac9] dark:text-[#a7a6a8]">
+                                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                                     Ocultos / Privados
                                 </span>
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#ebf1f7] text-[#95aac9] transition-colors dark:bg-[#16191c] dark:text-[#a7a6a8]">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-slate-500 transition-colors dark:bg-[#12161f] dark:text-slate-400">
                                     <EyeOff className="h-5 w-5" />
                                 </div>
                             </div>
                             <div className="mt-3 flex items-baseline gap-2">
-                                <span className="text-3xl font-bold tracking-tight text-[#293951] dark:text-[#ffffff]">
+                                <span className="font-heading text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
                                     {privateTypes}
                                 </span>
-                                <span className="text-sm text-[#95aac9] dark:text-[#a7a6a8]">
+                                <span className="text-xs text-slate-400 dark:text-slate-500">
                                     panel interno
                                 </span>
                             </div>
-                            <div className="mt-3 flex items-center justify-between border-t border-[#f5f7fa] pt-3 text-sm dark:border-[#16191c]">
-                                <span className="text-[#95aac9] dark:text-[#a7a6a8]">
+                            <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3 text-xs dark:border-slate-800">
+                                <span className="text-slate-500 dark:text-slate-400">
                                     Solo administradores
                                 </span>
-                                <span className="inline-flex items-center rounded-lg bg-[#ebf1f7] px-2 py-0.5 text-xs font-medium text-[#95aac9] dark:bg-[#16191c] dark:text-[#a7a6a8]">
+                                <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400">
                                     Privados
                                 </span>
                             </div>
@@ -215,35 +214,35 @@ export default function Index({ contentTypes = [], isAdmin: propIsAdmin }) {
 
                     {/* ── C. Banner Informativo para Clientes (Rol User) ───────────── */}
                     {!isAdmin && (
-                        <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-[#1e2126]">
+                        <div className="rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24]">
                             <div className="flex items-center gap-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#ebf1f7] text-brand-primary dark:bg-[#16191c]">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
                                     <Sparkles className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <h3 className="font-heading text-base font-bold text-[#293951] dark:text-[#ffffff]">
+                                    <h3 className="font-heading text-base font-bold text-slate-900 dark:text-white">
                                         Módulos Personalizados
                                     </h3>
-                                    <p className="mt-0.5 text-xs text-[#95aac9] dark:text-[#a7a6a8]">
-                                        Tu catálogo de tipos de contenido ha sido configurado por el Super Administrador. Puedes redactar y gestionar tus publicaciones, y activar o pausar la visibilidad de cada sección en tu sitio web público con el interruptor de cada tarjeta.
+                                    <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                                        Cada tipo de contenido te permite gestionar de forma ordenada y privada tus publicaciones específicas.
                                     </p>
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    {/* ── D. Grid de CPTs (Tarjetas SIN BORDES, exactamente como Dashboard) */}
+                    {/* ── D. Grid de CPTs (Tarjetas Bento) */}
                     {contentTypes.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center rounded-2xl bg-white p-12 text-center shadow-sm dark:bg-[#1e2126]">
-                            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#ebf1f7] text-brand-primary dark:bg-[#16191c]">
+                        <div className="flex flex-col items-center justify-center rounded-[28px] border border-slate-100/90 bg-white p-12 text-center shadow-sm dark:border-slate-800/80 dark:bg-[#161b24]">
+                            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-brand-primary dark:bg-[#12161f]">
                                 <Boxes className="h-8 w-8" />
                             </div>
-                            <h3 className="mt-4 font-heading text-lg font-bold text-[#293951] dark:text-[#ffffff]">
+                            <h3 className="mt-4 font-heading text-lg font-bold text-slate-900 dark:text-white">
                                 {isAdmin
                                     ? 'No has creado ningún Tipo de Contenido aún'
                                     : 'No tienes Tipos de Contenido asignados actualmente'}
                             </h3>
-                            <p className="mt-1 max-w-md text-sm text-[#95aac9] dark:text-[#a7a6a8]">
+                            <p className="mt-1 max-w-md text-sm text-slate-500 dark:text-slate-400">
                                 {isAdmin
                                     ? 'Crea modelos universales como Proyectos, Casos de Éxito, Tratamientos o Testimonios y asígnalos a tus clientes.'
                                     : 'Comunícate con el Super Administrador para activar tus módulos personalizados.'}
@@ -264,37 +263,37 @@ export default function Index({ contentTypes = [], isAdmin: propIsAdmin }) {
                                 return (
                                     <div
                                         key={type.id}
-                                        className="group flex flex-col justify-between rounded-2xl bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:bg-[#1e2126]"
+                                        className="group flex flex-col justify-between rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md dark:border-slate-800/80 dark:bg-[#161b24]"
                                     >
                                         <div>
                                             {/* Cabecera de la tarjeta: Icono, Nombre y Pill */}
                                             <div className="flex items-start justify-between gap-3">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#ebf1f7] text-brand-primary transition-colors dark:bg-[#16191c] dark:text-brand-primary">
+                                                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary ring-1 ring-brand-primary/20">
                                                         {getIconComponent(type.icon)}
                                                     </div>
                                                     <div>
-                                                        <h3 className="font-heading text-lg font-bold text-[#293951] dark:text-[#ffffff]">
+                                                        <h3 className="font-heading text-lg font-bold text-slate-900 dark:text-white">
                                                             {type.name}
                                                         </h3>
-                                                        <span className="text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                                                        <span className="text-xs text-slate-400 dark:text-slate-500">
                                                             Singular: {type.singular_name}
                                                         </span>
                                                     </div>
                                                 </div>
 
                                                 <span
-                                                    className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold ${
+                                                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                                                         type.is_public
-                                                            ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400'
-                                                            : 'bg-[#ebf1f7] text-[#95aac9] dark:bg-[#16191c] dark:text-[#a7a6a8]'
+                                                            ? 'bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/20 dark:text-emerald-400'
+                                                            : 'bg-slate-100 text-slate-600 ring-1 ring-slate-200/60 dark:bg-slate-800 dark:text-slate-400 dark:ring-slate-700/60'
                                                     }`}
                                                 >
                                                     <span
                                                         className={`h-1.5 w-1.5 rounded-full ${
                                                             type.is_public
                                                                 ? 'bg-emerald-500 animate-pulse'
-                                                                : 'bg-zinc-400'
+                                                                : 'bg-slate-400'
                                                         }`}
                                                     />
                                                     {type.is_public ? 'Público' : 'Privado'}
@@ -303,18 +302,18 @@ export default function Index({ contentTypes = [], isAdmin: propIsAdmin }) {
 
                                             {/* Si es Super Admin: Mostrar usuario asignado */}
                                             {isAdmin && (
-                                                <div className="mt-4 flex items-center justify-between rounded-xl bg-[#f8fafc] px-3.5 py-2 text-xs dark:bg-[#16191c]">
+                                                <div className="mt-4 flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-3.5 py-2 text-xs dark:border-slate-800 dark:bg-[#12161f]">
                                                     <div className="flex items-center gap-2 truncate">
                                                         <UserIcon className="h-3.5 w-3.5 text-brand-primary" />
-                                                        <span className="font-medium text-[#293951] dark:text-[#ffffff] truncate">
+                                                        <span className="font-medium text-slate-900 dark:text-white truncate">
                                                             {type.user?.name || 'Administrador'}
                                                         </span>
                                                     </div>
                                                     <span
-                                                        className={`rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
+                                                        className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
                                                             (type.user?.role?.slug === 'admin' || type.user?.role === 'admin')
-                                                                ? 'bg-brand-primary/10 text-brand-primary dark:bg-brand-primary/20 dark:text-brand-primary'
-                                                                : 'bg-brand-secondary/10 text-brand-secondary dark:bg-brand-secondary/20 dark:text-brand-secondary'
+                                                                ? 'bg-brand-primary/10 text-brand-primary ring-1 ring-brand-primary/20 dark:bg-brand-primary/20 dark:text-brand-primary'
+                                                                : 'bg-slate-200/60 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
                                                         }`}
                                                     >
                                                         {(type.user?.role?.slug === 'admin' || type.user?.role === 'admin') ? 'Super Admin' : 'Cliente'}
@@ -323,14 +322,14 @@ export default function Index({ contentTypes = [], isAdmin: propIsAdmin }) {
                                             )}
 
                                             {/* Switch Interactivo de Visibilidad Pública (Cliente y Admin) */}
-                                            <div className="mt-4 flex items-center justify-between rounded-xl bg-[#f8fafc] p-3.5 dark:bg-[#16191c]">
+                                            <div className="mt-4 flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 p-3.5 dark:border-slate-800 dark:bg-[#12161f]">
                                                 <div>
-                                                    <span className="block text-xs font-semibold text-[#293951] dark:text-[#ffffff]">
+                                                    <span className="block text-xs font-semibold text-slate-900 dark:text-white">
                                                         {type.is_public
                                                             ? 'Visible en sitio web'
                                                             : 'Oculto del sitio web'}
                                                     </span>
-                                                    <span className="text-[11px] font-mono text-[#95aac9] dark:text-[#a7a6a8]">
+                                                    <span className="text-[11px] font-mono text-slate-400 dark:text-slate-500">
                                                         /{type.public_slug || type.slug}
                                                     </span>
                                                 </div>
@@ -349,7 +348,7 @@ export default function Index({ contentTypes = [], isAdmin: propIsAdmin }) {
                                                     className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 disabled:opacity-50 ${
                                                         type.is_public
                                                             ? 'bg-brand-primary'
-                                                            : 'bg-zinc-300 dark:bg-zinc-700'
+                                                            : 'bg-slate-300 dark:bg-slate-700'
                                                     }`}
                                                 >
                                                     <span
@@ -363,27 +362,27 @@ export default function Index({ contentTypes = [], isAdmin: propIsAdmin }) {
                                             </div>
 
                                             {/* Descripción */}
-                                            <p className="mt-4 text-xs leading-relaxed text-[#95aac9] line-clamp-2 dark:text-[#a7a6a8]">
+                                            <p className="mt-4 text-xs leading-relaxed text-slate-500 line-clamp-2 dark:text-slate-400">
                                                 {type.description || 'Sin descripción configurada.'}
                                             </p>
 
                                             {/* Metadatos (Publicaciones, Campos) */}
-                                            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[#f5f7fa] pt-4 text-xs text-[#95aac9] dark:border-[#16191c] dark:text-[#a7a6a8]">
-                                                <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#ebf1f7] px-2.5 py-1 font-semibold text-brand-primary dark:bg-[#16191c]">
+                                            <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-4 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
+                                                <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 font-semibold text-brand-primary dark:border-slate-800 dark:bg-[#12161f]">
                                                     <FileText className="h-3.5 w-3.5" />
                                                     {type.contents_count || 0} publicaciones
                                                 </span>
-                                                <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#f8fafc] px-2.5 py-1 font-medium text-[#293951] dark:bg-[#16191c] dark:text-[#ffffff]">
-                                                    <Layers className="h-3.5 w-3.5 text-[#95aac9]" />
+                                                <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 font-medium text-slate-700 dark:border-slate-800 dark:bg-[#12161f] dark:text-slate-300">
+                                                    <Layers className="h-3.5 w-3.5 text-slate-400" />
                                                     {type.custom_fields_count || 0} campos
                                                 </span>
                                                 {type.has_categories && (
-                                                    <span className="rounded-lg bg-[#f8fafc] px-2 py-0.5 text-xs dark:bg-[#16191c]">
+                                                    <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs text-slate-600 dark:border-slate-800 dark:bg-[#12161f] dark:text-slate-400">
                                                         Categorías
                                                     </span>
                                                 )}
                                                 {type.has_tags && (
-                                                    <span className="rounded-lg bg-[#f8fafc] px-2 py-0.5 text-xs dark:bg-[#16191c]">
+                                                    <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs text-slate-600 dark:border-slate-800 dark:bg-[#12161f] dark:text-slate-400">
                                                         Tags
                                                     </span>
                                                 )}
@@ -391,7 +390,7 @@ export default function Index({ contentTypes = [], isAdmin: propIsAdmin }) {
                                         </div>
 
                                         {/* Acciones inferiores */}
-                                        <div className="mt-5 flex items-center justify-between border-t border-[#f5f7fa] pt-4 dark:border-[#16191c]">
+                                        <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-4 dark:border-slate-800">
                                             <div className="flex items-center gap-3">
                                                 <Link
                                                     href={route('admin.content.index', type.slug)}
@@ -405,7 +404,7 @@ export default function Index({ contentTypes = [], isAdmin: propIsAdmin }) {
                                                         href={`/${type.public_slug || type.slug}`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="inline-flex items-center gap-1 text-xs font-medium text-[#95aac9] hover:text-brand-primary dark:text-[#a7a6a8]"
+                                                        className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-brand-primary dark:text-slate-400"
                                                         title="Ver en la Web"
                                                     >
                                                         <span>Web</span>
@@ -418,7 +417,7 @@ export default function Index({ contentTypes = [], isAdmin: propIsAdmin }) {
                                                 <div className="flex items-center gap-1.5">
                                                     <Link
                                                         href={route('admin.content-types.edit', type.id)}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-[#f8fafc] text-[#95aac9] transition-colors hover:bg-[#ebf1f7] hover:text-brand-primary dark:bg-[#16191c] dark:text-[#a7a6a8] dark:hover:text-brand-primary"
+                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:border-slate-300 hover:text-brand-primary dark:border-slate-700 dark:bg-[#202735] dark:text-slate-400 dark:hover:text-brand-primary"
                                                         title="Editar estructura y campos"
                                                     >
                                                         <Edit2 className="h-3.5 w-3.5" />
@@ -426,14 +425,14 @@ export default function Index({ contentTypes = [], isAdmin: propIsAdmin }) {
                                                     <button
                                                         type="button"
                                                         onClick={() => confirmDelete(type)}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-[#f8fafc] text-[#95aac9] transition-colors hover:bg-red-50 hover:text-red-500 dark:bg-[#16191c] dark:text-[#a7a6a8] dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-red-200/60 bg-red-50/50 text-red-600 transition hover:bg-red-100/80 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20"
                                                         title="Eliminar tipo"
                                                     >
                                                         <Trash2 className="h-3.5 w-3.5" />
                                                     </button>
                                                 </div>
                                             ) : (
-                                                <div className="flex items-center gap-1 text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                                                <div className="flex items-center gap-1 text-xs text-slate-400 dark:text-slate-500">
                                                     <Lock className="h-3.5 w-3.5" />
                                                     <span>Estructura fija</span>
                                                 </div>
@@ -444,18 +443,17 @@ export default function Index({ contentTypes = [], isAdmin: propIsAdmin }) {
                             })}
                         </div>
                     )}
-                </div>
             </div>
 
             {/* Modal de confirmación para eliminar CPT */}
             {isAdmin && (
                 <Modal show={Boolean(deletingType)} onClose={() => setDeletingType(null)} maxWidth="sm">
                     <div className="p-6">
-                        <h2 className="font-heading text-lg font-bold text-[#293951] dark:text-[#ffffff]">
+                        <h2 className="font-heading text-lg font-bold text-slate-900 dark:text-white">
                             ¿Eliminar Tipo de Contenido?
                         </h2>
-                        <p className="mt-2 text-sm text-[#95aac9] dark:text-[#a7a6a8]">
-                            ¿Estás seguro de que deseas eliminar <strong>{deletingType?.name}</strong>? Se eliminarán también todas sus publicaciones y la estructura de sus campos. Esta acción es irreversible.
+                        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                            ¿Estás seguro de que deseas eliminar <strong className="font-semibold text-slate-900 dark:text-white">{deletingType?.name}</strong>? Se eliminarán también todas sus publicaciones y la estructura de sus campos. Esta acción es irreversible.
                         </p>
                         <div className="mt-6 flex justify-end gap-3">
                             <SecondaryButton onClick={() => setDeletingType(null)}>

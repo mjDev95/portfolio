@@ -182,7 +182,7 @@ export default function CommandPalette({
                             className="fixed top-6 z-50 w-[94vw] max-w-xl pointer-events-auto"
                         >
                             {/* Píldora Input principal */}
-                            <div className="flex items-center gap-3 rounded-full bg-white/95 px-4 py-2.5 shadow-2xl backdrop-blur-xl border border-[#e3ebf6] dark:bg-[#1e2126]/95 dark:border-[#282d35] dark:shadow-black/60">
+                            <div className="flex items-center gap-3 rounded-full bg-white/95 px-4 py-2.5 shadow-2xl backdrop-blur-xl border border-slate-200/80 dark:bg-[#161b24]/95 dark:border-slate-800/80 dark:shadow-black/60">
                                 {/* Ícono lupa */}
                                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-primary/10 text-brand-primary dark:bg-brand-primary/20">
                                     <Search className="h-4 w-4" />
@@ -215,7 +215,7 @@ export default function CommandPalette({
                                             ? `Buscar en ${activeContext.name}...`
                                             : 'Buscar en el panel de administración...'
                                     }
-                                    className="w-full border-0 bg-transparent p-0 text-sm font-medium text-[#293951] placeholder-[#95aac9] focus:outline-none focus:ring-0 dark:text-[#ffffff] dark:placeholder-[#606770]"
+                                    className="w-full border-0 bg-transparent p-0 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-0 dark:text-white dark:placeholder-slate-500"
                                 />
 
                                 {loading && (
@@ -226,7 +226,7 @@ export default function CommandPalette({
                                     <button
                                         type="button"
                                         onClick={() => setQuery('')}
-                                        className="rounded-full p-1 text-[#95aac9] hover:text-[#293951] dark:text-[#a7a6a8] dark:hover:text-white transition-colors"
+                                        className="rounded-full p-1 text-slate-400 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white transition-colors"
                                         title="Limpiar texto"
                                     >
                                         <X className="h-3.5 w-3.5" />
@@ -239,7 +239,7 @@ export default function CommandPalette({
                                     onClick={() => setIsTutorialOpen(true)}
                                     title="Guía de uso y atajos"
                                     aria-label="Guía de uso y atajos"
-                                    className="rounded-full p-1.5 text-[#95aac9] hover:bg-[#ebf1f7] hover:text-brand-primary dark:text-[#a7a6a8] dark:hover:bg-[#282d35] dark:hover:text-brand-primary transition-colors shrink-0"
+                                    className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-brand-primary dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-brand-primary transition-colors shrink-0"
                                 >
                                     <HelpCircle className="h-4 w-4" />
                                 </button>
@@ -250,7 +250,7 @@ export default function CommandPalette({
                                     onClick={onClose}
                                     title="Cerrar buscador"
                                     aria-label="Cerrar buscador"
-                                    className="rounded-full p-1.5 text-[#95aac9] hover:bg-[#ebf1f7] hover:text-[#293951] dark:text-[#a7a6a8] dark:hover:bg-[#282d35] dark:hover:text-[#ffffff] transition-colors shrink-0"
+                                    className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white transition-colors shrink-0"
                                 >
                                     <X className="h-4 w-4" />
                                 </button>
@@ -264,12 +264,12 @@ export default function CommandPalette({
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                         exit={{ opacity: 0, y: 6, scale: 0.98 }}
                                         transition={{ duration: 0.15 }}
-                                        className="mt-2 w-full overflow-hidden rounded-2xl border border-[#e3ebf6] bg-white/95 shadow-2xl backdrop-blur-2xl dark:border-[#282d35] dark:bg-[#1e2126]/95 dark:shadow-black/60 p-2 max-h-[60vh] overflow-y-auto space-y-3"
+                                        className="mt-2 w-full overflow-hidden rounded-3xl border border-slate-200/80 bg-white/95 shadow-2xl backdrop-blur-2xl dark:border-slate-800 dark:bg-[#161b24]/95 dark:shadow-black/60 p-2 max-h-[60vh] overflow-y-auto space-y-3"
                                     >
                                         {/* Comandos y Acciones Rápidas */}
                                         {results.commands.length > 0 && (
                                             <div>
-                                                <p className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#95aac9] dark:text-[#a7a6a8]">
+                                                <p className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                                                     Acciones y Accesos Rápidos
                                                 </p>
                                                 <div className="space-y-0.5">
@@ -282,18 +282,18 @@ export default function CommandPalette({
                                                                 type="button"
                                                                 onClick={() => handleSelectItem(cmd)}
                                                                 onMouseEnter={() => setSelectedIndex(itemIndex)}
-                                                                className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-xs transition-colors ${
+                                                                className={`flex w-full items-center justify-between gap-3 rounded-2xl px-3 py-2 text-left text-xs transition-colors ${
                                                                     isSelected
                                                                         ? 'bg-brand-primary text-white shadow-sm font-semibold'
-                                                                        : 'text-[#293951] hover:bg-[#f8fafc] dark:text-[#ffffff] dark:hover:bg-[#16191c]'
+                                                                        : 'text-slate-700 hover:bg-slate-50 dark:text-white dark:hover:bg-[#1c222e]'
                                                                 }`}
                                                             >
                                                                 <div className="flex items-center gap-2.5 min-w-0">
                                                                     <div
-                                                                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
+                                                                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-xl ${
                                                                             isSelected
                                                                                 ? 'bg-white/20 text-white'
-                                                                                : 'bg-[#ebf1f7] text-brand-primary dark:bg-[#282d35] dark:text-brand-primary'
+                                                                                : 'bg-slate-100 text-brand-primary dark:bg-slate-800 dark:text-brand-primary'
                                                                         }`}
                                                                     >
                                                                         {renderItemIcon(cmd.icon, 'h-3.5 w-3.5')}
@@ -306,7 +306,7 @@ export default function CommandPalette({
                                                                             className={`text-[11px] truncate ${
                                                                                 isSelected
                                                                                     ? 'text-white/80'
-                                                                                    : 'text-[#95aac9] dark:text-[#a7a6a8]'
+                                                                                    : 'text-slate-400 dark:text-slate-500'
                                                                             }`}
                                                                         >
                                                                             {cmd.subtitle}
@@ -315,10 +315,10 @@ export default function CommandPalette({
                                                                 </div>
 
                                                                 <span
-                                                                    className={`rounded-md px-1.5 py-0.5 text-[10px] uppercase font-bold shrink-0 ${
+                                                                    className={`rounded-full px-2 py-0.5 text-[10px] uppercase font-bold shrink-0 ${
                                                                         isSelected
                                                                             ? 'bg-white/20 text-white'
-                                                                            : 'bg-[#f5f7fa] text-[#95aac9] dark:bg-[#16191c] dark:text-[#a7a6a8]'
+                                                                            : 'bg-slate-100 text-slate-500 dark:bg-slate-800/80 dark:text-slate-400'
                                                                     }`}
                                                                 >
                                                                     {cmd.badge}
@@ -333,7 +333,7 @@ export default function CommandPalette({
                                         {/* Publicaciones y Contenidos Encontrados */}
                                         {results.items.length > 0 && (
                                             <div>
-                                                <p className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#95aac9] dark:text-[#a7a6a8]">
+                                                <p className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                                                     Publicaciones ({results.items.length})
                                                 </p>
                                                 <div className="space-y-0.5">
@@ -346,18 +346,18 @@ export default function CommandPalette({
                                                                 type="button"
                                                                 onClick={() => handleSelectItem(item)}
                                                                 onMouseEnter={() => setSelectedIndex(itemIndex)}
-                                                                className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-xs transition-colors ${
+                                                                className={`flex w-full items-center justify-between gap-3 rounded-2xl px-3 py-2 text-left text-xs transition-colors ${
                                                                     isSelected
                                                                         ? 'bg-brand-primary text-white shadow-sm font-semibold'
-                                                                        : 'text-[#293951] hover:bg-[#f8fafc] dark:text-[#ffffff] dark:hover:bg-[#16191c]'
+                                                                        : 'text-slate-700 hover:bg-slate-50 dark:text-white dark:hover:bg-[#1c222e]'
                                                                 }`}
                                                             >
                                                                 <div className="flex items-center gap-2.5 min-w-0">
                                                                     <div
-                                                                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
+                                                                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-xl ${
                                                                             isSelected
                                                                                 ? 'bg-white/20 text-white'
-                                                                                : 'bg-[#ebf1f7] text-brand-primary dark:bg-[#282d35] dark:text-brand-primary'
+                                                                                : 'bg-slate-100 text-brand-primary dark:bg-slate-800 dark:text-brand-primary'
                                                                         }`}
                                                                     >
                                                                         {renderItemIcon(item.cpt_icon || item.icon || 'FileText', 'h-3.5 w-3.5')}
@@ -370,7 +370,7 @@ export default function CommandPalette({
                                                                             className={`text-[11px] truncate ${
                                                                                 isSelected
                                                                                     ? 'text-white/80'
-                                                                                    : 'text-[#95aac9] dark:text-[#a7a6a8]'
+                                                                                    : 'text-slate-400 dark:text-slate-500'
                                                                             }`}
                                                                         >
                                                                             {item.subtitle}
@@ -381,7 +381,7 @@ export default function CommandPalette({
                                                                 <div className="flex items-center gap-2 shrink-0">
                                                                     {item.status && (
                                                                         <span
-                                                                            className={`rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${
+                                                                            className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                                                                                 isSelected
                                                                                     ? 'bg-white/20 text-white'
                                                                                     : item.status === 'published'
@@ -396,7 +396,7 @@ export default function CommandPalette({
                                                                         className={`text-[11px] ${
                                                                             isSelected
                                                                                 ? 'text-white/70'
-                                                                                : 'text-[#95aac9] dark:text-[#606770]'
+                                                                                : 'text-slate-400 dark:text-slate-500'
                                                                         }`}
                                                                     >
                                                                         {item.cpt_name || item.badge}
@@ -411,8 +411,8 @@ export default function CommandPalette({
 
                                         {/* Sin coincidencias */}
                                         {!loading && query && allItems.length === 0 && (
-                                            <div className="py-8 text-center text-xs text-[#95aac9] dark:text-[#a7a6a8]">
-                                                <p className="font-semibold text-sm text-[#293951] dark:text-white mb-1">
+                                            <div className="py-8 text-center text-xs text-slate-400 dark:text-slate-500">
+                                                <p className="font-semibold text-sm text-slate-800 dark:text-white mb-1">
                                                     Sin coincidencias para &quot;{query}&quot;
                                                 </p>
                                                 <p>

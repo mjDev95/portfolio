@@ -5,7 +5,7 @@ export default function DynamicFieldInput({ field, value, onChange, error }) {
     const { label, name, type, options, placeholder, is_required } = field;
 
     const baseInputStyles =
-        'w-full rounded-xl border border-[#e3ebf6] bg-white px-3.5 py-2.5 text-sm text-[#293951] placeholder-[#95aac9] transition-all focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20 dark:border-[#282d35] dark:bg-[#16191c] dark:text-[#ffffff] dark:placeholder-[#606770]';
+        'w-full rounded-2xl border border-slate-200/80 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 transition-all shadow-xs focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-800 dark:bg-[#12161f] dark:text-white dark:placeholder-slate-500';
 
     const renderInput = () => {
         switch (type) {
@@ -72,9 +72,9 @@ export default function DynamicFieldInput({ field, value, onChange, error }) {
                                 onChange={(e) => onChange(name, e.target.checked)}
                                 className="peer sr-only"
                             />
-                            <div className="h-6 w-11 rounded-full bg-[#e3ebf6] transition-colors after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-brand-primary peer-checked:after:translate-x-full peer-focus:outline-none dark:bg-[#282d35]"></div>
+                            <div className="h-6 w-11 rounded-full bg-slate-200 transition-colors after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:bg-brand-primary peer-checked:after:translate-x-full peer-focus:outline-none dark:bg-slate-700"></div>
                         </label>
-                        <span className="text-sm font-medium text-[#293951] dark:text-[#ffffff]">
+                        <span className="text-sm font-medium text-slate-900 dark:text-white">
                             {value ? 'Activo / Sí' : 'Inactivo / No'}
                         </span>
                     </div>
@@ -131,7 +131,7 @@ export default function DynamicFieldInput({ field, value, onChange, error }) {
                         </span>
                     )}
                 </InputLabel>
-                <span className="text-xs font-mono uppercase tracking-wider text-[#95aac9] dark:text-[#606770]">
+                <span className="text-xs font-mono uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     {type}
                 </span>
             </div>

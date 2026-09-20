@@ -178,7 +178,7 @@ export default function Index({ palettes = [], activePaletteId = null }) {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 15, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
-                        className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-2xl bg-[#0B0D0E] px-4 py-3 text-white shadow-2xl ring-1 ring-white/10 dark:bg-white dark:text-[#0B0D0E]"
+                        className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-full bg-slate-900 px-5 py-2.5 text-white shadow-xl ring-1 ring-white/10 dark:bg-white dark:text-slate-900"
                     >
                         <CheckCircle2 className="h-4 w-4 text-emerald-400 dark:text-emerald-600" />
                         <div className="text-xs font-medium">
@@ -189,9 +189,8 @@ export default function Index({ palettes = [], activePaletteId = null }) {
                 )}
             </AnimatePresence>
 
-            <div className="py-8">
-                <div className="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
-                    {/* ── 1. Cabecera Principal ─────────────────────────────────── */}
+            <div className="w-full space-y-8">
+                {/* ── 1. Cabecera Principal ─────────────────────────────────── */}
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <div className="flex items-center gap-2">
@@ -199,15 +198,15 @@ export default function Index({ palettes = [], activePaletteId = null }) {
                                     <Sparkles className="h-3 w-3" />
                                     Sistema de Diseño & Branding
                                 </span>
-                                <span className="text-xs font-medium text-[#95aac9] dark:text-[#a7a6a8]">
+                                <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
                                     v1.0
                                 </span>
                             </div>
 
-                            <h1 className="mt-2 font-heading text-2xl font-bold tracking-tight text-[#293951] dark:text-white sm:text-3xl">
+                            <h1 className="mt-2 font-heading text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
                                 Identidad Corporativa & Catálogo de Color
                             </h1>
-                            <p className="mt-1 text-sm text-[#95aac9] dark:text-[#a7a6a8]">
+                            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                                 Administra las combinaciones cromáticas de 4 colores y visualiza el stack tipográfico oficial.
                             </p>
                         </div>
@@ -215,20 +214,20 @@ export default function Index({ palettes = [], activePaletteId = null }) {
                         {/* Acciones y Buscador Rápido de Colores */}
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                             <div className="relative w-full sm:w-64">
-                                <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#95aac9] dark:text-[#a7a6a8]" />
+                                <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
                                 <input
                                     type="text"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     placeholder="Buscar por color, HEX..."
-                                    className="w-full rounded-2xl border-0 bg-white py-2.5 pl-10 pr-4 text-xs text-[#293951] shadow-xs placeholder-[#95aac9] focus:outline-none focus:ring-2 focus:ring-brand-secondary dark:bg-[#1e2126] dark:text-white dark:placeholder-[#a7a6a8]"
+                                    className="w-full rounded-full border border-slate-200/80 bg-white py-2 pl-9 pr-4 text-xs text-slate-900 placeholder-slate-400 shadow-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-800 dark:bg-[#161b24] dark:text-white dark:placeholder-slate-500"
                                 />
                             </div>
 
                             <button
                                 type="button"
                                 onClick={handleCreateClick}
-                                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-primary px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:opacity-95 shrink-0"
+                                className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-primary px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-brand-primary-hover shrink-0"
                             >
                                 <Plus className="h-4 w-4" />
                                 <span>Nueva Paleta</span>
@@ -237,20 +236,20 @@ export default function Index({ palettes = [], activePaletteId = null }) {
                     </div>
 
                     {/* ── 2. Pestañas de Navegación del Módulo ───────────────────── */}
-                    <div className="flex items-center gap-2 border-b border-gray-100 pb-4 dark:border-gray-800/60">
+                    <div className="flex items-center gap-2 border-b border-slate-100 pb-4 dark:border-slate-800/80">
                         <button
                             type="button"
                             onClick={() => setActiveTab('palettes')}
-                            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition ${
+                            className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold transition ${
                                 activeTab === 'palettes'
                                     ? 'bg-brand-primary text-white shadow-sm'
-                                    : 'bg-white text-[#95aac9] hover:text-[#293951] dark:bg-[#1e2126] dark:text-[#a7a6a8] dark:hover:text-white'
+                                    : 'border border-slate-200/80 bg-white text-slate-600 hover:text-slate-900 dark:border-slate-800 dark:bg-[#161b24] dark:text-slate-400 dark:hover:text-white'
                             }`}
                         >
                             <Palette className="h-4 w-4" />
                             <span>Paletas Cromáticas</span>
-                            <span className={`rounded-full px-2 py-0.2 text-[10px] ${
-                                activeTab === 'palettes' ? 'bg-black/20 text-white' : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'
+                            <span className={`rounded-full px-2 py-0.5 text-[10px] ${
+                                activeTab === 'palettes' ? 'bg-black/20 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
                             }`}>
                                 {paletteList.length}
                             </span>
@@ -259,15 +258,17 @@ export default function Index({ palettes = [], activePaletteId = null }) {
                         <button
                             type="button"
                             onClick={() => setActiveTab('typography')}
-                            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition ${
+                            className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold transition ${
                                 activeTab === 'typography'
                                     ? 'bg-brand-primary text-white shadow-sm'
-                                    : 'bg-white text-[#95aac9] hover:text-[#293951] dark:bg-[#1e2126] dark:text-[#a7a6a8] dark:hover:text-white'
+                                    : 'border border-slate-200/80 bg-white text-slate-600 hover:text-slate-900 dark:border-slate-800 dark:bg-[#161b24] dark:text-slate-400 dark:hover:text-white'
                             }`}
                         >
                             <Type className="h-4 w-4" />
                             <span>Tipografía Oficial</span>
-                            <span className="rounded-full bg-gray-100 px-2 py-0.2 text-[10px] text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                            <span className={`rounded-full px-2 py-0.5 text-[10px] ${
+                                activeTab === 'typography' ? 'bg-black/20 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                            }`}>
                                 2
                             </span>
                         </button>
@@ -275,10 +276,10 @@ export default function Index({ palettes = [], activePaletteId = null }) {
                         <button
                             type="button"
                             onClick={() => setActiveTab('tokens')}
-                            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition ${
+                            className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold transition ${
                                 activeTab === 'tokens'
                                     ? 'bg-brand-primary text-white shadow-sm'
-                                    : 'bg-white text-[#95aac9] hover:text-[#293951] dark:bg-[#1e2126] dark:text-[#a7a6a8] dark:hover:text-white'
+                                    : 'border border-slate-200/80 bg-white text-slate-600 hover:text-slate-900 dark:border-slate-800 dark:bg-[#161b24] dark:text-slate-400 dark:hover:text-white'
                             }`}
                         >
                             <Code2 className="h-4 w-4" />
@@ -302,12 +303,12 @@ export default function Index({ palettes = [], activePaletteId = null }) {
                                     />
                                 ))
                             ) : (
-                                <div className="rounded-3xl bg-white p-12 text-center dark:bg-[#1e2126]">
-                                    <Palette className="mx-auto h-12 w-12 text-[#95aac9] dark:text-[#a7a6a8]" />
-                                    <h3 className="mt-4 font-heading text-lg font-bold text-[#293951] dark:text-white">
+                                <div className="rounded-[28px] border border-slate-100/90 bg-white p-12 text-center shadow-sm dark:border-slate-800/80 dark:bg-[#161b24]">
+                                    <Palette className="mx-auto h-12 w-12 text-slate-400 dark:text-slate-500" />
+                                    <h3 className="mt-4 font-heading text-lg font-bold text-slate-900 dark:text-white">
                                         No se encontraron paletas
                                     </h3>
-                                    <p className="mt-1 text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                                         No hay coincidencias para &quot;{searchQuery}&quot;. Intenta con otro término o código HEX.
                                     </p>
                                 </div>
@@ -318,7 +319,6 @@ export default function Index({ palettes = [], activePaletteId = null }) {
                     {activeTab === 'typography' && <TypographySection />}
 
                     {activeTab === 'tokens' && <TokensCodeSection onToast={showToast} />}
-                </div>
             </div>
 
             {/* Modal para Crear y Editar Paleta (4 colores, sin is_master) */}
@@ -349,18 +349,18 @@ export default function Index({ palettes = [], activePaletteId = null }) {
                             <AlertTriangle className="h-6 w-6" />
                         </div>
                         <div>
-                            <h3 className="font-heading text-lg font-bold text-[#293951] dark:text-white">
+                            <h3 className="font-heading text-lg font-bold text-slate-900 dark:text-white">
                                 ¿Eliminar paleta de color?
                             </h3>
-                            <p className="mt-1 text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                                 Esta acción eliminará permanentemente la paleta del catálogo.
                             </p>
                         </div>
                     </div>
 
                     {paletteToDelete && (
-                        <div className="mt-5 rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-gray-800 dark:bg-[#16191c]">
-                            <span className="block text-xs font-bold text-[#293951] dark:text-white">
+                        <div className="mt-5 rounded-2xl border border-slate-100 bg-[#f8f9fb] p-4 dark:border-slate-800 dark:bg-[#12161f]">
+                            <span className="block text-xs font-bold text-slate-900 dark:text-white">
                                 {paletteToDelete.name}
                             </span>
                             <div className="mt-2.5 flex h-7 w-full overflow-hidden rounded-lg shadow-2xs">

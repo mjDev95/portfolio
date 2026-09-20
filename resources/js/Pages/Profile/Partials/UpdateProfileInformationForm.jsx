@@ -29,11 +29,11 @@ export default function UpdateProfileInformation({
     return (
         <section className={className}>
             <header>
-                <h2 className="font-heading text-lg font-bold text-[#293951] dark:text-white">
+                <h2 className="font-heading text-lg font-bold text-slate-900 dark:text-white">
                     Información del Perfil
                 </h2>
 
-                <p className="mt-1 text-sm text-[#95aac9] dark:text-[#a7a6a8]">
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                     Actualiza el nombre y dirección de correo de tu cuenta administrativa.
                 </p>
             </header>
@@ -73,7 +73,7 @@ export default function UpdateProfileInformation({
 
                 {mustVerifyEmail && user.email_verified_at === null && (
                     <div>
-                        <p className="mt-2 text-sm text-[#293951] dark:text-white">
+                        <p className="mt-2 text-sm text-slate-900 dark:text-white">
                             Tu dirección de correo no está verificada.
                             <Link
                                 href={route('admin.verification.send')}

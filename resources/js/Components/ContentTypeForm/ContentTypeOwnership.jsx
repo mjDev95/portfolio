@@ -27,12 +27,12 @@ export default function ContentTypeOwnership({
     };
 
     return (
-        <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-[#1e2126] sm:p-8">
-            <div className="border-b border-[#f5f7fa] pb-4 dark:border-[#16191c]">
-                <h2 className="font-heading text-lg font-bold text-[#293951] dark:text-[#ffffff]">
+        <div className="rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24] sm:p-8">
+            <div className="border-b border-slate-100 pb-4 dark:border-slate-800/80">
+                <h2 className="font-heading text-lg font-bold text-slate-900 dark:text-white">
                     2. Asignación de Clientes / Propietarios del CPT
                 </h2>
-                <p className="text-sm text-[#95aac9] dark:text-[#a7a6a8]">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                     Puedes asignar este tipo de contenido a uno o múltiples clientes. Cada cliente tendrá su propio espacio privado.
                 </p>
             </div>
@@ -49,10 +49,10 @@ export default function ContentTypeOwnership({
                     error={errors.user_ids || errors.user_id}
                 />
 
-                <div className="mt-4 flex items-center gap-2.5 rounded-xl bg-[#f8fafc] p-4 text-xs text-[#95aac9] dark:bg-[#16191c] dark:text-[#a7a6a8]">
+                <div className="mt-4 flex items-center gap-2.5 rounded-2xl border border-slate-100 bg-[#f8f9fb] p-4 text-xs text-slate-500 dark:border-slate-800 dark:bg-[#12161f] dark:text-slate-400">
                     <ShieldCheck className="h-5 w-5 text-emerald-500 flex-shrink-0" />
                     <span>
-                        <strong>Aislamiento Estricto de Datos:</strong> Si asignas este CPT a múltiples clientes (ej. <i>Cliente A</i> y <i>Cliente B</i>), cada cliente verá únicamente sus propias publicaciones en su panel. El contenido, categorías y medios nunca se mezclarán entre clientes.
+                        <strong className="text-slate-900 dark:text-white">Aislamiento Estricto de Datos:</strong> Si asignas este CPT a múltiples clientes (ej. <i>Cliente A</i> y <i>Cliente B</i>), cada cliente verá únicamente sus propias publicaciones en su panel. El contenido, categorías y medios nunca se mezclarán entre clientes.
                     </span>
                 </div>
             </div>

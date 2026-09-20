@@ -102,3 +102,63 @@
         scrollbar-width: none !important;
     }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Dashboard Responsive Container Queries (Adaptabilidad Inteligente)
+   Permite que el contenido del Dashboard se adapte al ancho REAL disponible,
+   ya sea con sidebar expandido o colapsado en pantallas de 1024px a 1300px+.
+   ───────────────────────────────────────────────────────────────────────── */
+.dashboard-container {
+    container-type: inline-size;
+    container-name: dashboard;
+}
+
+@container dashboard (min-width: 1040px) {
+    .dashboard-metrics-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    }
+    .dashboard-details-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+    .dashboard-details-left {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+    }
+    .dashboard-details-right {
+        grid-column: span 2 / span 2 !important;
+    }
+}
+
+@container dashboard (min-width: 620px) and (max-width: 1039px) {
+    .dashboard-metrics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+    .dashboard-details-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+    .dashboard-details-left {
+        display: contents !important;
+    }
+    .dashboard-details-right {
+        grid-column: span 2 / span 2 !important;
+    }
+}
+
+@container dashboard (max-width: 619px) {
+    .dashboard-metrics-grid {
+        grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+    }
+    .dashboard-details-grid {
+        grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+    }
+    .dashboard-details-left {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+    }
+    .dashboard-details-right {
+        grid-column: span 1 / span 1 !important;
+    }
+}
+

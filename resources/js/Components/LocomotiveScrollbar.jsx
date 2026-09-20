@@ -182,8 +182,8 @@ export default function LocomotiveScrollbar() {
                     isDragging
                         ? 'bg-brand-primary dark:bg-brand-primary cursor-grabbing shadow-lg'
                         : isHovered
-                        ? 'bg-[#293951]/60 hover:bg-brand-primary dark:bg-white/50 dark:hover:bg-brand-primary cursor-grab'
-                        : 'bg-[#293951]/30 dark:bg-white/25 cursor-grab'
+                        ? 'bg-slate-700/60 hover:bg-brand-primary dark:bg-white/50 dark:hover:bg-brand-primary cursor-grab'
+                        : 'bg-slate-700/30 dark:bg-white/25 cursor-grab'
                 }`}
             />
         </div>

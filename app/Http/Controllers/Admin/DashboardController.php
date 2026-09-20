@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Content;
 use App\Models\ContentType;
 use App\Models\Media;
@@ -224,6 +225,31 @@ class DashboardController extends Controller
             $growthPercentage = ($percentage >= 0 ? '+' : '').number_format($percentage, 1).'%';
         }
 
+        $projectsCount = Content::whereHas('contentType', fn ($q) => $q->where('slug', 'proyectos'))
+            ->where('status', 'published')
+            ->count();
+        $postsCount = Content::whereHas('contentType', fn ($q) => $q->where('slug', 'blog'))
+            ->where('status', 'published')
+            ->count();
+
+        $categoriesList = Category::withCount('contents')
+            ->orderByDesc('contents_count')
+            ->get(['id', 'name', 'slug'])
+            ->map(fn ($cat) => [
+                'id' => $cat->id,
+                'name' => $cat->name,
+                'slug' => $cat->slug,
+                'count' => $cat->contents_count,
+            ])
+            ->all();
+
+        $topItem = Content::where('featured', true)
+            ->with([
+                'contentType:id,name,slug',
+                'media' => fn ($q) => $q->where('collection', 'thumbnail'),
+            ])
+            ->first();
+
         $activityData = $this->getActivityData($userId, $isAdmin);
 
         return [
@@ -237,6 +263,21 @@ class DashboardController extends Controller
                     'published' => $publishedContents,
                     'drafts' => $draftContents,
                 ],
+                'projects' => [
+                    'total' => $projectsCount,
+                ],
+                'posts' => [
+                    'total' => $postsCount,
+                ],
+                'categories' => $categoriesList,
+                'topItem' => $topItem ? [
+                    'id' => $topItem->id,
+                    'title' => $topItem->title,
+                    'slug' => $topItem->slug,
+                    'type' => $topItem->contentType?->name ?? 'Proyecto',
+                    'type_slug' => $topItem->contentType?->slug ?? 'proyectos',
+                    'thumbnail_url' => $topItem->media->first()?->url,
+                ] : null,
                 'contentTypes' => [
                     'total' => $totalContentTypes,
                 ],

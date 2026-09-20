@@ -24,9 +24,9 @@ export default function TaxonomySidebar({
         <>
             {/* Sidebar Card: Categorías */}
             {contentType.has_categories && (
-                <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-[#1e2126]">
+                <div className="rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24]">
                     <div className="flex items-center justify-between mb-3">
-                        <h3 className="font-heading text-base font-bold text-[#293951] dark:text-[#ffffff]">
+                        <h3 className="font-heading text-base font-bold text-slate-900 dark:text-white">
                             Categorías
                         </h3>
                         <button
@@ -40,7 +40,7 @@ export default function TaxonomySidebar({
                     </div>
 
                     {categoryList.length === 0 ? (
-                        <p className="text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                        <p className="text-xs text-slate-400 dark:text-slate-500">
                             No hay categorías registradas.
                         </p>
                     ) : (
@@ -48,13 +48,13 @@ export default function TaxonomySidebar({
                             {categoryList.map((cat) => (
                                 <label
                                     key={cat.id}
-                                    className="flex items-center gap-2.5 text-xs font-medium text-[#293951] dark:text-[#ffffff] cursor-pointer"
+                                    className="flex items-center gap-2.5 text-xs font-medium text-slate-700 dark:text-slate-300 cursor-pointer"
                                 >
                                     <input
                                         type="checkbox"
                                         checked={selectedCategories.includes(cat.id)}
                                         onChange={() => onToggleCategory(cat.id)}
-                                        className="rounded border-0 bg-[#ebf1f7] text-brand-primary focus:ring-brand-primary dark:bg-[#121517]"
+                                        className="rounded-lg border-slate-300 text-brand-primary shadow-xs focus:ring-brand-primary/20 dark:border-slate-700 dark:bg-[#12161f]"
                                     />
                                     <span>{cat.name}</span>
                                 </label>
@@ -66,9 +66,9 @@ export default function TaxonomySidebar({
 
             {/* Sidebar Card: Etiquetas / Tags */}
             {contentType.has_tags && (
-                <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-[#1e2126]">
+                <div className="rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24]">
                     <div className="flex items-center justify-between mb-3">
-                        <h3 className="font-heading text-base font-bold text-[#293951] dark:text-[#ffffff]">
+                        <h3 className="font-heading text-base font-bold text-slate-900 dark:text-white">
                             Etiquetas (Tags)
                         </h3>
                         <button
@@ -82,7 +82,7 @@ export default function TaxonomySidebar({
                     </div>
 
                     {tagList.length === 0 ? (
-                        <p className="text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                        <p className="text-xs text-slate-400 dark:text-slate-500">
                             No hay etiquetas creadas.
                         </p>
                     ) : (
@@ -94,10 +94,10 @@ export default function TaxonomySidebar({
                                         key={tag.id}
                                         type="button"
                                         onClick={() => onToggleTag(tag.id)}
-                                        className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${
+                                        className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                                             isSelected
-                                                ? 'bg-brand-primary text-white'
-                                                : 'bg-[#f5f7fa] text-[#95aac9] hover:bg-[#ebf1f7] hover:text-[#293951] dark:bg-[#121517] dark:text-[#a7a6a8] dark:hover:text-[#ffffff]'
+                                                ? 'bg-brand-primary text-white shadow-xs'
+                                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200/80 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
                                         }`}
                                     >
                                         #{tag.name}

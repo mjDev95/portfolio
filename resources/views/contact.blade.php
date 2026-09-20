@@ -5,6 +5,12 @@
 
 @section('content')
 <section class="container py-2xl" style="min-height: 100vh;">
+    <div class="mb-sm">
+        <x-breadcrumbs :items="[
+            ['label' => 'Inicio', 'url' => route('home')],
+            ['label' => 'Contacto', 'url' => null]
+        ]" />
+    </div>
     <h1 class="h1" data-reveal>Hablemos</h1>
 
     @if (session('success'))

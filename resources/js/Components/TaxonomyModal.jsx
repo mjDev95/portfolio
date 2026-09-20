@@ -79,14 +79,14 @@ export default function TaxonomyModal({
     return (
         <Modal show={isOpen} onClose={handleClose} maxWidth="md">
             <form onSubmit={handleSubmit} className="p-6">
-                <div className="flex items-center justify-between border-b border-[#f5f7fa] pb-4 dark:border-[#16191c]">
-                    <h3 className="font-heading text-lg font-bold text-[#293951] dark:text-[#ffffff]">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
+                    <h3 className="font-heading text-lg font-bold text-slate-900 dark:text-white">
                         {title}
                     </h3>
                     <button
                         type="button"
                         onClick={handleClose}
-                        className="rounded-lg p-1 text-[#95aac9] hover:bg-[#ebf1f7] hover:text-[#293951] dark:text-[#a7a6a8] dark:hover:bg-[#16191c] dark:hover:text-[#ffffff]"
+                        className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white transition"
                     >
                         <X className="h-5 w-5" />
                     </button>
@@ -120,13 +120,13 @@ export default function TaxonomyModal({
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                                 placeholder="Breve descripción o propósito..."
-                                className="mt-1 block w-full rounded-xl border-0 bg-[#ebf1f7] p-3 text-base text-[#293951] placeholder:text-[#95aac9] focus:bg-white focus:ring-2 focus:ring-brand-primary dark:border-0 dark:bg-[#16191c] dark:text-[#ffffff] dark:placeholder:text-[#a7a6a8] dark:focus:bg-[#16191c] dark:focus:ring-brand-primary"
+                                className="mt-1 block w-full rounded-2xl border border-slate-200/80 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 shadow-xs focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-800 dark:bg-[#12161f] dark:text-white dark:placeholder:text-slate-500"
                             />
                         </div>
                     )}
                 </div>
 
-                <div className="mt-6 flex justify-end gap-3 border-t border-[#f5f7fa] pt-4 dark:border-[#16191c]">
+                <div className="mt-6 flex justify-end gap-3 border-t border-slate-100 pt-4 dark:border-slate-800">
                     <SecondaryButton onClick={handleClose} disabled={loading}>
                         Cancelar
                     </SecondaryButton>

@@ -49,7 +49,7 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }) {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     onClick={onClose}
-                    className="absolute inset-0 bg-[#121517]/60 backdrop-blur-sm"
+                    className="absolute inset-0 bg-slate-950/70 backdrop-blur-md"
                 />
 
                 {/* Modal Container */}
@@ -58,19 +58,19 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }) {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 12 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-                    className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-[#e3ebf6] bg-white p-6 shadow-2xl dark:border-[#282d35] dark:bg-[#1e2126] sm:p-8"
+                    className="relative w-full max-w-2xl overflow-hidden rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-2xl dark:border-slate-800/80 dark:bg-[#161b24] sm:p-8"
                 >
                     {/* Header */}
-                    <div className="flex items-start justify-between pb-6 border-b border-[#f5f7fa] dark:border-[#282d35]">
+                    <div className="flex items-start justify-between pb-6 border-b border-slate-100 dark:border-slate-800">
                         <div className="flex items-center gap-3.5">
                             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary dark:bg-brand-primary/15">
                                 <Sparkles className="h-5 w-5" />
                             </div>
                             <div>
-                                <h3 className="font-heading text-lg font-bold text-[#293951] dark:text-[#ffffff]">
+                                <h3 className="font-heading text-lg font-bold text-slate-900 dark:text-white">
                                     Guía y Atajos del Command Palette
                                 </h3>
-                                <p className="text-xs text-[#95aac9] dark:text-[#a7a6a8] mt-0.5">
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                                     Navega, crea y gestiona tu contenido a la velocidad de la luz.
                                 </p>
                             </div>
@@ -79,7 +79,7 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }) {
                         <button
                             type="button"
                             onClick={onClose}
-                            className="rounded-xl p-2 text-[#95aac9] transition-colors hover:bg-[#ebf1f7] hover:text-[#293951] dark:text-[#a7a6a8] dark:hover:bg-[#282d35] dark:hover:text-[#ffffff]"
+                            className="rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
                             title="Cerrar (ESC)"
                         >
                             <X className="h-5 w-5" />
@@ -90,7 +90,7 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }) {
                     <div className="mt-6 space-y-6 max-h-[60vh] overflow-y-auto pr-1">
                         {shortcutGroups.map((group, idx) => (
                             <div key={idx} className="space-y-3">
-                                <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#95aac9] dark:text-[#a7a6a8]">
+                                <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                                     {group.title}
                                 </h4>
 
@@ -98,10 +98,10 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }) {
                                     {group.shortcuts.map((shortcut, sIdx) => (
                                         <div
                                             key={sIdx}
-                                            className="flex flex-col gap-1.5 rounded-xl border border-[#f5f7fa] bg-[#f8fafc] p-3 transition dark:border-[#282d35]/60 dark:bg-[#16191c] sm:flex-row sm:items-center sm:justify-between"
+                                            className="flex flex-col gap-1.5 rounded-2xl border border-slate-100 bg-[#f8f9fb] p-3 transition dark:border-slate-800/60 dark:bg-[#12161f] sm:flex-row sm:items-center sm:justify-between"
                                         >
                                             <div className="min-w-0 flex-1">
-                                                <p className="text-xs font-medium text-[#293951] dark:text-[#ffffff]">
+                                                <p className="text-xs font-medium text-slate-800 dark:text-white">
                                                     {shortcut.label}
                                                 </p>
                                                 {shortcut.example && (
@@ -115,7 +115,7 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }) {
                                                 {shortcut.keys.map((k, kIdx) => (
                                                     <kbd
                                                         key={kIdx}
-                                                        className="inline-flex min-w-[26px] h-6 items-center justify-center rounded-lg border border-[#e3ebf6] bg-white px-2 font-mono text-[11px] font-bold text-[#293951] shadow-sm dark:border-[#282d35] dark:bg-[#1e2126] dark:text-[#ffffff]"
+                                                        className="inline-flex min-w-[26px] h-6 items-center justify-center rounded-lg border border-slate-200/80 bg-white px-2 font-mono text-[11px] font-bold text-slate-700 shadow-xs dark:border-slate-700 dark:bg-[#1e2634] dark:text-slate-200"
                                                     >
                                                         {k}
                                                     </kbd>
@@ -140,14 +140,14 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }) {
                     </div>
 
                     {/* Footer */}
-                    <div className="mt-6 flex items-center justify-between pt-4 border-t border-[#f5f7fa] dark:border-[#282d35]">
-                        <span className="text-[11px] text-[#95aac9] dark:text-[#a7a6a8]">
-                            Presiona <kbd className="rounded border px-1.5 py-0.5 font-mono text-[10px]">ESC</kbd> para salir
+                    <div className="mt-6 flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+                        <span className="text-[11px] text-slate-400 dark:text-slate-500">
+                            Presiona <kbd className="rounded-md border border-slate-200 px-1.5 py-0.5 font-mono text-[10px] dark:border-slate-700">ESC</kbd> para salir
                         </span>
                         <button
                             type="button"
                             onClick={onClose}
-                            className="rounded-xl bg-brand-primary px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-brand-primary-hover"
+                            className="rounded-full bg-brand-primary px-5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-primary-hover"
                         >
                             Entendido
                         </button>

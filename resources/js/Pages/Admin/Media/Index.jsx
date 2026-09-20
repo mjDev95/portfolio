@@ -443,7 +443,7 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                 onDragLeave={handleDragLeave}
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={handleDrop}
-                className="relative min-h-[calc(100vh-5rem)] py-8"
+                className="relative w-full min-h-[calc(100vh-5rem)]"
             >
                 {/* Overlay visual Drag & Drop al arrastrar archivos */}
                 {isDragging && (
@@ -460,17 +460,17 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                     </div>
                 )}
 
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
+                <div className="w-full space-y-6">
                     {/* Header de la Sección */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
-                            <h1 className="text-2xl font-bold font-heading tracking-tight text-[#293951] dark:text-white flex items-center gap-3">
+                            <h1 className="text-2xl font-bold font-heading tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
                                 <span>Biblioteca de Medios</span>
-                                <span className="text-xs font-normal text-[#95aac9] dark:text-[#a7a6a8] bg-white dark:bg-[#1e2126] px-3 py-1 rounded-full shadow-sm">
+                                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 bg-white dark:bg-[#161b24] border border-slate-200/80 dark:border-slate-800 px-3 py-1 rounded-full shadow-xs">
                                     {totalItems || stats.total || 0} archivos
                                 </span>
                             </h1>
-                            <p className="text-xs text-[#95aac9] dark:text-[#a7a6a8] mt-1">
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                                 Gestiona tus imágenes con compresión WebP y miniaturas ultraligeras.
                             </p>
                         </div>
@@ -491,7 +491,7 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                             <button
                                 type="button"
                                 onClick={() => fileInputRef.current?.click()}
-                                className="inline-flex items-center gap-2 rounded-2xl bg-brand-primary px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-brand-primary-hover active:scale-95"
+                                className="inline-flex items-center gap-2 rounded-full bg-brand-primary px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-brand-primary-hover active:scale-95"
                             >
                                 <Plus className="h-4 w-4" />
                                 Subir nueva imagen
@@ -499,8 +499,8 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                         </div>
                     </div>
 
-                    {/* Barra de Filtros y Búsqueda (Sin Bordes) */}
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-2xl bg-white p-3 shadow-sm dark:bg-[#1e2126]">
+                    {/* Barra de Filtros y Búsqueda */}
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-[28px] border border-slate-100/90 bg-white p-3.5 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24]">
                         {/* Píldoras de Colección */}
                         <div className="flex items-center gap-1.5 overflow-x-auto p-1">
                             {collections.map((col) => {
@@ -513,10 +513,10 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                                             setCollectionFilter(col.key);
                                             executeFilter(search, col.key);
                                         }}
-                                        className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition-all whitespace-nowrap ${
+                                        className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all whitespace-nowrap ${
                                             isActive
                                                 ? 'bg-brand-primary text-white shadow-sm'
-                                                : 'bg-[#f8fafc] text-[#95aac9] hover:bg-[#ebf1f7] hover:text-[#293951] dark:bg-[#16191c] dark:text-[#a7a6a8] dark:hover:bg-[#20252b] dark:hover:text-white'
+                                                : 'bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:bg-[#12161f] dark:text-slate-400 dark:hover:bg-[#1c222e] dark:hover:text-white'
                                         }`}
                                     >
                                         {col.label}
@@ -527,7 +527,7 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
 
                         {/* Buscador */}
                         <div className="relative w-full sm:w-72">
-                            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#95aac9]" />
+                            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                             <input
                                 type="text"
                                 value={search}
@@ -538,7 +538,7 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                                     }
                                 }}
                                 placeholder="Buscar por nombre o caption..."
-                                className="w-full rounded-xl bg-[#f8fafc] py-2 pl-9 pr-8 text-xs text-[#293951] placeholder-[#95aac9] focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary dark:bg-[#16191c] dark:text-white dark:placeholder-[#606770] dark:focus:bg-[#121517] border-0"
+                                className="w-full rounded-full border border-slate-200/80 bg-slate-50/80 py-2 pl-9 pr-8 text-xs text-slate-900 placeholder-slate-400 focus:border-brand-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-800 dark:bg-[#12161f] dark:text-white dark:placeholder-slate-500"
                             />
                             {search && (
                                 <button
@@ -547,7 +547,7 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                                         setSearch('');
                                         executeFilter('', collectionFilter);
                                     }}
-                                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#95aac9] hover:text-[#293951] dark:hover:text-white"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
                                 >
                                     <X className="h-3.5 w-3.5" />
                                 </button>
@@ -557,14 +557,14 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
 
                     {/* Cola de subidas asíncronas en vivo */}
                     {uploads.length > 0 && (
-                        <div className="flex flex-wrap items-center gap-2 p-3 rounded-2xl bg-white dark:bg-[#1e2126] shadow-sm">
-                            <span className="text-xs font-semibold text-[#293951] dark:text-white mr-1">
+                        <div className="flex flex-wrap items-center gap-2 p-3.5 rounded-[28px] border border-slate-100/90 bg-white dark:border-slate-800/80 dark:bg-[#161b24] shadow-sm">
+                            <span className="text-xs font-semibold text-slate-900 dark:text-white mr-1">
                                 Subidas recientes:
                             </span>
                             {uploads.map((u) => (
                                 <div
                                     key={u.id}
-                                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-medium ${
+                                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${
                                         u.status === 'uploading'
                                             ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400'
                                              : u.status === 'done'
@@ -588,29 +588,29 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                     )}
 
                     {/* Cuadrícula de Medios de Ancho Completo (Sin columna lateral fija) */}
-                    <div className="w-full rounded-3xl bg-white p-6 sm:p-8 shadow-sm dark:bg-[#1e2126]">
+                    <div className="w-full rounded-[28px] border border-slate-100/90 bg-white p-6 sm:p-8 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24]">
                         {isSearching ? (
                             <div className="flex h-64 items-center justify-center">
-                                <div className="flex items-center gap-2 text-sm text-[#95aac9] dark:text-[#a7a6a8]">
+                                <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
                                     <Loader2 className="h-5 w-5 animate-spin text-brand-primary" />
                                     Filtrando medios...
                                 </div>
                             </div>
                         ) : mediaList.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-20 text-center">
-                                <div className="h-16 w-16 rounded-3xl bg-[#ebf1f7] dark:bg-[#16191c] flex items-center justify-center text-[#95aac9] mb-3">
+                                <div className="h-16 w-16 rounded-2xl bg-slate-100 dark:bg-[#12161f] flex items-center justify-center text-slate-400 mb-3">
                                     <UploadCloud className="h-8 w-8 text-brand-primary" />
                                 </div>
-                                <h3 className="text-lg font-bold font-heading text-[#293951] dark:text-white">
+                                <h3 className="text-lg font-bold font-heading text-slate-900 dark:text-white">
                                     Sin imágenes en la biblioteca
                                 </h3>
-                                <p className="text-xs text-[#95aac9] dark:text-[#a7a6a8] mt-1 max-w-sm">
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm">
                                     Arrastra imágenes directamente desde tu computadora o haz clic en subir nueva imagen.
                                 </p>
                                 <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[#ebf1f7] px-4 py-2 text-xs font-semibold text-brand-primary transition hover:bg-[#dfe7ef] dark:bg-[#16191c] dark:text-brand-primary"
+                                    className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-4 py-2 text-xs font-semibold text-brand-primary transition hover:bg-slate-200 dark:bg-[#12161f] dark:text-brand-primary dark:hover:bg-[#1c222e]"
                                 >
                                     <Plus className="h-4 w-4" />
                                     Seleccionar archivo
@@ -631,12 +631,12 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                                                     openItemDetails(item);
                                                 }
                                             }}
-                                            className={`group relative aspect-square rounded-2xl overflow-hidden cursor-pointer transition-all duration-200 bg-[#f8fafc] dark:bg-[#16191c] select-none ${
+                                            className={`group relative aspect-square rounded-2xl overflow-hidden cursor-pointer transition-all duration-200 bg-slate-100 dark:bg-[#12161f] border border-slate-200/60 dark:border-slate-800/60 select-none ${
                                                 isSelectedForBulk
-                                                    ? 'shadow-lg ring-4 ring-brand-primary scale-[0.98]'
+                                                    ? 'shadow-lg ring-4 ring-brand-primary scale-[0.98] border-transparent'
                                                     : isSelectedModal
-                                                    ? 'shadow-md ring-2 ring-brand-primary'
-                                                    : 'hover:shadow-md hover:scale-[1.02]'
+                                                    ? 'shadow-md ring-2 ring-brand-primary border-transparent'
+                                                    : 'hover:shadow-md hover:scale-[1.02] hover:border-brand-primary/40'
                                             }`}
                                         >
                                             <img
@@ -683,13 +683,13 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                         {/* Centinela y Feedback de Scroll Infinito */}
                         <div ref={sentinelRef} className="py-8 flex flex-col items-center justify-center gap-2">
                             {loadingMore && (
-                                <div className="flex items-center gap-2 text-xs font-medium text-[#95aac9] dark:text-[#a7a6a8] bg-[#f8fafc] dark:bg-[#16191c] px-4 py-2 rounded-full shadow-sm">
+                                <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400 bg-slate-50 border border-slate-200/80 dark:border-slate-800 dark:bg-[#12161f] px-4 py-2 rounded-full shadow-xs">
                                     <Loader2 className="h-4 w-4 animate-spin text-brand-primary" />
                                     <span>Cargando más archivos...</span>
                                 </div>
                             )}
                             {!hasMore && mediaList.length > 0 && (totalItems || stats.total) > 24 && (
-                                <p className="text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                                <p className="text-xs text-slate-500 dark:text-slate-400">
                                     Has llegado al final de la biblioteca ({totalItems || stats.total} archivos)
                                 </p>
                             )}
@@ -707,13 +707,13 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                             animate={{ opacity: 1, y: 0, scale: 1, x: '-50%' }}
                             exit={{ opacity: 0, y: 30, scale: 0.94, x: '-50%' }}
                             transition={{ type: 'spring', stiffness: 450, damping: 28 }}
-                            className="fixed bottom-6 left-1/2 z-[100] flex items-center gap-3.5 rounded-2xl bg-white/95 text-[#293951] ring-1 ring-black/10 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:bg-[#1e2126]/95 dark:text-white dark:ring-white/10 dark:shadow-[0_20px_50px_rgba(0,0,0,0.45)] backdrop-blur-xl px-3 py-3 transition-colors duration-200"
+                            className="fixed bottom-6 left-1/2 z-[100] flex items-center gap-3.5 rounded-full border border-slate-200/80 bg-white/95 text-slate-900 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:border-slate-700/80 dark:bg-[#161b24]/95 dark:text-white dark:shadow-[0_20px_50px_rgba(0,0,0,0.45)] backdrop-blur-xl px-4 py-2.5 transition-colors duration-200"
                         >
-                            <div className="flex items-center gap-2.5 pr-2.5 border-r border-[#e2e8f0] dark:border-white/15">
+                            <div className="flex items-center gap-2.5 pr-2.5 border-r border-slate-200 dark:border-slate-700">
                                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-primary text-xs font-bold text-white shadow-sm">
                                     {selectedIds.size}
                                 </span>
-                                <span className="text-xs font-semibold text-[#293951] dark:text-white/95 whitespace-nowrap">
+                                <span className="text-xs font-semibold text-slate-900 dark:text-white whitespace-nowrap">
                                     {selectedIds.size === 1 ? 'imagen seleccionada' : 'imágenes seleccionadas'}
                                 </span>
                             </div>
@@ -721,7 +721,7 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                             <button
                                 type="button"
                                 onClick={handleSelectAll}
-                                className="text-xs font-medium text-[#64748b] hover:text-[#293951] hover:bg-[#f1f5f9] dark:text-[#a7a6a8] dark:hover:text-white dark:hover:bg-white/10 transition px-2.5 py-1.5 rounded-xl whitespace-nowrap"
+                                className="text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800 transition px-3 py-1.5 rounded-full whitespace-nowrap"
                             >
                                 {selectedIds.size === mediaList.length ? 'Deseleccionar todo' : 'Seleccionar todo'}
                             </button>
@@ -729,7 +729,7 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                             <button
                                 type="button"
                                 onClick={handleClearSelection}
-                                className="text-xs font-medium text-[#64748b] hover:text-[#293951] hover:bg-[#f1f5f9] dark:text-[#a7a6a8] dark:hover:text-white dark:hover:bg-white/10 transition px-2.5 py-1.5 rounded-xl whitespace-nowrap"
+                                className="text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800 transition px-3 py-1.5 rounded-full whitespace-nowrap"
                             >
                                 Cancelar
                             </button>
@@ -738,7 +738,7 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                                 type="button"
                                 onClick={handleBulkDelete}
                                 disabled={isBulkDeleting}
-                                className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-xs font-semibold text-white shadow-md transition hover:bg-red-700 active:scale-95 disabled:opacity-50 whitespace-nowrap"
+                                className="inline-flex items-center gap-2 rounded-full bg-red-600 px-4 py-2 text-xs font-semibold text-white shadow-md transition hover:bg-red-700 active:scale-95 disabled:opacity-50 whitespace-nowrap"
                             >
                                 {isBulkDeleting ? (
                                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -768,7 +768,7 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                         leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                     >
-                        <div className="fixed inset-0 bg-[#16191c]/75 backdrop-blur-md" />
+                        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-md" />
                     </TransitionChild>
 
                     <TransitionChild
@@ -779,18 +779,18 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                         leaveFrom="opacity-100 scale-100"
                         leaveTo="opacity-0 scale-95"
                     >
-                        <DialogPanel className="relative flex flex-col w-full max-w-5xl h-[85vh] max-h-[800px] rounded-3xl bg-white dark:bg-[#1b1f24] shadow-2xl overflow-hidden border-0">
+                        <DialogPanel className="relative flex flex-col w-full max-w-5xl h-[85vh] max-h-[800px] rounded-[28px] border border-slate-100/90 bg-white dark:border-slate-800/80 dark:bg-[#161b24] shadow-2xl overflow-hidden">
                             {/* Header del Modal */}
-                            <div className="flex items-center justify-between px-6 py-4 bg-[#fafcff] dark:bg-[#16191c]">
+                            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-[#f8f9fb] dark:border-slate-800 dark:bg-[#12161f]">
                                 <div className="flex items-center gap-3">
                                     <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
                                         <Images className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <h3 className="text-sm font-bold font-heading text-[#293951] dark:text-white">
+                                        <h3 className="text-sm font-bold font-heading text-slate-900 dark:text-white">
                                             Detalles de la Imagen
                                         </h3>
-                                        <p className="text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">
                                             Previsualización en resolución completa y metadatos SEO.
                                         </p>
                                     </div>
@@ -798,7 +798,7 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                                 <button
                                     type="button"
                                     onClick={() => setIsDetailModalOpen(false)}
-                                    className="rounded-xl p-2 text-[#95aac9] hover:bg-[#ebf1f7] hover:text-[#293951] dark:text-[#a7a6a8] dark:hover:bg-[#282d35] dark:hover:text-white transition"
+                                    className="rounded-full p-2 text-slate-400 hover:bg-slate-200/60 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-white transition"
                                 >
                                     <X className="h-5 w-5" />
                                 </button>
@@ -808,20 +808,20 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                             {selectedItem && (
                                 <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
                                     {/* COLUMNA IZQUIERDA: Imagen Original en Alta Resolución */}
-                                    <div className="flex-1 bg-[#f8fafc] dark:bg-[#121517] p-6 flex flex-col items-center justify-center relative overflow-hidden group">
+                                    <div className="flex-1 bg-slate-50 dark:bg-[#0e121a] p-6 flex flex-col items-center justify-center relative overflow-hidden group">
                                         <div className="relative w-full h-full flex items-center justify-center">
                                             <img
                                                 src={selectedItem.url}
                                                 alt={selectedItem.alt || selectedItem.file_name}
                                                 title={selectedItem.title || selectedItem.file_name}
                                                 decoding="async"
-                                                className="max-h-full max-w-full object-contain rounded-xl shadow-sm"
+                                                className="max-h-full max-w-full object-contain rounded-2xl shadow-sm"
                                             />
                                             <a
                                                 href={selectedItem.url}
                                                 target="_blank"
                                                 rel="noreferrer"
-                                                className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-xl bg-black/60 px-3 py-1.5 text-xs text-white opacity-0 group-hover:opacity-100 transition hover:bg-black/80 backdrop-blur"
+                                                className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1.5 text-xs text-white opacity-0 group-hover:opacity-100 transition hover:bg-black/80 backdrop-blur"
                                                 title="Ver en pestaña completa"
                                             >
                                                 <ExternalLink className="h-3.5 w-3.5" />
@@ -831,11 +831,11 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                                     </div>
 
                                     {/* COLUMNA DERECHA: Metadatos y Campos Editables */}
-                                    <div className="w-full lg:w-96 bg-white dark:bg-[#1b1f24] p-6 flex flex-col justify-between overflow-y-auto space-y-5">
+                                    <div className="w-full lg:w-96 bg-white dark:bg-[#161b24] border-t lg:border-t-0 lg:border-l border-slate-100 dark:border-slate-800 p-6 flex flex-col justify-between overflow-y-auto space-y-5">
                                         <div className="space-y-4">
                                             {/* Barra de estado de guardado */}
                                             <div className="flex items-center justify-between">
-                                                <h4 className="text-xs font-bold uppercase tracking-wider text-[#95aac9] dark:text-[#a7a6a8]">
+                                                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                                                     Metadatos
                                                 </h4>
                                                 <div className="flex items-center gap-1.5 h-4">
@@ -861,30 +861,30 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                                             </div>
 
                                             {/* Datos Técnicos */}
-                                            <div className="rounded-2xl bg-[#f8fafc] dark:bg-[#16191c] p-4 space-y-2.5 text-xs">
+                                            <div className="rounded-2xl border border-slate-100 bg-[#f8f9fb] dark:border-slate-800 dark:bg-[#12161f] p-4 space-y-2.5 text-xs">
                                                 <div>
-                                                    <span className="text-[#95aac9] dark:text-[#a7a6a8] block text-[10px]">
+                                                    <span className="text-slate-400 dark:text-slate-500 block text-[10px]">
                                                         Nombre de archivo:
                                                     </span>
-                                                    <span className="font-semibold text-[#293951] dark:text-white break-all">
+                                                    <span className="font-semibold text-slate-900 dark:text-white break-all">
                                                         {selectedItem.file_name}
                                                     </span>
                                                 </div>
 
                                                 <div className="flex items-center justify-between">
                                                     <div>
-                                                        <span className="text-[#95aac9] dark:text-[#a7a6a8] block text-[10px]">
+                                                        <span className="text-slate-400 dark:text-slate-500 block text-[10px]">
                                                             Peso original:
                                                         </span>
-                                                        <span className="font-medium text-[#293951] dark:text-white">
+                                                        <span className="font-medium text-slate-900 dark:text-white">
                                                             {formatBytes(selectedItem.file_size)}
                                                         </span>
                                                     </div>
                                                     <div>
-                                                        <span className="text-[#95aac9] dark:text-[#a7a6a8] block text-[10px]">
+                                                        <span className="text-slate-400 dark:text-slate-500 block text-[10px]">
                                                             Formato:
                                                         </span>
-                                                        <span className="font-medium text-[#293951] dark:text-white">
+                                                        <span className="font-medium text-slate-900 dark:text-white">
                                                             {selectedItem.mime_type}
                                                         </span>
                                                     </div>
@@ -892,19 +892,19 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
 
                                                 <div className="flex items-center justify-between">
                                                     <div>
-                                                        <span className="text-[#95aac9] dark:text-[#a7a6a8] block text-[10px]">
+                                                        <span className="text-slate-400 dark:text-slate-500 block text-[10px]">
                                                             Colección:
                                                         </span>
-                                                        <span className="font-medium text-[#293951] dark:text-white capitalize">
+                                                        <span className="font-medium text-slate-900 dark:text-white capitalize">
                                                             {selectedItem.collection}
                                                         </span>
                                                     </div>
                                                     {selectedItem.created_at && (
                                                         <div>
-                                                            <span className="text-[#95aac9] dark:text-[#a7a6a8] block text-[10px]">
+                                                            <span className="text-slate-400 dark:text-slate-500 block text-[10px]">
                                                                 Fecha:
                                                             </span>
-                                                            <span className="text-[#293951] dark:text-white">
+                                                            <span className="text-slate-900 dark:text-white">
                                                                 {new Date(selectedItem.created_at).toLocaleDateString()}
                                                             </span>
                                                         </div>
@@ -915,7 +915,7 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                                             {/* Campos Editables */}
                                             <div className="space-y-3 pt-1">
                                                 <div>
-                                                    <label className="block text-[11px] font-semibold text-[#293951] dark:text-[#ffffff] mb-1">
+                                                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
                                                         Título
                                                     </label>
                                                     <input
@@ -924,12 +924,12 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                                                         onChange={(e) => handleFieldChange('title', e.target.value)}
                                                         onBlur={handleFieldBlur}
                                                         placeholder="Título de la imagen..."
-                                                        className="w-full rounded-xl bg-[#f8fafc] px-3 py-2 text-xs text-[#293951] placeholder-[#95aac9] border-0 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 dark:bg-[#16191c] dark:text-white dark:placeholder-[#606770]"
+                                                        className="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:border-brand-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-700 dark:bg-[#12161f] dark:text-white dark:placeholder-slate-500"
                                                     />
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-[11px] font-semibold text-[#293951] dark:text-[#ffffff] mb-1">
+                                                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
                                                         Texto alternativo (Alt)
                                                     </label>
                                                     <input
@@ -938,15 +938,15 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                                                         onChange={(e) => handleFieldChange('alt', e.target.value)}
                                                         onBlur={handleFieldBlur}
                                                         placeholder="Describe el contenido de la imagen..."
-                                                        className="w-full rounded-xl bg-[#f8fafc] px-3 py-2 text-xs text-[#293951] placeholder-[#95aac9] border-0 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 dark:bg-[#16191c] dark:text-white dark:placeholder-[#606770]"
+                                                        className="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:border-brand-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-700 dark:bg-[#12161f] dark:text-white dark:placeholder-slate-500"
                                                     />
-                                                    <p className="text-[10px] text-[#95aac9] dark:text-[#a7a6a8] mt-0.5">
+                                                    <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
                                                         Utilizado en la etiqueta &lt;img alt="..."&gt; para SEO y accesibilidad.
                                                     </p>
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-[11px] font-semibold text-[#293951] dark:text-[#ffffff] mb-1">
+                                                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
                                                         Descripción
                                                     </label>
                                                     <textarea
@@ -955,7 +955,7 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                                                         onChange={(e) => handleFieldChange('description', e.target.value)}
                                                         onBlur={handleFieldBlur}
                                                         placeholder="Descripción detallada o notas..."
-                                                        className="w-full rounded-xl bg-[#f8fafc] px-3 py-2 text-xs text-[#293951] placeholder-[#95aac9] border-0 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 resize-none dark:bg-[#16191c] dark:text-white dark:placeholder-[#606770]"
+                                                        className="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:border-brand-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-primary resize-none dark:border-slate-700 dark:bg-[#12161f] dark:text-white dark:placeholder-slate-500"
                                                     />
                                                 </div>
                                             </div>
@@ -966,7 +966,7 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                                             <button
                                                 type="button"
                                                 onClick={handleCopyUrl}
-                                                className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#f8fafc] dark:bg-[#16191c] py-2.5 text-xs font-semibold text-[#293951] dark:text-white transition hover:bg-[#ebf1f7] dark:hover:bg-[#20252b]"
+                                                className="w-full flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-[#12161f] dark:text-slate-200 dark:hover:bg-[#1c222e] transition"
                                             >
                                                 {copiedUrl ? (
                                                     <>
@@ -975,7 +975,7 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <Copy className="h-4 w-4 text-[#95aac9]" />
+                                                        <Copy className="h-4 w-4 text-slate-400" />
                                                         <span>Copiar enlace público</span>
                                                     </>
                                                 )}
@@ -985,7 +985,7 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                                                 type="button"
                                                 onClick={handleDelete}
                                                 disabled={isDeleting}
-                                                className="w-full flex items-center justify-center gap-2 rounded-xl bg-red-50 dark:bg-red-950/30 py-2.5 text-xs font-semibold text-red-600 dark:text-red-400 transition hover:bg-red-100 dark:hover:bg-red-900/40 disabled:opacity-50"
+                                                className="w-full flex items-center justify-center gap-2 rounded-xl border border-red-200/60 bg-red-50/60 px-3 py-2.5 text-xs font-semibold text-red-600 hover:bg-red-100 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 transition disabled:opacity-50"
                                             >
                                                 <Trash2 className="h-4 w-4" />
                                                 <span>Eliminar permanentemente</span>

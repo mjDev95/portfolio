@@ -38,12 +38,12 @@ export default function ContentTypeBasicInfo({
     toSnakeCase,
 }) {
     return (
-        <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-[#1e2126] sm:p-8">
-            <div className="border-b border-[#f5f7fa] pb-4 dark:border-[#16191c]">
-                <h2 className="font-heading text-lg font-bold text-[#293951] dark:text-[#ffffff]">
+        <div className="rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24] sm:p-8">
+            <div className="border-b border-slate-100 pb-4 dark:border-slate-800/80">
+                <h2 className="font-heading text-lg font-bold text-slate-900 dark:text-white">
                     1. Información General del CPT
                 </h2>
-                <p className="text-sm text-[#95aac9] dark:text-[#a7a6a8]">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                     Nombres y datos base para identificar este modelo en el sistema.
                 </p>
             </div>
@@ -106,7 +106,7 @@ export default function ContentTypeBasicInfo({
                         placeholder="ej: casos, tratamientos, proyectos"
                         required
                     />
-                    <p className="mt-1 text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                         Ruta del panel: <code>/admin/{data.slug || 'slug'}</code>
                     </p>
                     {errors.slug && <InputError message={errors.slug} className="mt-1" />}
@@ -140,10 +140,10 @@ export default function ContentTypeBasicInfo({
                                     key={item.name}
                                     type="button"
                                     onClick={() => setData('icon', item.name)}
-                                    className={`inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-medium transition-all ${
+                                    className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-medium transition-all ${
                                         isSelected
-                                            ? 'bg-[#ebf1f7] text-brand-primary font-semibold shadow-xs dark:bg-[#16191c]'
-                                            : 'bg-[#f8fafc] text-[#95aac9] hover:text-[#293951] dark:bg-[#16191c] dark:text-[#a7a6a8] dark:hover:text-[#ffffff]'
+                                            ? 'bg-brand-primary/10 text-brand-primary font-semibold ring-1 ring-brand-primary/30 dark:bg-brand-primary/20'
+                                            : 'border border-slate-200/80 bg-white text-slate-600 hover:text-slate-900 dark:border-slate-800 dark:bg-[#12161f] dark:text-slate-400 dark:hover:text-white'
                                     }`}
                                     title={item.label}
                                 >
@@ -164,7 +164,7 @@ export default function ContentTypeBasicInfo({
                     <textarea
                         id="description"
                         rows={2}
-                        className="mt-1 w-full rounded-xl bg-white px-3.5 py-2.5 text-sm text-[#293951] placeholder-[#95aac9] transition-all shadow-inner focus:outline-none focus:ring-2 focus:ring-brand-primary/30 dark:bg-[#16191c] dark:text-[#ffffff] dark:placeholder-[#606770]"
+                        className="mt-1 w-full rounded-2xl border border-slate-200/80 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 transition-all shadow-xs focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-800 dark:bg-[#12161f] dark:text-white dark:placeholder-slate-500"
                         value={data.description}
                         onChange={(e) => setData('description', e.target.value)}
                         placeholder="Breve explicación sobre para qué se usa este tipo de contenido..."

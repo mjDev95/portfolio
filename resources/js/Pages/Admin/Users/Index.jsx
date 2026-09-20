@@ -92,21 +92,20 @@ export default function Index({ users = {}, roles = [], stats = {} }) {
         <>
             <Head title="Gestión de Usuarios y Clientes — Admin" />
 
-            <div className="py-8">
-                <div className="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
-                    {/* ── Cabecera Principal ─────────────────────────────────── */}
+            <div className="w-full space-y-8">
+                {/* ── Cabecera Principal ─────────────────────────────────── */}
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <div className="flex items-center gap-3">
-                                <h1 className="font-heading text-2xl font-bold tracking-tight text-[#293951] dark:text-[#ffffff] sm:text-3xl">
+                                <h1 className="font-heading text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
                                     Usuarios y Clientes
                                 </h1>
-                                <span className="inline-flex items-center gap-2 rounded-full bg-brand-primary/10 px-3 py-1 text-sm font-medium text-brand-primary dark:bg-brand-primary/20 dark:text-brand-primary">
+                                <span className="inline-flex items-center gap-2 rounded-full border border-brand-primary/20 bg-brand-primary/10 px-3 py-1 text-sm font-medium text-brand-primary dark:bg-brand-primary/20 dark:text-brand-primary">
                                     <Shield className="h-4 w-4" />
                                     Super Admin • {userList.length} {totalUsers > userList.length ? `de ${totalUsers}` : ''} cuentas
                                 </span>
                             </div>
-                            <p className="mt-1.5 text-base text-[#95aac9] dark:text-[#a7a6a8]">
+                            <p className="mt-1.5 text-base text-slate-500 dark:text-slate-400">
                                 Gestiona las cuentas del sistema, visualiza los CPTs asignados a cada cliente y activa o desactiva su contador de visitas.
                             </p>
                         </div>
@@ -124,34 +123,34 @@ export default function Index({ users = {}, roles = [], stats = {} }) {
 
                     {/* ── KPIs Rápidos ────────────────────────────────────────── */}
                     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                        <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-[#1e2126]">
+                        <div className="rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24]">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium text-[#95aac9] dark:text-[#a7a6a8]">Total Cuentas</span>
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary">
+                                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Cuentas</span>
+                                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
                                     <Users className="h-5 w-5" />
                                 </div>
                             </div>
-                            <div className="mt-3 font-heading text-3xl font-bold text-[#293951] dark:text-[#ffffff]">
+                            <div className="mt-3 font-heading text-3xl font-bold text-slate-900 dark:text-white">
                                 {stats.totalUsers ?? totalUsers}
                             </div>
                         </div>
 
-                        <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-[#1e2126]">
+                        <div className="rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24]">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium text-[#95aac9] dark:text-[#a7a6a8]">Clientes Activos</span>
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600">
+                                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Clientes Activos</span>
+                                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600">
                                     <Boxes className="h-5 w-5" />
                                 </div>
                             </div>
-                            <div className="mt-3 font-heading text-3xl font-bold text-[#293951] dark:text-[#ffffff]">
+                            <div className="mt-3 font-heading text-3xl font-bold text-slate-900 dark:text-white">
                                 {stats.activeClients ?? userList.filter((u) => u.role === 'user' && u.is_active).length}
                             </div>
                         </div>
 
-                        <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-[#1e2126]">
+                        <div className="rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24]">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium text-[#95aac9] dark:text-[#a7a6a8]">Pausados (401)</span>
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/10 text-red-600">
+                                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Pausados (401)</span>
+                                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-red-500/10 text-red-600">
                                     <PauseCircle className="h-5 w-5" />
                                 </div>
                             </div>
@@ -160,33 +159,33 @@ export default function Index({ users = {}, roles = [], stats = {} }) {
                             </div>
                         </div>
 
-                        <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-[#1e2126]">
+                        <div className="rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24]">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium text-[#95aac9] dark:text-[#a7a6a8]">Telemetría Activa</span>
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-accent/10 text-brand-accent">
+                                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Telemetría Activa</span>
+                                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-accent/10 text-brand-accent">
                                     <Activity className="h-5 w-5" />
                                 </div>
                             </div>
-                            <div className="mt-3 font-heading text-3xl font-bold text-[#293951] dark:text-[#ffffff]">
+                            <div className="mt-3 font-heading text-3xl font-bold text-slate-900 dark:text-white">
                                 {stats.telemetryUsers ?? userList.filter((u) => u.has_telemetry).length}
                             </div>
                         </div>
                     </div>
 
                     {/* ── Tabla de Usuarios y Clientes ───────────────────────── */}
-                    <div className="overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-[#1e2126]">
-                        <div className="border-b border-[#f5f7fa] px-6 py-5 dark:border-[#16191c]">
-                            <h2 className="font-heading text-lg font-bold text-[#293951] dark:text-[#ffffff]">
+                    <div className="overflow-hidden rounded-[28px] border border-slate-100/90 bg-white shadow-sm dark:border-slate-800/80 dark:bg-[#161b24]">
+                        <div className="border-b border-slate-100 px-6 py-5 dark:border-slate-800/80">
+                            <h2 className="font-heading text-lg font-bold text-slate-900 dark:text-white">
                                 Directorio de Cuentas y Asignaciones
                             </h2>
-                            <p className="mt-0.5 text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                                 El Super Admin puede pausar el acceso por falta de pago (aplicando 401 en el sitio público), asignar telemetría y auditar contenidos.
                             </p>
                         </div>
 
                         <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-[#f5f7fa] text-left text-sm dark:divide-[#16191c]">
-                                <thead className="bg-[#ebf1f7] text-xs font-semibold uppercase tracking-wider text-[#293951] dark:bg-[#16191c] dark:text-[#a7a6a8]">
+                            <table className="min-w-full divide-y divide-slate-100/80 text-left text-sm dark:divide-slate-800/60">
+                                <thead className="border-b border-slate-100 bg-[#f8f9fb] text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:border-slate-800 dark:bg-[#12161f] dark:text-slate-400">
                                     <tr>
                                         <th scope="col" className="px-6 py-4">Usuario / Cuenta</th>
                                         <th scope="col" className="px-6 py-4">Rol</th>
@@ -198,25 +197,25 @@ export default function Index({ users = {}, roles = [], stats = {} }) {
                                         <th scope="col" className="px-6 py-4 text-right">Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-[#f5f7fa] dark:divide-[#16191c]">
+                                <tbody className="divide-y divide-slate-100/80 dark:divide-slate-800/60">
                                     {userList.map((user) => (
-                                        <tr key={user.id} className="transition hover:bg-[#ebf1f7]/50 dark:hover:bg-[#16191c]/50">
+                                        <tr key={user.id} className="transition-colors hover:bg-slate-50/80 dark:hover:bg-[#1c222e]/60">
                                             {/* Nombre y Email */}
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-primary/10 font-heading text-sm font-bold text-brand-primary">
+                                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-primary/10 font-heading text-sm font-bold text-brand-primary ring-1 ring-brand-primary/20">
                                                         {user.name.charAt(0).toUpperCase()}
                                                     </div>
                                                     <div>
-                                                        <div className="font-semibold text-[#293951] dark:text-[#ffffff]">
+                                                        <div className="font-heading font-semibold text-slate-900 dark:text-white">
                                                             {user.name}
                                                             {user.id === currentUserId && (
-                                                                <span className="ml-2 text-xs font-normal text-[#95aac9] dark:text-[#a7a6a8]">
+                                                                <span className="ml-2 text-xs font-normal text-slate-400 dark:text-slate-500">
                                                                     (Tú)
                                                                 </span>
                                                             )}
                                                         </div>
-                                                        <div className="text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                                                        <div className="text-xs text-slate-500 dark:text-slate-400">
                                                             {user.email}
                                                         </div>
                                                     </div>
@@ -226,10 +225,10 @@ export default function Index({ users = {}, roles = [], stats = {} }) {
                                             {/* Rol */}
                                             <td className="px-6 py-4">
                                                 <span
-                                                    className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold uppercase tracking-wider ${
+                                                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                                                         user.role === 'admin'
-                                                            ? 'bg-brand-primary/10 text-brand-primary dark:bg-brand-primary/20 dark:text-brand-primary'
-                                                            : 'bg-brand-secondary/10 text-brand-secondary dark:bg-brand-secondary/20 dark:text-brand-secondary'
+                                                            ? 'bg-brand-primary/10 text-brand-primary ring-1 ring-brand-primary/20 dark:bg-brand-primary/20 dark:text-brand-primary'
+                                                            : 'bg-slate-100 text-slate-600 ring-1 ring-slate-200/60 dark:bg-slate-800/60 dark:text-slate-400 dark:ring-slate-700/60'
                                                     }`}
                                                 >
                                                     {user.role === 'admin' ? (
@@ -248,8 +247,8 @@ export default function Index({ users = {}, roles = [], stats = {} }) {
                                                 <span
                                                     className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                                                         user.is_active
-                                                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                                                            : 'bg-red-500/10 text-red-600 dark:text-red-400'
+                                                            ? 'bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/20 dark:text-emerald-400'
+                                                            : 'bg-red-500/10 text-red-600 ring-1 ring-red-500/20 dark:text-red-400'
                                                     }`}
                                                 >
                                                     <span
@@ -270,20 +269,20 @@ export default function Index({ users = {}, roles = [], stats = {} }) {
                                                                 key={cpt.id}
                                                                 href={route('admin.content-types.edit', cpt.id)}
                                                                 title={`Editar estructura de ${cpt.name}`}
-                                                                className="inline-flex items-center gap-1.5 rounded-lg bg-[#ebf1f7] px-2.5 py-1 text-xs font-medium text-[#293951] transition hover:bg-brand-primary hover:text-white dark:bg-[#16191c] dark:text-[#ffffff] dark:hover:bg-brand-primary"
+                                                                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 transition hover:border-brand-primary hover:text-brand-primary dark:border-slate-700/80 dark:bg-[#1b222c] dark:text-slate-300 dark:hover:border-brand-primary dark:hover:text-brand-primary"
                                                             >
                                                                 {renderCptIcon(cpt.icon)}
                                                                 <span>{cpt.name}</span>
                                                                 {cpt.is_public ? (
                                                                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" title="Público" />
                                                                 ) : (
-                                                                    <span className="h-1.5 w-1.5 rounded-full bg-gray-400" title="Privado" />
+                                                                    <span className="h-1.5 w-1.5 rounded-full bg-slate-400" title="Privado" />
                                                                 )}
                                                             </Link>
                                                         ))}
                                                     </div>
                                                 ) : (
-                                                    <span className="text-xs italic text-[#95aac9] dark:text-[#a7a6a8]">
+                                                    <span className="text-xs italic text-slate-400 dark:text-slate-500">
                                                         Sin CPTs asignados
                                                     </span>
                                                 )}
@@ -295,10 +294,10 @@ export default function Index({ users = {}, roles = [], stats = {} }) {
                                                     type="button"
                                                     disabled={togglingTelemetryId === user.id}
                                                     onClick={() => handleToggleTelemetry(user)}
-                                                    className={`inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
+                                                    className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
                                                         user.has_telemetry
-                                                            ? 'bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 dark:text-emerald-400'
-                                                            : 'bg-[#ebf1f7] text-[#95aac9] hover:bg-emerald-500/10 hover:text-emerald-600 dark:bg-[#16191c] dark:text-[#a7a6a8]'
+                                                            ? 'bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/20 hover:bg-emerald-500/20 dark:text-emerald-400'
+                                                            : 'border border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:border-slate-700 dark:bg-[#1c222e] dark:text-slate-400'
                                                     }`}
                                                     title="Clic para cambiar el estado del contador de visitas"
                                                 >
@@ -306,7 +305,7 @@ export default function Index({ users = {}, roles = [], stats = {} }) {
                                                         className={`h-2 w-2 rounded-full ${
                                                             user.has_telemetry
                                                                 ? 'animate-pulse bg-emerald-500'
-                                                                : 'bg-gray-400'
+                                                                : 'bg-slate-400'
                                                         }`}
                                                     />
                                                     <span>{user.has_telemetry ? 'Activo' : 'Desactivado'}</span>
@@ -314,40 +313,40 @@ export default function Index({ users = {}, roles = [], stats = {} }) {
                                             </td>
 
                                             {/* Publicaciones Totales */}
-                                            <td className="px-6 py-4 text-center font-mono font-semibold text-[#293951] dark:text-[#ffffff]">
+                                            <td className="px-6 py-4 text-center font-mono font-semibold text-slate-900 dark:text-white">
                                                 {user.contents_count || 0}
                                             </td>
 
                                             {/* Visitas */}
-                                            <td className="px-6 py-4 text-center font-mono font-semibold text-[#293951] dark:text-[#ffffff]">
+                                            <td className="px-6 py-4 text-center font-mono font-semibold text-slate-900 dark:text-white">
                                                 {user.visits_count || 0}
                                             </td>
 
                                             {/* Acciones */}
                                             <td className="px-6 py-4 text-right">
-                                                <div className="flex items-center justify-end gap-2">
+                                                <div className="flex items-center justify-end gap-1.5">
                                                     <Link
                                                         href={route('admin.users.show', user.id)}
-                                                        className="rounded-lg p-1.5 text-[#95aac9] transition hover:bg-[#ebf1f7] hover:text-brand-primary dark:text-[#a7a6a8] dark:hover:bg-[#16191c] dark:hover:text-white"
+                                                        className="rounded-full border border-slate-200 bg-white p-2 text-slate-600 transition hover:border-slate-300 hover:text-brand-primary dark:border-slate-700 dark:bg-[#202735] dark:text-slate-300 dark:hover:text-brand-primary"
                                                         title="Ver detalle del cliente"
                                                     >
-                                                        <Eye className="h-4 w-4" />
+                                                        <Eye className="h-3.5 w-3.5" />
                                                     </Link>
                                                     <Link
                                                         href={route('admin.users.edit', user.id)}
-                                                        className="rounded-lg p-1.5 text-[#95aac9] transition hover:bg-[#ebf1f7] hover:text-brand-primary dark:text-[#a7a6a8] dark:hover:bg-[#16191c] dark:hover:text-white"
+                                                        className="rounded-full border border-slate-200 bg-white p-2 text-slate-600 transition hover:border-slate-300 hover:text-brand-primary dark:border-slate-700 dark:bg-[#202735] dark:text-slate-300 dark:hover:text-brand-primary"
                                                         title="Editar usuario"
                                                     >
-                                                        <Edit2 className="h-4 w-4" />
+                                                        <Edit2 className="h-3.5 w-3.5" />
                                                     </Link>
                                                     {user.id !== currentUserId && (
                                                         <button
                                                             type="button"
                                                             onClick={() => confirmDelete(user)}
-                                                            className="rounded-lg p-1.5 text-[#95aac9] transition hover:bg-red-500/10 hover:text-red-500 dark:text-[#a7a6a8]"
+                                                            className="rounded-full border border-red-200/60 bg-red-50/50 p-2 text-red-600 transition hover:bg-red-100/80 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20"
                                                             title="Eliminar usuario"
                                                         >
-                                                            <Trash2 className="h-4 w-4" />
+                                                            <Trash2 className="h-3.5 w-3.5" />
                                                         </button>
                                                     )}
                                                 </div>
@@ -359,33 +358,30 @@ export default function Index({ users = {}, roles = [], stats = {} }) {
                         </div>
 
                         {/* Centinela y Feedback de Scroll Infinito */}
-                        <div ref={sentinelRef} className="py-6 flex flex-col items-center justify-center gap-2">
+                        <div ref={sentinelRef} className="flex flex-col items-center justify-center gap-2 py-6">
                             {loadingMore && (
-                                <div className="flex items-center gap-2 text-xs font-medium text-[#95aac9] dark:text-[#a7a6a8] bg-[#f8fafc] dark:bg-[#16191c] px-4 py-2 rounded-full shadow-sm">
+                                <div className="flex items-center gap-2 rounded-full border border-slate-100 bg-slate-50 px-4 py-2 text-xs font-medium text-slate-500 shadow-sm dark:border-slate-800 dark:bg-[#12161f] dark:text-slate-400">
                                     <Loader2 className="h-4 w-4 animate-spin text-brand-primary" />
                                     <span>Cargando más cuentas...</span>
                                 </div>
                             )}
                             {!hasMore && userList.length > 0 && totalUsers > 15 && (
-                                <p className="text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                                <p className="text-xs text-slate-400 dark:text-slate-500">
                                     Has llegado al final de los usuarios ({totalUsers} en total)
                                 </p>
                             )}
                         </div>
                     </div>
-                </div>
             </div>
-
-
 
             {/* ── Modal Confirmar Eliminar Usuario ───────────────────────── */}
             <Modal show={Boolean(deletingUser)} onClose={() => setDeletingUser(null)} maxWidth="sm">
                 <div className="p-6">
-                    <h2 className="font-heading text-lg font-bold text-[#293951] dark:text-[#ffffff]">
+                    <h2 className="font-heading text-lg font-bold text-slate-900 dark:text-white">
                         ¿Eliminar Cuenta de Usuario?
                     </h2>
-                    <p className="mt-2 text-sm text-[#95aac9] dark:text-[#a7a6a8]">
-                        ¿Estás seguro de que deseas eliminar la cuenta de <strong>{deletingUser?.name}</strong> ({deletingUser?.email})? Se perderán sus contenidos y accesos asociados. Esta acción no se puede deshacer.
+                    <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                        ¿Estás seguro de que deseas eliminar la cuenta de <strong className="font-semibold text-slate-900 dark:text-white">{deletingUser?.name}</strong> ({deletingUser?.email})? Se perderán sus contenidos y accesos asociados. Esta acción no se puede deshacer.
                     </p>
                     <div className="mt-6 flex justify-end gap-3">
                         <SecondaryButton onClick={() => setDeletingUser(null)}>

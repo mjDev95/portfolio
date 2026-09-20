@@ -5,8 +5,8 @@ import { Save, Loader2 } from 'lucide-react';
 
 export default function PublishingSidebar({ data, setData, processing }) {
     return (
-        <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-[#1e2126]">
-            <h3 className="font-heading text-base font-bold text-[#293951] dark:text-[#ffffff] mb-4">
+        <div className="rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24]">
+            <h3 className="font-heading text-base font-bold text-slate-900 dark:text-white mb-4">
                 Publicación
             </h3>
 
@@ -20,7 +20,7 @@ export default function PublishingSidebar({ data, setData, processing }) {
                         id="status"
                         value={data.status}
                         onChange={(e) => setData('status', e.target.value)}
-                        className="mt-1 w-full rounded-xl border-0 bg-[#ebf1f7]/50 px-3.5 py-2.5 text-sm text-[#293951] focus:outline-none focus:ring-2 focus:ring-brand-primary/30 dark:bg-[#121517] dark:text-[#ffffff]"
+                        className="mt-1 w-full rounded-2xl border border-slate-200/80 bg-white px-3.5 py-2.5 text-sm text-slate-900 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-800 dark:bg-[#12161f] dark:text-white shadow-xs"
                     >
                         <option value="published">Publicado (Visible)</option>
                         <option value="draft">Borrador (Privado)</option>
@@ -44,12 +44,12 @@ export default function PublishingSidebar({ data, setData, processing }) {
 
                 {/* Destacado en Homepage */}
                 <div className="pt-2">
-                    <label className="flex items-center gap-2.5 cursor-pointer text-sm font-medium text-[#293951] dark:text-[#ffffff]">
+                    <label className="flex items-center gap-2.5 cursor-pointer text-sm font-medium text-slate-700 dark:text-slate-300">
                         <input
                             type="checkbox"
                             checked={data.featured}
                             onChange={(e) => setData('featured', e.target.checked)}
-                            className="rounded border-0 bg-[#ebf1f7] text-brand-primary focus:ring-brand-primary dark:bg-[#121517]"
+                            className="rounded-lg border-slate-300 text-brand-primary shadow-xs focus:ring-brand-primary/20 dark:border-slate-700 dark:bg-[#12161f]"
                         />
                         <span>Destacado en Homepage</span>
                     </label>

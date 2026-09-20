@@ -164,11 +164,11 @@ export default function PaletteSection({
     };
 
     return (
-        <section className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm transition-all dark:border-gray-800/40 dark:bg-[#1e2126] sm:p-8">
+        <section className="rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm transition-all dark:border-slate-800/80 dark:bg-[#161b24] sm:p-8">
             {/* Header de la paleta */}
-            <div className="flex flex-col gap-4 border-b border-gray-100 pb-6 dark:border-gray-800/50 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-4 border-b border-slate-100 pb-6 dark:border-slate-800/80 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-wrap items-center gap-3">
-                    <h2 className="font-heading text-2xl font-bold tracking-tight text-[#293951] dark:text-white sm:text-3xl">
+                    <h2 className="font-heading text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
                         {palette.name}
                     </h2>
 
@@ -197,7 +197,7 @@ export default function PaletteSection({
                     <button
                         type="button"
                         onClick={handleCopyTokens}
-                        className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-xs font-semibold text-[#293951] shadow-xs transition hover:bg-gray-50 dark:border-gray-700/60 dark:bg-[#16191c] dark:text-white dark:hover:bg-[#20252b]"
+                        className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-[#202735] dark:text-slate-300 dark:hover:bg-slate-700/50"
                         title="Copiar tokens CSS"
                     >
                         {copiedTokens ? (
@@ -207,7 +207,7 @@ export default function PaletteSection({
                             </>
                         ) : (
                             <>
-                                <Code2 className="h-3.5 w-3.5 text-[#95aac9] dark:text-[#a7a6a8]" />
+                                <Code2 className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
                                 <span>Tokens CSS</span>
                             </>
                         )}
@@ -217,10 +217,10 @@ export default function PaletteSection({
                         type="button"
                         onClick={handleDownloadPng}
                         disabled={downloading}
-                        className="inline-flex items-center gap-1.5 rounded-xl bg-[#ebf1f7] px-3.5 py-2 text-xs font-semibold text-[#293951] shadow-xs transition hover:bg-[#dfe7ef] dark:bg-[#16191c] dark:text-white dark:hover:bg-[#20252b]"
+                        className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-xs transition hover:bg-slate-100 dark:border-slate-700 dark:bg-[#202735] dark:text-slate-300 dark:hover:bg-slate-700/50"
                         title="Descargar paleta en PNG (Retina 2x)"
                     >
-                        <Download className="h-3.5 w-3.5 text-[#95aac9] dark:text-[#a7a6a8]" />
+                        <Download className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
                         <span>{downloading ? 'Generando...' : 'Descargar PNG'}</span>
                     </button>
 
@@ -228,10 +228,10 @@ export default function PaletteSection({
                         <button
                             type="button"
                             onClick={() => onEdit(palette)}
-                            className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-xs font-semibold text-[#293951] shadow-xs transition hover:bg-gray-50 dark:border-gray-700/60 dark:bg-[#16191c] dark:text-white dark:hover:bg-[#20252b]"
+                            className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-[#202735] dark:text-slate-300 dark:hover:bg-slate-700/50"
                             title="Editar paleta"
                         >
-                            <Pencil className="h-3.5 w-3.5 text-[#95aac9] dark:text-[#a7a6a8]" />
+                            <Pencil className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
                             <span>Editar</span>
                         </button>
                     )}
@@ -240,7 +240,7 @@ export default function PaletteSection({
                         <button
                             type="button"
                             onClick={() => onDelete(palette)}
-                            className="inline-flex items-center gap-1.5 rounded-xl border border-red-200/60 bg-red-50 px-3.5 py-2 text-xs font-semibold text-red-600 shadow-xs transition hover:bg-red-100 dark:border-red-900/30 dark:bg-red-950/30 dark:text-red-400 dark:hover:bg-red-950/50"
+                            className="inline-flex items-center gap-1.5 rounded-full border border-red-200/60 bg-red-50/50 px-3.5 py-2 text-xs font-semibold text-red-600 shadow-xs transition hover:bg-red-100/80 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400"
                             title="Eliminar paleta"
                         >
                             <Trash2 className="h-3.5 w-3.5" />

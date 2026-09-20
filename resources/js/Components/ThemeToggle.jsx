@@ -60,7 +60,7 @@ export default function ThemeToggle({ className = '' }) {
 
     return (
         <div
-            className={`grid grid-cols-2 rounded-xl bg-[#ebf1f7] p-1 text-xs font-semibold text-[#95aac9] backdrop-blur dark:bg-[#16191c] dark:text-[#a7a6a8] ${className}`}
+            className={`grid grid-cols-2 rounded-full border border-slate-200/90 bg-slate-100/80 p-1 text-xs font-semibold text-slate-500 backdrop-blur dark:border-slate-800/80 dark:bg-[#12161f] dark:text-slate-400 ${className}`}
             role="group"
             aria-label="Selector de tema"
         >
@@ -68,10 +68,10 @@ export default function ThemeToggle({ className = '' }) {
                 type="button"
                 onClick={() => updateTheme('light')}
                 title="Modo Claro"
-                className={`flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 transition-all duration-150 ${
+                className={`flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 transition-all duration-150 ${
                     theme === 'light'
-                        ? 'bg-white text-[#293951] shadow-sm dark:bg-[#1e2126] dark:text-white'
-                        : 'hover:text-[#293951] dark:hover:text-white'
+                        ? 'bg-white text-slate-900 shadow-xs dark:bg-[#161b24] dark:text-white'
+                        : 'hover:text-slate-900 dark:hover:text-white'
                 }`}
             >
                 <Sun className="h-3.5 w-3.5" />
@@ -81,10 +81,10 @@ export default function ThemeToggle({ className = '' }) {
                 type="button"
                 onClick={() => updateTheme('dark')}
                 title="Modo Oscuro"
-                className={`flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 transition-all duration-150 ${
+                className={`flex items-center justify-center gap-1.5 rounded-full px-3 py-1.5 transition-all duration-150 ${
                     theme === 'dark'
-                        ? 'bg-white text-[#293951] shadow-sm dark:bg-[#1e2126] dark:text-white'
-                        : 'hover:text-[#293951] dark:hover:text-white'
+                        ? 'bg-white text-slate-900 shadow-xs dark:bg-[#161b24] dark:text-white'
+                        : 'hover:text-slate-900 dark:hover:text-white'
                 }`}
             >
                 <Moon className="h-3.5 w-3.5" />

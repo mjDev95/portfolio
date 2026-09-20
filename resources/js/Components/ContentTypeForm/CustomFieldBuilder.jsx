@@ -25,13 +25,13 @@ export default function CustomFieldBuilder({
     toSnakeCase,
 }) {
     return (
-        <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-[#1e2126] sm:p-8">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-[#f5f7fa] pb-4 dark:border-[#16191c]">
+        <div className="rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24] sm:p-8">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4 dark:border-slate-800/80">
                 <div>
-                    <h2 className="font-heading text-lg font-bold text-[#293951] dark:text-[#ffffff]">
+                    <h2 className="font-heading text-lg font-bold text-slate-900 dark:text-white">
                         4. Campos Personalizados (Custom Fields)
                     </h2>
-                    <p className="text-sm text-[#95aac9] dark:text-[#a7a6a8]">
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
                         Define las propiedades específicas que solicitará este contenido. Puedes definir campos globales o específicos para un cliente.
                     </p>
                 </div>
@@ -47,8 +47,8 @@ export default function CustomFieldBuilder({
             </div>
 
             {fields.length === 0 ? (
-                <div className="mt-6 flex flex-col items-center justify-center rounded-xl bg-[#f8fafc] p-8 text-center dark:bg-[#16191c]">
-                    <p className="text-sm text-[#95aac9] dark:text-[#a7a6a8]">
+                <div className="mt-6 flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-[#f8f9fb] p-8 text-center dark:border-slate-800 dark:bg-[#12161f]">
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
                         Este tipo de contenido utilizará los campos base (Título, Extracto, Contenido Markdown, Imágenes y SEO).
                     </p>
                     <button
@@ -69,25 +69,25 @@ export default function CustomFieldBuilder({
                         return (
                             <div
                                 key={index}
-                                className="rounded-xl bg-[#f8fafc] p-5 transition-all dark:bg-[#16191c]"
+                                className="rounded-2xl border border-slate-100 bg-[#f8f9fb] p-5 transition-all dark:border-slate-800 dark:bg-[#12161f]"
                             >
-                                <div className="flex items-center justify-between gap-3 border-b border-[#f5f7fa] pb-3 dark:border-[#1e2126]">
+                                <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-3 dark:border-slate-800/80">
                                     <div className="flex flex-wrap items-center gap-2">
-                                        <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-white text-xs font-bold text-[#293951] shadow-xs dark:bg-[#1e2126] dark:text-[#ffffff]">
+                                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-xs font-bold text-slate-900 shadow-xs dark:bg-[#202735] dark:text-white">
                                             {index + 1}
                                         </span>
-                                        <span className="font-semibold text-sm text-[#293951] dark:text-[#ffffff]">
+                                        <span className="font-semibold text-sm text-slate-900 dark:text-white">
                                             {field.label || `Campo #${index + 1}`}
                                         </span>
-                                        <span className="rounded-md bg-[#ebf1f7] px-2 py-0.5 text-[11px] font-mono text-brand-primary dark:bg-[#1e2126]">
+                                        <span className="rounded-full bg-brand-primary/10 px-2 py-0.5 text-[11px] font-mono text-brand-primary dark:bg-brand-primary/20">
                                             {field.name || 'sin_identificador'}
                                         </span>
                                         {field.user_id ? (
-                                            <span className="rounded-md bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-600 dark:text-amber-400">
+                                            <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-600 dark:text-amber-400">
                                                 Solo para {specificUser ? specificUser.name : `Cliente #${field.user_id}`}
                                             </span>
                                         ) : (
-                                            <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                                            <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
                                                 Global (Todos)
                                             </span>
                                         )}
@@ -98,7 +98,7 @@ export default function CustomFieldBuilder({
                                             type="button"
                                             onClick={() => moveField(index, -1)}
                                             disabled={index === 0}
-                                            className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-[#95aac9] hover:bg-white hover:text-[#293951] disabled:opacity-30 dark:hover:bg-[#1e2126] dark:hover:text-[#ffffff]"
+                                            className="inline-flex h-7 w-7 items-center justify-center rounded-full text-slate-400 hover:bg-white hover:text-slate-900 disabled:opacity-30 dark:hover:bg-[#202735] dark:hover:text-white"
                                             title="Subir posición"
                                         >
                                             <ArrowUp className="h-3.5 w-3.5" />
@@ -107,7 +107,7 @@ export default function CustomFieldBuilder({
                                             type="button"
                                             onClick={() => moveField(index, 1)}
                                             disabled={index === fields.length - 1}
-                                            className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-[#95aac9] hover:bg-white hover:text-[#293951] disabled:opacity-30 dark:hover:bg-[#1e2126] dark:hover:text-[#ffffff]"
+                                            className="inline-flex h-7 w-7 items-center justify-center rounded-full text-slate-400 hover:bg-white hover:text-slate-900 disabled:opacity-30 dark:hover:bg-[#202735] dark:hover:text-white"
                                             title="Bajar posición"
                                         >
                                             <ArrowDown className="h-3.5 w-3.5" />
@@ -115,7 +115,7 @@ export default function CustomFieldBuilder({
                                         <button
                                             type="button"
                                             onClick={() => removeField(index)}
-                                            className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                            className="inline-flex h-7 w-7 items-center justify-center rounded-full text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
                                             title="Eliminar campo"
                                         >
                                             <Trash2 className="h-3.5 w-3.5" />
@@ -125,7 +125,7 @@ export default function CustomFieldBuilder({
 
                                 <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                                     <div>
-                                        <label className="text-xs font-semibold text-[#293951] dark:text-[#ffffff]">
+                                        <label className="text-xs font-semibold text-slate-900 dark:text-white">
                                             Etiqueta visible *
                                         </label>
                                         <TextInput
@@ -141,7 +141,7 @@ export default function CustomFieldBuilder({
                                     </div>
 
                                     <div>
-                                        <label className="text-xs font-semibold text-[#293951] dark:text-[#ffffff]">
+                                        <label className="text-xs font-semibold text-slate-900 dark:text-white">
                                             Identificador (snake_case) *
                                         </label>
                                         <TextInput
@@ -159,11 +159,11 @@ export default function CustomFieldBuilder({
                                     </div>
 
                                     <div>
-                                        <label className="text-xs font-semibold text-[#293951] dark:text-[#ffffff]">
+                                        <label className="text-xs font-semibold text-slate-900 dark:text-white">
                                             Tipo de dato *
                                         </label>
                                         <select
-                                            className="mt-1 w-full rounded-xl bg-white px-3 py-2 text-xs text-[#293951] shadow-inner focus:outline-none focus:ring-2 focus:ring-brand-primary/30 dark:bg-[#1e2126] dark:text-[#ffffff]"
+                                            className="mt-1 w-full rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-xs text-slate-900 shadow-xs focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-800 dark:bg-[#161b24] dark:text-white"
                                             value={field.type}
                                             onChange={(e) =>
                                                 updateField(index, 'type', e.target.value)
@@ -178,11 +178,11 @@ export default function CustomFieldBuilder({
                                     </div>
 
                                     <div>
-                                        <label className="text-xs font-semibold text-[#293951] dark:text-[#ffffff]">
+                                        <label className="text-xs font-semibold text-slate-900 dark:text-white">
                                             Ámbito / Cliente Asignado
                                         </label>
                                         <select
-                                            className="mt-1 w-full rounded-xl bg-white px-3 py-2 text-xs text-[#293951] shadow-inner focus:outline-none focus:ring-2 focus:ring-brand-primary/30 dark:bg-[#1e2126] dark:text-[#ffffff]"
+                                            className="mt-1 w-full rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-xs text-slate-900 shadow-xs focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-800 dark:bg-[#161b24] dark:text-white"
                                             value={field.user_id ?? ''}
                                             onChange={(e) => {
                                                 const val = e.target.value === '' ? null : Number(e.target.value);
@@ -199,7 +199,7 @@ export default function CustomFieldBuilder({
                                     </div>
 
                                     <div className="sm:col-span-2">
-                                        <label className="text-xs font-semibold text-[#293951] dark:text-[#ffffff]">
+                                        <label className="text-xs font-semibold text-slate-900 dark:text-white">
                                             Texto de ayuda / Placeholder
                                         </label>
                                         <TextInput
@@ -229,9 +229,9 @@ export default function CustomFieldBuilder({
                                                         e.target.checked
                                                     )
                                                 }
-                                                className="rounded border-0 text-brand-primary focus:ring-brand-primary bg-white dark:bg-[#1e2126]"
+                                                className="rounded border-slate-300 text-brand-primary focus:ring-brand-primary dark:border-slate-700 dark:bg-[#161b24]"
                                             />
-                                            <span className="text-xs font-semibold text-[#293951] dark:text-[#ffffff]">
+                                            <span className="text-xs font-semibold text-slate-900 dark:text-white">
                                                 Campo obligatorio (requerido para publicar)
                                             </span>
                                         </label>
@@ -240,9 +240,9 @@ export default function CustomFieldBuilder({
 
                             {/* Si es tipo 'select', editor de opciones */}
                             {field.type === 'select' && (
-                                <div className="mt-4 border-t border-[#f5f7fa] pt-3 dark:border-[#1e2126]">
+                                <div className="mt-4 border-t border-slate-200/80 pt-3 dark:border-slate-800">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-xs font-bold text-[#293951] dark:text-[#ffffff]">
+                                        <span className="text-xs font-bold text-slate-900 dark:text-white">
                                             Opciones del Menú Desplegable
                                         </span>
                                         <button
@@ -293,7 +293,7 @@ export default function CustomFieldBuilder({
                                                     onClick={() =>
                                                         removeSelectOption(index, optIdx)
                                                     }
-                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-full text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
                                                     title="Eliminar opción"
                                                 >
                                                     <Trash2 className="h-3.5 w-3.5" />
@@ -302,7 +302,7 @@ export default function CustomFieldBuilder({
                                         ))}
 
                                         {(!field.options || field.options.length === 0) && (
-                                            <p className="text-[11px] text-[#95aac9] dark:text-[#a7a6a8] italic">
+                                            <p className="text-[11px] text-slate-400 dark:text-slate-500 italic">
                                                 No hay opciones definidas aún. Añade al menos una.
                                             </p>
                                         )}

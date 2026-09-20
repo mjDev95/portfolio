@@ -176,16 +176,16 @@ export default function ColorPaletteModal({
             <div className="max-h-[calc(100vh-6rem)] overflow-y-auto">
                 <form onSubmit={handleSubmit} className="p-6 sm:p-7">
                     {/* Header */}
-                    <div className="flex items-center justify-between border-b border-gray-100 pb-4 dark:border-gray-800">
+                    <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-800/80">
                         <div className="flex items-center gap-3">
                             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary dark:bg-brand-primary/20">
                                 <Palette className="h-5 w-5" />
                             </div>
                             <div>
-                                <h3 className="font-heading text-lg font-bold text-[#293951] dark:text-white">
+                                <h3 className="font-heading text-lg font-bold text-slate-900 dark:text-white">
                                     {isEditing ? 'Editar Paleta de Color' : 'Nueva Paleta de Color'}
                                 </h3>
-                                <p className="mt-0.5 text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                                <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                                     {isEditing
                                         ? 'Modifica el nombre y la combinación de 4 colores.'
                                         : 'Registra una combinación cromática de 4 colores para el sistema.'}
@@ -196,7 +196,7 @@ export default function ColorPaletteModal({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="rounded-xl p-1.5 text-[#95aac9] transition hover:bg-gray-100 hover:text-[#293951] dark:text-[#a7a6a8] dark:hover:bg-gray-800 dark:hover:text-white"
+                            className="rounded-full p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-white"
                         >
                             <X className="h-5 w-5" />
                         </button>
@@ -210,12 +210,12 @@ export default function ColorPaletteModal({
                     )}
 
                     {/* Previsualización en Tiempo Real de los 4 Colores */}
-                    <div className="mt-5 rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-gray-800 dark:bg-[#16191c]/80">
+                    <div className="mt-5 rounded-2xl border border-slate-100 bg-[#f8f9fb] p-4 dark:border-slate-800 dark:bg-[#12161f]">
                         <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-[#293951] dark:text-white">
+                            <span className="text-xs font-semibold text-slate-900 dark:text-white">
                                 Muestra en tiempo real:
                             </span>
-                            <span className="text-[11px] font-mono text-[#95aac9]">
+                            <span className="text-[11px] font-mono text-slate-400 dark:text-slate-500">
                                 {formData.name || 'Sin título'}
                             </span>
                         </div>
@@ -265,19 +265,19 @@ export default function ColorPaletteModal({
                         </div>
 
                         {/* Configuración de los 4 Colores */}
-                        <div className="rounded-2xl border border-gray-100 bg-gray-50/50 p-4 dark:border-gray-800 dark:bg-[#181b1f]">
+                        <div className="rounded-2xl border border-slate-100 bg-[#f8f9fb] p-4 dark:border-slate-800 dark:bg-[#12161f]">
                             <div className="flex items-center justify-between">
-                                <h4 className="text-xs font-bold uppercase tracking-wider text-[#293951] dark:text-white">
+                                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
                                     Los 4 Colores de la Paleta (HEX)
                                 </h4>
-                                <span className="text-[11px] text-[#95aac9]">Exactamente 4 colores</span>
+                                <span className="text-[11px] text-slate-400 dark:text-slate-500">Exactamente 4 colores</span>
                             </div>
 
                             <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                                 {/* 1. Primario */}
-                                <div className="rounded-xl bg-white p-3 shadow-xs dark:bg-[#1e2126]">
+                                <div className="rounded-xl border border-slate-200/80 bg-white p-3 shadow-xs dark:border-slate-800 dark:bg-[#161b24]">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-xs font-bold text-[#293951] dark:text-white">
+                                        <span className="text-xs font-bold text-slate-900 dark:text-white">
                                             1. Primario *
                                         </span>
                                         <span className="rounded-md bg-brand-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-brand-primary">
@@ -297,7 +297,7 @@ export default function ColorPaletteModal({
                                             onChange={(e) => handleChange('primary_color', e.target.value)}
                                             placeholder="#CB2128"
                                             maxLength={7}
-                                            className="w-full rounded-lg border-0 bg-gray-100 py-1 font-mono text-xs uppercase text-[#293951] dark:bg-[#16191c] dark:text-white"
+                                            className="w-full rounded-lg border border-slate-200/80 bg-slate-50 px-2.5 py-1 font-mono text-xs uppercase text-slate-900 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-700 dark:bg-[#12161f] dark:text-white"
                                             required
                                         />
                                     </div>
@@ -305,9 +305,9 @@ export default function ColorPaletteModal({
                                 </div>
 
                                 {/* 2. Secundario */}
-                                <div className="rounded-xl bg-white p-3 shadow-xs dark:bg-[#1e2126]">
+                                <div className="rounded-xl border border-slate-200/80 bg-white p-3 shadow-xs dark:border-slate-800 dark:bg-[#161b24]">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-xs font-bold text-[#293951] dark:text-white">
+                                        <span className="text-xs font-bold text-slate-900 dark:text-white">
                                             2. Secundario *
                                         </span>
                                         <span className="rounded-md bg-brand-secondary/10 px-1.5 py-0.5 text-[10px] font-bold text-brand-secondary">
@@ -327,7 +327,7 @@ export default function ColorPaletteModal({
                                             onChange={(e) => handleChange('secondary_color', e.target.value)}
                                             placeholder="#DFB136"
                                             maxLength={7}
-                                            className="w-full rounded-lg border-0 bg-gray-100 py-1 font-mono text-xs uppercase text-[#293951] dark:bg-[#16191c] dark:text-white"
+                                            className="w-full rounded-lg border border-slate-200/80 bg-slate-50 px-2.5 py-1 font-mono text-xs uppercase text-slate-900 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-700 dark:bg-[#12161f] dark:text-white"
                                             required
                                         />
                                     </div>
@@ -335,12 +335,12 @@ export default function ColorPaletteModal({
                                 </div>
 
                                 {/* 3. Terciario */}
-                                <div className="rounded-xl bg-white p-3 shadow-xs dark:bg-[#1e2126]">
+                                <div className="rounded-xl border border-slate-200/80 bg-white p-3 shadow-xs dark:border-slate-800 dark:bg-[#161b24]">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-xs font-semibold text-[#293951] dark:text-white">
+                                        <span className="text-xs font-semibold text-slate-900 dark:text-white">
                                             3. Terciario
                                         </span>
-                                        <span className="text-[10px] text-[#95aac9]">Interacción / Soporte</span>
+                                        <span className="text-[10px] text-slate-400 dark:text-slate-500">Interacción / Soporte</span>
                                     </div>
                                     <div className="mt-2 flex items-center gap-2">
                                         <input
@@ -355,16 +355,16 @@ export default function ColorPaletteModal({
                                             onChange={(e) => handleChange('tertiary_color', e.target.value)}
                                             placeholder="Opcional (#HEX)"
                                             maxLength={7}
-                                            className="w-full rounded-lg border-0 bg-gray-100 py-1 font-mono text-xs uppercase text-[#293951] dark:bg-[#16191c] dark:text-white"
+                                            className="w-full rounded-lg border border-slate-200/80 bg-slate-50 px-2.5 py-1 font-mono text-xs uppercase text-slate-900 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-700 dark:bg-[#12161f] dark:text-white"
                                         />
                                     </div>
                                     <InputError message={errors.tertiary_color} className="mt-1" />
                                 </div>
 
                                 {/* 4. Acento */}
-                                <div className="rounded-xl bg-white p-3 shadow-xs dark:bg-[#1e2126]">
+                                <div className="rounded-xl border border-slate-200/80 bg-white p-3 shadow-xs dark:border-slate-800 dark:bg-[#161b24]">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-xs font-semibold text-[#293951] dark:text-white">
+                                        <span className="text-xs font-semibold text-slate-900 dark:text-white">
                                             4. Acento
                                         </span>
                                         <span className="rounded-md bg-brand-accent/10 px-1.5 py-0.5 text-[10px] font-bold text-brand-accent">
@@ -384,7 +384,7 @@ export default function ColorPaletteModal({
                                             onChange={(e) => handleChange('accent_color', e.target.value)}
                                             placeholder="Opcional (#HEX)"
                                             maxLength={7}
-                                            className="w-full rounded-lg border-0 bg-gray-100 py-1 font-mono text-xs uppercase text-[#293951] dark:bg-[#16191c] dark:text-white"
+                                            className="w-full rounded-lg border border-slate-200/80 bg-slate-50 px-2.5 py-1 font-mono text-xs uppercase text-slate-900 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-700 dark:bg-[#12161f] dark:text-white"
                                         />
                                     </div>
                                     <InputError message={errors.accent_color} className="mt-1" />
@@ -394,7 +394,7 @@ export default function ColorPaletteModal({
                     </div>
 
                     {/* Botones de acción */}
-                    <div className="mt-6 flex items-center justify-end gap-3 border-t border-gray-100 pt-4 dark:border-gray-800">
+                    <div className="mt-6 flex items-center justify-end gap-3 border-t border-slate-100 pt-4 dark:border-slate-800/80">
                         <SecondaryButton onClick={onClose} disabled={submitting}>
                             Cancelar
                         </SecondaryButton>

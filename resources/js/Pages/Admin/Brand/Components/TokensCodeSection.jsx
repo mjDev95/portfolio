@@ -119,17 +119,17 @@ module.exports = {
     };
 
     return (
-        <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800/40 dark:bg-[#1e2126] sm:p-8">
-            <div className="flex flex-col gap-4 border-b border-gray-100 pb-6 dark:border-gray-800/50 sm:flex-row sm:items-center sm:justify-between">
+        <div className="rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24] sm:p-8">
+            <div className="flex flex-col gap-4 border-b border-slate-100 pb-6 dark:border-slate-800/80 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
                     <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary dark:bg-brand-primary/20 dark:text-brand-primary">
                         <FileCode2 className="h-6 w-6" />
                     </div>
                     <div>
-                        <h2 className="font-heading text-xl font-bold tracking-tight text-[#293951] dark:text-white sm:text-2xl">
+                        <h2 className="font-heading text-xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-2xl">
                             Tokens de Diseño & Exportación
                         </h2>
-                        <p className="mt-0.5 text-sm text-[#95aac9] dark:text-[#a7a6a8]">
+                        <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
                             Exporta los colores y tokens a Tailwind CSS, variables CSS nativas o JSON estructurado.
                         </p>
                     </div>
@@ -137,14 +137,14 @@ module.exports = {
 
                 {/* Selector de Pestaña y Botón Copiar */}
                 <div className="flex items-center gap-2">
-                    <div className="flex rounded-xl bg-[#ebf1f7] p-1 dark:bg-[#16191c]">
+                    <div className="flex rounded-full bg-slate-100 p-1 dark:bg-[#12161f]">
                         <button
                             type="button"
                             onClick={() => setActiveTab('tailwind')}
-                            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                            className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                                 activeTab === 'tailwind'
-                                    ? 'bg-white text-[#293951] shadow-xs dark:bg-[#1e2126] dark:text-white'
-                                    : 'text-[#95aac9] hover:text-[#293951] dark:text-[#a7a6a8] dark:hover:text-white'
+                                    ? 'bg-white text-slate-900 shadow-sm dark:bg-[#202735] dark:text-white'
+                                    : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                             }`}
                         >
                             Tailwind CSS
@@ -152,10 +152,10 @@ module.exports = {
                         <button
                             type="button"
                             onClick={() => setActiveTab('css')}
-                            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                            className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                                 activeTab === 'css'
-                                    ? 'bg-white text-[#293951] shadow-xs dark:bg-[#1e2126] dark:text-white'
-                                    : 'text-[#95aac9] hover:text-[#293951] dark:text-[#a7a6a8] dark:hover:text-white'
+                                    ? 'bg-white text-slate-900 shadow-sm dark:bg-[#202735] dark:text-white'
+                                    : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                             }`}
                         >
                             CSS Variables
@@ -163,10 +163,10 @@ module.exports = {
                         <button
                             type="button"
                             onClick={() => setActiveTab('json')}
-                            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                            className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                                 activeTab === 'json'
-                                    ? 'bg-white text-[#293951] shadow-xs dark:bg-[#1e2126] dark:text-white'
-                                    : 'text-[#95aac9] hover:text-[#293951] dark:text-[#a7a6a8] dark:hover:text-white'
+                                    ? 'bg-white text-slate-900 shadow-sm dark:bg-[#202735] dark:text-white'
+                                    : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                             }`}
                         >
                             Tokens JSON
@@ -176,7 +176,7 @@ module.exports = {
                     <button
                         type="button"
                         onClick={handleCopy}
-                        className="inline-flex items-center gap-1.5 rounded-xl bg-brand-primary px-4 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-primary-hover active:scale-95"
+                        className="inline-flex items-center gap-1.5 rounded-full bg-brand-primary px-4 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-primary-hover active:scale-95"
                     >
                         {copied ? (
                             <>
@@ -194,7 +194,7 @@ module.exports = {
             </div>
 
             {/* Bloque de código con resaltado oscuro */}
-            <div className="relative mt-6 overflow-hidden rounded-2xl bg-[#0B0D0E] p-6 shadow-inner">
+            <div className="relative mt-6 overflow-hidden rounded-2xl bg-[#0e1219] p-6 shadow-inner ring-1 ring-slate-800/60">
                 <pre className="max-h-[480px] overflow-x-auto font-mono text-xs leading-relaxed text-zinc-300">
                     <code>{currentCode}</code>
                 </pre>

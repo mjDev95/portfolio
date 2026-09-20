@@ -42,7 +42,7 @@ export default function Modal({
                 {/* Backdrop overlay */}
                 <TransitionChild
                     as="div"
-                    className="fixed inset-0 bg-[#16191c]/70 backdrop-blur-xs"
+                    className="fixed inset-0 bg-slate-950/70 backdrop-blur-xs"
                     enter="ease-out duration-300"
                     enterFrom="opacity-0"
                     enterTo="opacity-100"
@@ -56,7 +56,7 @@ export default function Modal({
                     <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-6">
                         <TransitionChild
                             as="div"
-                            className={`relative w-full transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all dark:bg-[#1e2126] sm:my-8 ${maxWidthClass}`}
+                            className={`relative w-full transform overflow-hidden rounded-[28px] border border-slate-100/90 bg-white text-left shadow-2xl transition-all dark:border-slate-800/80 dark:bg-[#161b24] sm:my-8 ${maxWidthClass}`}
                             enter="ease-out duration-300"
                             enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                             enterTo="opacity-100 translate-y-0 sm:scale-100"

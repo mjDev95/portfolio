@@ -250,9 +250,8 @@ export default function Edit({ preference, palettes = [] }) {
         <>
             <Head title="Preferencias del Administrador — Admin" />
 
-            <div className="py-8">
-                <div className="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
-                    {/* ── A. Header Principal ───────────────────────────────────── */}
+            <div className="w-full space-y-8">
+                {/* ── A. Header Principal ───────────────────────────────────── */}
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <div className="flex items-center gap-3">
@@ -260,10 +259,10 @@ export default function Edit({ preference, palettes = [] }) {
                                     <Settings className="h-6 w-6" />
                                 </div>
                                 <div>
-                                    <h1 className="font-heading text-2xl font-bold tracking-tight text-[#293951] dark:text-[#ffffff] sm:text-3xl">
+                                    <h1 className="font-heading text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
                                         Preferencias del Administrador
                                     </h1>
-                                    <p className="mt-1 text-sm text-[#95aac9] dark:text-[#a7a6a8]">
+                                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                                         Configuración global de apariencia, colores de marca del sitio público y comportamiento del panel.
                                     </p>
                                 </div>
@@ -325,10 +324,10 @@ export default function Edit({ preference, palettes = [] }) {
                     <CacheManagementSection />
 
                     {/* ── G. Barra de Acciones Inferior ─────────────────────────── */}
-                    <div className="sticky bottom-6 z-30 rounded-2xl bg-white/95 p-5 shadow-lg backdrop-blur-md dark:bg-[#1e2126]/95 dark:shadow-none">
+                    <div className="sticky bottom-6 z-30 rounded-[28px] border border-slate-100/90 bg-white/95 p-5 shadow-lg backdrop-blur-md dark:border-slate-800/80 dark:bg-[#161b24]/95">
                         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
                             <div className="flex items-center gap-2">
-                                <span className="text-sm text-[#95aac9] dark:text-[#a7a6a8]">
+                                <span className="text-sm text-slate-500 dark:text-slate-400">
                                     Asegúrate de guardar los cambios para aplicarlos en tu cuenta.
                                 </span>
                             </div>
@@ -350,7 +349,6 @@ export default function Edit({ preference, palettes = [] }) {
                             </div>
                         </div>
                     </div>
-                </div>
             </div>
         </>
     );

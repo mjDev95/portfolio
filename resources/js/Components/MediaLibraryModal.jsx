@@ -408,7 +408,7 @@ export default function MediaLibraryModal({
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="fixed inset-0 bg-[#16191c]/75 backdrop-blur-md" />
+                    <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-md" />
                 </TransitionChild>
 
                 <TransitionChild
@@ -424,7 +424,7 @@ export default function MediaLibraryModal({
                         onDragLeave={handleDragLeave}
                         onDragOver={handleDragOver}
                         onDrop={handleDrop}
-                        className="relative flex flex-col h-[90vh] max-h-[850px] w-full max-w-6xl rounded-3xl bg-white dark:bg-[#1b1f24] shadow-2xl overflow-hidden"
+                        className="relative flex flex-col h-[90vh] max-h-[850px] w-full max-w-6xl rounded-[28px] border border-slate-100/90 bg-white dark:border-slate-800/80 dark:bg-[#161b24] shadow-2xl overflow-hidden"
                     >
                         {/* Overlay visual Drag & Drop al arrastrar archivos */}
                         {isDragging && (
@@ -442,19 +442,19 @@ export default function MediaLibraryModal({
                         )}
 
                         {/* Modal Header */}
-                        <div className="flex items-center justify-between px-6 py-4 bg-[#fafcff] dark:bg-[#16191c]">
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-[#f8f9fb] dark:border-slate-800 dark:bg-[#12161f]">
                             <div className="flex items-center gap-3">
                                 <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
                                     <Images className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <h2 className="text-base font-bold font-heading text-[#293951] dark:text-white flex items-center gap-2">
+                                    <h2 className="text-base font-bold font-heading text-slate-900 dark:text-white flex items-center gap-2">
                                         {title}
-                                        <span className="text-xs font-normal text-[#95aac9] dark:text-[#a7a6a8] bg-[#ebf1f7] dark:bg-[#282d35] px-2 py-0.5 rounded-full">
+                                        <span className="text-xs font-normal text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full">
                                             {totalCount} archivos
                                         </span>
                                     </h2>
-                                    <p className="text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                                    <p className="text-xs text-slate-400 dark:text-slate-500">
                                         Arrastra imágenes directamente o selecciona archivos de tu equipo
                                     </p>
                                 </div>
@@ -476,7 +476,7 @@ export default function MediaLibraryModal({
                                 <button
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="inline-flex items-center gap-1.5 rounded-xl bg-brand-primary px-3.5 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-brand-primary-hover active:scale-95"
+                                    className="inline-flex items-center gap-1.5 rounded-full bg-brand-primary px-4 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-primary-hover active:scale-95"
                                 >
                                     <Plus className="h-4 w-4" />
                                     Subir nueva imagen
@@ -486,7 +486,7 @@ export default function MediaLibraryModal({
                                 <button
                                     type="button"
                                     onClick={onClose}
-                                    className="rounded-xl p-2 text-[#95aac9] hover:bg-[#ebf1f7] hover:text-[#293951] dark:text-[#a7a6a8] dark:hover:bg-[#282d35] dark:hover:text-white transition"
+                                    className="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white transition"
                                 >
                                     <X className="h-5 w-5" />
                                 </button>
@@ -494,22 +494,22 @@ export default function MediaLibraryModal({
                         </div>
 
                         {/* Subheader / Buscador y Cola de Subidas */}
-                        <div className="px-6 py-3 bg-[#ffffff] dark:bg-[#1b1f24] flex flex-wrap items-center justify-between gap-3">
+                        <div className="px-6 py-3 border-b border-slate-100 bg-white dark:border-slate-800 dark:bg-[#161b24] flex flex-wrap items-center justify-between gap-3">
                             {/* Buscador */}
                             <div className="relative flex-1 max-w-sm">
-                                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#95aac9]" />
+                                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                 <input
                                     type="text"
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                     placeholder="Buscar por nombre o descripción..."
-                                    className="w-full rounded-xl border-0 bg-[#f8fafc] py-2 pl-9 pr-8 text-xs text-[#293951] placeholder-[#95aac9] focus:outline-none focus:ring-2 focus:ring-brand-primary/30 dark:bg-[#16191c] dark:text-white dark:placeholder-[#606770]"
+                                    className="w-full rounded-full border border-slate-200/80 bg-slate-50/50 py-2 pl-9 pr-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-brand-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-800 dark:bg-[#12161f] dark:text-white dark:placeholder:text-slate-500"
                                 />
                                 {search && (
                                     <button
                                         type="button"
                                         onClick={() => setSearch('')}
-                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#95aac9] hover:text-[#293951] dark:hover:text-white"
+                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-white"
                                     >
                                         <X className="h-3.5 w-3.5" />
                                     </button>
@@ -522,7 +522,7 @@ export default function MediaLibraryModal({
                                     {uploads.slice(0, 3).map((u) => (
                                         <div
                                             key={u.id}
-                                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium ${
+                                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
                                                 u.status === 'uploading'
                                                     ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400'
                                                     : u.status === 'done'
@@ -545,7 +545,7 @@ export default function MediaLibraryModal({
                                         </div>
                                     ))}
                                     {uploads.length > 3 && (
-                                        <span className="text-[11px] text-[#95aac9] dark:text-[#a7a6a8]">
+                                        <span className="text-[11px] text-slate-400 dark:text-slate-500">
                                             +{uploads.length - 3} más
                                         </span>
                                     )}
@@ -559,26 +559,26 @@ export default function MediaLibraryModal({
                             <div className="flex-1 overflow-y-auto p-6">
                                 {isLoading && mediaItems.length === 0 ? (
                                     <div className="flex h-64 items-center justify-center">
-                                        <div className="flex items-center gap-2 text-sm text-[#95aac9] dark:text-[#a7a6a8]">
+                                        <div className="flex items-center gap-2 text-sm text-slate-400 dark:text-slate-500">
                                             <Loader2 className="h-5 w-5 animate-spin text-brand-primary" />
                                             Cargando biblioteca...
                                         </div>
                                     </div>
                                 ) : mediaItems.length === 0 ? (
-                                    <div className="flex flex-col items-center justify-center h-80 rounded-2xl p-8 text-center bg-[#fafcff] dark:bg-[#16191c]/50">
-                                        <div className="h-16 w-16 rounded-3xl bg-[#ebf1f7] dark:bg-[#282d35] flex items-center justify-center text-[#95aac9] mb-3">
+                                    <div className="flex flex-col items-center justify-center h-80 rounded-[28px] p-8 text-center bg-slate-50/50 dark:bg-[#12161f]/50 border border-slate-100 dark:border-slate-800">
+                                        <div className="h-16 w-16 rounded-3xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 mb-3">
                                             <UploadCloud className="h-8 w-8" />
                                         </div>
-                                        <h4 className="text-base font-bold text-[#293951] dark:text-white font-heading">
+                                        <h4 className="text-base font-bold text-slate-900 dark:text-white font-heading">
                                             Sin imágenes encontradas
                                         </h4>
-                                        <p className="text-xs text-[#95aac9] dark:text-[#a7a6a8] mt-1 max-w-sm">
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm">
                                             Arrastra archivos de imagen desde cualquier carpeta de tu equipo para subirlos al instante
                                         </p>
                                         <button
                                             type="button"
                                             onClick={() => fileInputRef.current?.click()}
-                                            className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#ebf1f7] px-4 py-2 text-xs font-semibold text-brand-primary transition hover:bg-[#dfe7ef] dark:bg-[#282d35] dark:text-brand-primary"
+                                            className="mt-4 inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white px-4 py-2 text-xs font-semibold text-brand-primary transition hover:bg-slate-50 dark:border-slate-800 dark:bg-[#161b24]"
                                         >
                                             <Plus className="h-4 w-4" />
                                             Seleccionar desde el equipo
@@ -592,7 +592,7 @@ export default function MediaLibraryModal({
                                                 <div
                                                     key={media.id}
                                                     onClick={() => setSelectedItem(media)}
-                                                    className={`group relative aspect-square rounded-2xl overflow-hidden cursor-pointer transition-all duration-200 bg-[#f8fafc] dark:bg-[#16191c] shadow-sm ${
+                                                    className={`group relative aspect-square rounded-2xl overflow-hidden cursor-pointer transition-all duration-200 bg-slate-100 dark:bg-[#12161f] shadow-xs ${
                                                         isSelected
                                                             ? 'ring-3 ring-brand-primary shadow-lg scale-[1.02]'
                                                             : 'hover:shadow-md hover:ring-2 hover:ring-brand-primary/30'
@@ -607,7 +607,7 @@ export default function MediaLibraryModal({
                                                     />
 
                                                     {/* Badge de colección */}
-                                                    <span className="absolute top-1.5 left-1.5 rounded-md bg-[#16191c]/70 px-1.5 py-0.5 text-[9px] font-semibold text-white backdrop-blur">
+                                                    <span className="absolute top-1.5 left-1.5 rounded-full bg-slate-950/70 px-2 py-0.5 text-[9px] font-semibold text-white backdrop-blur">
                                                         {media.collection}
                                                     </span>
 
@@ -640,7 +640,7 @@ export default function MediaLibraryModal({
                                             type="button"
                                             disabled={isLoading}
                                             onClick={() => fetchMedia(page + 1, search, true)}
-                                            className="rounded-xl border-0 bg-[#ebf1f7] dark:bg-[#20252b] px-4 py-2 text-xs font-semibold text-[#293951] dark:text-white shadow-sm hover:bg-[#dfe7ef] dark:hover:bg-[#282d35] transition disabled:opacity-50"
+                                            className="rounded-full border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-[#161b24] px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-xs hover:bg-slate-50 dark:hover:bg-[#1c222e] transition disabled:opacity-50"
                                         >
                                             {isLoading ? 'Cargando más...' : 'Cargar más imágenes'}
                                         </button>
@@ -649,11 +649,11 @@ export default function MediaLibraryModal({
                             </div>
 
                             {/* Panel Lateral de Detalles */}
-                            <div className="w-80 bg-[#fafcff] dark:bg-[#16191c] flex flex-col justify-between overflow-y-auto p-5">
+                            <div className="w-80 border-l border-slate-100 bg-[#f8f9fb] dark:border-slate-800 dark:bg-[#12161f] flex flex-col justify-between overflow-y-auto p-5">
                                 {selectedItem ? (
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between">
-                                            <h3 className="text-xs font-bold uppercase tracking-wider text-[#95aac9] dark:text-[#a7a6a8]">
+                                            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                                                 Detalles y Metadatos
                                             </h3>
                                             <div className="flex items-center gap-1.5 h-4">
@@ -679,7 +679,7 @@ export default function MediaLibraryModal({
                                         </div>
 
                                         {/* Preview grande */}
-                                        <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/5 dark:bg-white/5 relative group">
+                                        <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/5 dark:bg-white/5 relative group border border-slate-200/60 dark:border-slate-800">
                                             <img
                                                 src={selectedItem.url}
                                                 alt={selectedItem.alt || selectedItem.file_name}
@@ -700,28 +700,28 @@ export default function MediaLibraryModal({
                                         {/* Metadatos técnicos */}
                                         <div className="space-y-2 text-xs">
                                             <div>
-                                                <span className="text-[#95aac9] dark:text-[#a7a6a8] block text-[10px]">
+                                                <span className="text-slate-400 dark:text-slate-500 block text-[10px]">
                                                     Nombre:
                                                 </span>
-                                                <span className="font-semibold text-[#293951] dark:text-white break-all">
+                                                <span className="font-semibold text-slate-900 dark:text-white break-all">
                                                     {selectedItem.file_name}
                                                 </span>
                                             </div>
 
                                             <div className="flex items-center justify-between">
                                                 <div>
-                                                    <span className="text-[#95aac9] dark:text-[#a7a6a8] block text-[10px]">
+                                                    <span className="text-slate-400 dark:text-slate-500 block text-[10px]">
                                                         Peso:
                                                     </span>
-                                                    <span className="font-medium text-[#293951] dark:text-white">
+                                                    <span className="font-medium text-slate-800 dark:text-slate-200">
                                                         {formatBytes(selectedItem.file_size)}
                                                     </span>
                                                 </div>
                                                 <div>
-                                                    <span className="text-[#95aac9] dark:text-[#a7a6a8] block text-[10px]">
+                                                    <span className="text-slate-400 dark:text-slate-500 block text-[10px]">
                                                         Tipo:
                                                     </span>
-                                                    <span className="font-medium text-[#293951] dark:text-white">
+                                                    <span className="font-medium text-slate-800 dark:text-slate-200">
                                                         {selectedItem.mime_type}
                                                     </span>
                                                 </div>
@@ -729,20 +729,20 @@ export default function MediaLibraryModal({
 
                                             {selectedItem.created_at && (
                                                 <div>
-                                                    <span className="text-[#95aac9] dark:text-[#a7a6a8] block text-[10px]">
+                                                    <span className="text-slate-400 dark:text-slate-500 block text-[10px]">
                                                         Fecha:
                                                     </span>
-                                                    <span className="text-[#293951] dark:text-white">
+                                                    <span className="text-slate-800 dark:text-slate-200">
                                                         {new Date(selectedItem.created_at).toLocaleDateString()}
                                                     </span>
                                                 </div>
                                             )}
                                         </div>
 
-                                        {/* Campos Editables de Metadatos SEO / Accesibilidad (Estilo WordPress Asíncrono) */}
+                                        {/* Campos Editables de Metadatos SEO / Accesibilidad */}
                                         <div className="space-y-3 pt-2">
                                             <div>
-                                                <label className="block text-[11px] font-semibold text-[#293951] dark:text-[#ffffff] mb-1">
+                                                <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
                                                     Título
                                                 </label>
                                                 <input
@@ -751,12 +751,12 @@ export default function MediaLibraryModal({
                                                     onChange={(e) => handleFieldChange('title', e.target.value)}
                                                     onBlur={handleFieldBlur}
                                                     placeholder="Título de la imagen..."
-                                                    className="w-full rounded-xl bg-[#ebf1f7] px-3 py-2 text-xs text-[#293951] placeholder-[#95aac9] border-0 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 dark:bg-[#20252b] dark:text-white dark:placeholder-[#606770]"
+                                                    className="w-full rounded-2xl border border-slate-200/80 bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-800 dark:bg-[#161b24] dark:text-white dark:placeholder:text-slate-500"
                                                 />
                                             </div>
 
                                             <div>
-                                                <label className="block text-[11px] font-semibold text-[#293951] dark:text-[#ffffff] mb-1">
+                                                <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
                                                     Texto alternativo (Alt)
                                                 </label>
                                                 <input
@@ -765,15 +765,15 @@ export default function MediaLibraryModal({
                                                     onChange={(e) => handleFieldChange('alt', e.target.value)}
                                                     onBlur={handleFieldBlur}
                                                     placeholder="Describe el contenido de la imagen..."
-                                                    className="w-full rounded-xl bg-[#ebf1f7] px-3 py-2 text-xs text-[#293951] placeholder-[#95aac9] border-0 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 dark:bg-[#20252b] dark:text-white dark:placeholder-[#606770]"
+                                                    className="w-full rounded-2xl border border-slate-200/80 bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-800 dark:bg-[#161b24] dark:text-white dark:placeholder:text-slate-500"
                                                 />
-                                                <p className="text-[10px] text-[#95aac9] dark:text-[#a7a6a8] mt-0.5">
+                                                <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
                                                     Utilizado en la etiqueta &lt;img alt="..."&gt; para accesibilidad y SEO.
                                                 </p>
                                             </div>
 
                                             <div>
-                                                <label className="block text-[11px] font-semibold text-[#293951] dark:text-[#ffffff] mb-1">
+                                                <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
                                                     Descripción
                                                 </label>
                                                 <textarea
@@ -782,7 +782,7 @@ export default function MediaLibraryModal({
                                                     onChange={(e) => handleFieldChange('description', e.target.value)}
                                                     onBlur={handleFieldBlur}
                                                     placeholder="Descripción detallada o notas..."
-                                                    className="w-full rounded-xl bg-[#ebf1f7] px-3 py-2 text-xs text-[#293951] placeholder-[#95aac9] border-0 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 resize-none dark:bg-[#20252b] dark:text-white dark:placeholder-[#606770]"
+                                                    className="w-full rounded-2xl border border-slate-200/80 bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary resize-none dark:border-slate-800 dark:bg-[#161b24] dark:text-white dark:placeholder:text-slate-500"
                                                 />
                                             </div>
                                         </div>
@@ -792,7 +792,7 @@ export default function MediaLibraryModal({
                                             <button
                                                 type="button"
                                                 onClick={handleCopyUrl}
-                                                className="w-full flex items-center justify-center gap-1.5 rounded-xl border-0 bg-[#ebf1f7] dark:bg-[#20252b] py-2 text-xs font-semibold text-[#293951] dark:text-white transition hover:bg-[#dfe7ef] dark:hover:bg-[#282d35]"
+                                                className="w-full flex items-center justify-center gap-1.5 rounded-full border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-[#161b24] py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-[#1c222e]"
                                             >
                                                 {copiedUrl ? (
                                                     <>
@@ -801,7 +801,7 @@ export default function MediaLibraryModal({
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <Copy className="h-3.5 w-3.5 text-[#95aac9]" />
+                                                        <Copy className="h-3.5 w-3.5 text-slate-400" />
                                                         <span>Copiar enlace público</span>
                                                     </>
                                                 )}
@@ -811,7 +811,7 @@ export default function MediaLibraryModal({
                                                 type="button"
                                                 onClick={handleDeleteMedia}
                                                 disabled={isDeleting}
-                                                className="w-full flex items-center justify-center gap-1.5 rounded-xl border-0 bg-red-50 dark:bg-red-950/30 py-2 text-xs font-semibold text-red-600 dark:text-red-400 transition hover:bg-red-100 dark:hover:bg-red-900/40 disabled:opacity-50"
+                                                className="w-full flex items-center justify-center gap-1.5 rounded-full border border-red-200/60 bg-red-50/50 dark:border-red-500/20 dark:bg-red-500/10 py-2 text-xs font-semibold text-red-600 dark:text-red-400 transition hover:bg-red-100/80 dark:hover:bg-red-500/20 disabled:opacity-50"
                                             >
                                                 <Trash2 className="h-3.5 w-3.5" />
                                                 <span>Eliminar de la biblioteca</span>
@@ -819,7 +819,7 @@ export default function MediaLibraryModal({
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="flex flex-col items-center justify-center h-full text-center text-[#95aac9] dark:text-[#a7a6a8] py-8">
+                                    <div className="flex flex-col items-center justify-center h-full text-center text-slate-400 dark:text-slate-500 py-8">
                                         <ImageIcon className="h-10 w-10 mb-2 opacity-40" />
                                         <p className="text-xs">
                                             Selecciona una imagen para ver sus detalles o insertarla
@@ -834,7 +834,7 @@ export default function MediaLibraryModal({
                                             type="button"
                                             disabled={!selectedItem}
                                             onClick={handleConfirmSelection}
-                                            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand-primary py-2.5 text-xs font-bold text-white shadow-lg shadow-brand-primary/25 transition hover:bg-brand-primary-hover active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
+                                            className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-brand-primary py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-brand-primary-hover active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
                                         >
                                             <Check className="h-4 w-4" />
                                             Insertar selección

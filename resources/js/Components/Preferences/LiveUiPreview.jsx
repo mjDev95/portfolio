@@ -7,12 +7,12 @@ export default function LiveUiPreview({
 }) {
     return (
         <div
-            className={`mt-6 rounded-2xl p-5 sm:p-6 transition-colors duration-200 ${
+            className={`mt-6 rounded-[28px] border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 transition-colors duration-200 ${
                 previewBackground === 'light'
-                    ? 'bg-[#f5f7fa] text-[#293951]'
+                    ? 'bg-slate-50 text-slate-900'
                     : previewBackground === 'dark'
-                    ? 'bg-[#121517] text-[#ffffff]'
-                    : 'bg-[#ebf1f7] text-[#293951] dark:bg-[#16191c] dark:text-[#ffffff]'
+                    ? 'bg-[#12161f] text-white'
+                    : 'bg-slate-50 text-slate-900 dark:bg-[#12161f] dark:text-white'
             }`}
         >
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -21,10 +21,10 @@ export default function LiveUiPreview({
                     <span
                         className={`text-sm font-bold ${
                             previewBackground === 'light'
-                                ? 'text-[#293951]'
+                                ? 'text-slate-900'
                                 : previewBackground === 'dark'
-                                ? 'text-[#ffffff]'
-                                : 'text-[#293951] dark:text-[#ffffff]'
+                                ? 'text-white'
+                                : 'text-slate-900 dark:text-white'
                         }`}
                     >
                         Previsualización en Vivo de Componentes
@@ -32,14 +32,14 @@ export default function LiveUiPreview({
                 </div>
 
                 {/* Selector de fondo del preview (Automático / Claro / Oscuro) */}
-                <div className="flex items-center gap-1 rounded-xl bg-white/80 p-1 shadow-sm dark:bg-[#1e2126]">
+                <div className="flex items-center gap-1 rounded-full border border-slate-200/80 bg-white/90 p-1 shadow-xs dark:border-slate-800 dark:bg-[#161b24]">
                     <button
                         type="button"
                         onClick={() => onPreviewBackgroundChange('auto')}
-                        className={`rounded-lg px-2.5 py-1 text-xs font-medium transition ${
+                        className={`rounded-full px-3 py-1 text-xs font-medium transition ${
                             previewBackground === 'auto'
-                                ? 'bg-brand-primary text-white shadow-sm'
-                                : 'text-[#95aac9] hover:text-[#293951] dark:text-[#a7a6a8] dark:hover:text-[#ffffff]'
+                                ? 'bg-brand-primary text-white shadow-xs'
+                                : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                         }`}
                     >
                         Tema actual
@@ -47,10 +47,10 @@ export default function LiveUiPreview({
                     <button
                         type="button"
                         onClick={() => onPreviewBackgroundChange('light')}
-                        className={`rounded-lg px-2.5 py-1 text-xs font-medium transition ${
+                        className={`rounded-full px-3 py-1 text-xs font-medium transition ${
                             previewBackground === 'light'
-                                ? 'bg-brand-primary text-white shadow-sm'
-                                : 'text-[#95aac9] hover:text-[#293951] dark:text-[#a7a6a8] dark:hover:text-[#ffffff]'
+                                ? 'bg-brand-primary text-white shadow-xs'
+                                : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                         }`}
                     >
                         Fondo Claro
@@ -58,10 +58,10 @@ export default function LiveUiPreview({
                     <button
                         type="button"
                         onClick={() => onPreviewBackgroundChange('dark')}
-                        className={`rounded-lg px-2.5 py-1 text-xs font-medium transition ${
+                        className={`rounded-full px-3 py-1 text-xs font-medium transition ${
                             previewBackground === 'dark'
-                                ? 'bg-brand-primary text-white shadow-sm'
-                                : 'text-[#95aac9] hover:text-[#293951] dark:text-[#a7a6a8] dark:hover:text-[#ffffff]'
+                                ? 'bg-brand-primary text-white shadow-xs'
+                                : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                         }`}
                     >
                         Fondo Oscuro
@@ -72,10 +72,10 @@ export default function LiveUiPreview({
             <p
                 className={`mt-1.5 text-sm ${
                     previewBackground === 'light'
-                        ? 'text-[#95aac9]'
+                        ? 'text-slate-500'
                         : previewBackground === 'dark'
-                        ? 'text-[#a7a6a8]'
-                        : 'text-[#95aac9] dark:text-[#a7a6a8]'
+                        ? 'text-slate-400'
+                        : 'text-slate-500 dark:text-slate-400'
                 }`}
             >
                 Así lucirán los botones, insignias y enlaces interactivos en tu sitio web:
@@ -85,7 +85,7 @@ export default function LiveUiPreview({
                 {/* Botón Primario */}
                 <button
                     type="button"
-                    className="rounded-xl px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
+                    className="rounded-full px-5 py-2.5 text-sm font-semibold text-white shadow-xs transition hover:opacity-90"
                     style={{ backgroundColor: colors.primary }}
                 >
                     Botón Principal (CTA)
@@ -94,7 +94,7 @@ export default function LiveUiPreview({
                 {/* Botón Secundario */}
                 <button
                     type="button"
-                    className="rounded-xl px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
+                    className="rounded-full px-5 py-2.5 text-sm font-semibold text-white shadow-xs transition hover:opacity-90"
                     style={{ backgroundColor: colors.secondary }}
                 >
                     Botón Secundario
@@ -103,7 +103,7 @@ export default function LiveUiPreview({
                 {/* Botón Tonal / Ghost */}
                 <button
                     type="button"
-                    className="rounded-xl px-4 py-2 text-sm font-semibold transition hover:opacity-80 ring-1 ring-inset"
+                    className="rounded-full px-5 py-2 text-sm font-semibold transition hover:opacity-80 ring-1 ring-inset"
                     style={{
                         backgroundColor: `${colors.primary}12`,
                         color: colors.primary,

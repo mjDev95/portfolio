@@ -288,10 +288,10 @@ export default function GalleryManager({ content, galleryImages = [], onOpenLibr
             {/* Encabezado de la Galería */}
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <h3 className="font-heading text-lg font-bold text-[#293951] dark:text-[#ffffff]">
+                    <h3 className="font-heading text-lg font-bold text-slate-900 dark:text-white">
                         Galería de Medios
                     </h3>
-                    <p className="text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
                         Selecciona imágenes de tu biblioteca o arrastra fotos desde tu ordenador para cargarlas al instante.
                     </p>
                 </div>
@@ -300,12 +300,12 @@ export default function GalleryManager({ content, galleryImages = [], onOpenLibr
                     <button
                         type="button"
                         onClick={onOpenLibrary}
-                        className="inline-flex items-center gap-1.5 rounded-xl bg-brand-primary px-3.5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-brand-primary-hover transition focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+                        className="inline-flex items-center gap-1.5 rounded-full bg-brand-primary px-3.5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-brand-primary-hover transition focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
                     >
                         <Images className="h-3.5 w-3.5" />
                         Añadir desde Biblioteca
                     </button>
-                    <span className="rounded-full bg-[#ebf1f7] px-3 py-1.5 font-mono text-xs font-semibold text-brand-primary dark:bg-[#16191c]">
+                    <span className="rounded-full bg-slate-100 px-3 py-1.5 font-mono text-xs font-semibold text-brand-primary dark:bg-[#12161f]">
                         {images.length} {images.length === 1 ? 'imagen' : 'imágenes'}
                     </span>
                 </div>
@@ -313,7 +313,7 @@ export default function GalleryManager({ content, galleryImages = [], onOpenLibr
 
             {/* Indicador de subida asíncrona */}
             {isUploading && (
-                <div className="flex items-center gap-2 rounded-xl bg-blue-50/80 px-3.5 py-2.5 text-xs font-semibold text-brand-primary dark:bg-blue-950/30">
+                <div className="flex items-center gap-2 rounded-2xl bg-blue-50/80 px-3.5 py-2.5 text-xs font-semibold text-brand-primary dark:bg-blue-950/30">
                     <Loader2 className="h-4 w-4 animate-spin text-brand-primary" />
                     <span>Cargando imagen a la galería...</span>
                 </div>
@@ -333,7 +333,7 @@ export default function GalleryManager({ content, galleryImages = [], onOpenLibr
                                 onDragOver={(e) => handleDragOver(e, index)}
                                 onDrop={(e) => handleDrop(e, index)}
                                 onDragEnd={handleDragEnd}
-                                className={`group relative overflow-hidden rounded-2xl bg-[#f5f7fa] dark:bg-[#121517] cursor-grab active:cursor-grabbing transition-all duration-200 select-none shadow-sm ${
+                                className={`group relative overflow-hidden rounded-2xl bg-slate-100 dark:bg-[#12161f] cursor-grab active:cursor-grabbing transition-all duration-200 select-none shadow-sm ${
                                     isDraggingCurrent
                                         ? 'opacity-30 scale-95 ring-2 ring-dashed ring-brand-primary'
                                         : isOverCurrent
@@ -349,7 +349,7 @@ export default function GalleryManager({ content, galleryImages = [], onOpenLibr
                                 />
 
                                 {/* Indicador de orden y agarre */}
-                                <div className="absolute top-2 left-2 flex items-center gap-1 rounded-lg bg-[#16191c]/75 px-1.5 py-0.5 text-[10px] font-mono text-white backdrop-blur">
+                                <div className="absolute top-2 left-2 flex items-center gap-1 rounded-lg bg-black/75 px-1.5 py-0.5 text-[10px] font-mono text-white backdrop-blur">
                                     <GripVertical className="h-3 w-3 text-white/70" />
                                     <span>#{index + 1}</span>
                                 </div>
@@ -361,7 +361,7 @@ export default function GalleryManager({ content, galleryImages = [], onOpenLibr
                                         e.stopPropagation();
                                         destroy(image.id);
                                     }}
-                                    className="absolute right-2 top-2 rounded-lg bg-[#16191c]/80 p-1.5 text-white opacity-0 backdrop-blur transition group-hover:opacity-100 hover:bg-red-600"
+                                    className="absolute right-2 top-2 rounded-lg bg-black/80 p-1.5 text-white opacity-0 backdrop-blur transition group-hover:opacity-100 hover:bg-red-600"
                                     title="Eliminar foto de galería"
                                 >
                                     <Trash2 className="h-4 w-4" />
@@ -379,18 +379,18 @@ export default function GalleryManager({ content, galleryImages = [], onOpenLibr
                     })}
                 </div>
             ) : (
-                <div className="flex flex-col items-center justify-center rounded-2xl bg-[#ebf1f7]/50 p-8 text-center dark:bg-[#16191c]/50">
-                    <Images className="h-10 w-10 text-[#95aac9] dark:text-[#a7a6a8] mb-2 opacity-60" />
-                    <p className="text-sm font-semibold text-[#293951] dark:text-[#ffffff]">
+                <div className="flex flex-col items-center justify-center rounded-2xl bg-slate-50 p-8 text-center dark:bg-[#12161f]">
+                    <Images className="h-10 w-10 text-slate-400 mb-2 opacity-60" />
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">
                         No hay imágenes en la galería
                     </p>
-                    <p className="text-xs text-[#95aac9] dark:text-[#a7a6a8] mt-1 mb-4 max-w-sm">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-4 max-w-sm">
                         Añade fotos desde tu biblioteca de medios o arrastra imágenes directamente aquí para subirlas.
                     </p>
                     <button
                         type="button"
                         onClick={onOpenLibrary}
-                        className="inline-flex items-center gap-2 rounded-xl bg-brand-primary px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-brand-primary-hover transition focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+                        className="inline-flex items-center gap-2 rounded-full bg-brand-primary px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-brand-primary-hover transition focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
                     >
                         <Images className="h-4 w-4" />
                         Añadir desde Biblioteca

@@ -216,13 +216,12 @@ export default function Form({
                 }
             />
 
-            <div className="py-8">
-                <div className="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
-                    {/* Botón Volver */}
+            <div className="w-full space-y-8">
+                {/* Botón Volver */}
                     <div>
                         <Link
                             href={route('admin.content.index', contentType.slug)}
-                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#95aac9] transition-colors hover:text-brand-primary dark:text-[#a7a6a8]"
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 transition-colors hover:text-brand-primary dark:text-slate-400"
                         >
                             <ArrowLeft className="h-4 w-4" />
                             Volver a {contentType.name}
@@ -251,16 +250,16 @@ export default function Form({
                                 />
 
                                 {/* Bloque 3: Optimización SEO & SERP Preview */}
-                                <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-[#1e2126] sm:p-8">
+                                <div className="rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24] sm:p-8">
                                     <div className="flex items-center gap-2.5 mb-6">
-                                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#ebf1f7] text-brand-primary dark:bg-[#1e2126]">
+                                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-brand-primary dark:bg-[#12161f]">
                                             <Globe className="h-4.5 w-4.5" />
                                         </div>
                                         <div>
-                                            <h3 className="font-heading text-lg font-bold text-[#293951] dark:text-[#ffffff]">
+                                            <h3 className="font-heading text-lg font-bold text-slate-900 dark:text-white">
                                                 Optimización para Motores de Búsqueda (SEO)
                                             </h3>
-                                            <p className="text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                                            <p className="text-xs text-slate-500 dark:text-slate-400">
                                                 Controla los metadatos y cómo se indexa este contenido en Google.
                                             </p>
                                         </div>
@@ -280,7 +279,7 @@ export default function Form({
 
                                 {/* Bloque 4: Galería de Medios (disponible al editar) */}
                                 {isEditing && (
-                                    <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-[#1e2126] sm:p-8">
+                                    <div className="rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24] sm:p-8">
                                         <GalleryManager
                                             content={content}
                                             galleryImages={galleryImages}
@@ -397,7 +396,6 @@ export default function Form({
                                 : 'thumbnail'
                         }
                     />
-                </div>
             </div>
         </>
     );

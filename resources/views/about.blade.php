@@ -5,6 +5,12 @@
 
 @section('content')
 <section class="container py-2xl" style="min-height: 100vh;">
+    <div class="mb-sm">
+        <x-breadcrumbs :items="[
+            ['label' => 'Inicio', 'url' => route('home')],
+            ['label' => 'Sobre mí', 'url' => null]
+        ]" />
+    </div>
     <h1 class="h1" data-reveal>Sobre mí</h1>
     <p class="text-fluid-lg text-muted mt-md" style="max-width: 60ch;" data-reveal>
         Soy Creative Developer &amp; UX/UI Designer. Diseño y construyo productos

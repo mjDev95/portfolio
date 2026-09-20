@@ -9,6 +9,12 @@
 @section('content')
 <section class="container py-2xl" style="min-height: 100vh;">
     <div class="mb-xl">
+        <div class="mb-sm">
+            <x-breadcrumbs :items="[
+                ['label' => 'Inicio', 'url' => route('home')],
+                ['label' => $cpt->name, 'url' => null]
+            ]" />
+        </div>
         <h1 class="h2 mb-sm" data-reveal>{{ $cpt->name }}</h1>
 
         @if ($cpt->description)

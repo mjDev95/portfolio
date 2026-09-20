@@ -31,7 +31,7 @@ export default function ContentSubnav({ contentType, activeTab = 'contents' }) {
     ];
 
     return (
-        <div className="flex items-center gap-1.5 overflow-x-auto rounded-2xl bg-white p-1.5 shadow-sm dark:bg-[#1e2126]">
+        <div className="flex items-center gap-1.5 overflow-x-auto rounded-[28px] border border-slate-100/90 bg-white p-1.5 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24]">
             {tabs
                 .filter((tab) => tab.show)
                 .map((tab) => {
@@ -41,10 +41,10 @@ export default function ContentSubnav({ contentType, activeTab = 'contents' }) {
                         <Link
                             key={tab.key}
                             href={tab.href}
-                            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition-all ${
+                            className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold transition-all ${
                                 isActive
-                                    ? 'bg-[#ebf1f7] text-brand-primary shadow-xs dark:bg-[#16191c] dark:text-brand-primary'
-                                    : 'text-[#95aac9] hover:bg-[#f8fafc] hover:text-[#293951] dark:text-[#a7a6a8] dark:hover:bg-[#16191c]/50 dark:hover:text-white'
+                                    ? 'bg-brand-primary text-white shadow-sm'
+                                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-[#12161f] dark:hover:text-white'
                             }`}
                         >
                             <Icon className="h-4 w-4" />

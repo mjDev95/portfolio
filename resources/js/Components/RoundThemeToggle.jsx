@@ -70,12 +70,12 @@ export default function RoundThemeToggle({ className = '' }) {
             onClick={toggleTheme}
             title={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
             aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-            className={`inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#ebf1f7] text-[#95aac9] transition-all hover:bg-[#dfe7ef] hover:text-[#293951] focus:outline-none focus:ring-2 focus:ring-brand-primary dark:bg-[#1e2126] dark:text-[#a7a6a8] dark:hover:bg-[#282d35] dark:hover:text-[#ffffff] ${className}`}
+            className={`inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200/80 bg-white text-slate-500 transition-all hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary/20 dark:border-slate-800 dark:bg-[#161b24] dark:text-slate-400 dark:hover:bg-[#1c222e] dark:hover:text-white ${className}`}
         >
             {isDark ? (
                 <Sun className="h-4 w-4 text-amber-400 transition-transform duration-200 hover:rotate-45" />
             ) : (
-                <Moon className="h-4 w-4 text-[#95aac9] transition-transform duration-200 hover:-rotate-12" />
+                <Moon className="h-4 w-4 text-slate-500 transition-transform duration-200 hover:-rotate-12 dark:text-slate-400" />
             )}
         </button>
     );

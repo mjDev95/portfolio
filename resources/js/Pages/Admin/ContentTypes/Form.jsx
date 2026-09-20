@@ -142,13 +142,12 @@ export default function Form({ contentType = null, users = [], assignedUsers = [
                 }
             />
 
-            <div className="py-8">
-                <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-                    {/* Botón Volver */}
+            <div className="w-full space-y-8">
+                {/* Botón Volver */}
                     <div className="mb-6">
                         <Link
                             href={route('admin.content-types.index')}
-                            className="inline-flex items-center gap-2 text-sm font-semibold text-[#95aac9] transition hover:text-[#293951] dark:text-[#a7a6a8] dark:hover:text-[#ffffff]"
+                            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                         >
                             <ArrowLeft className="h-4 w-4" />
                             <span>Volver a Tipos de Contenido</span>
@@ -159,12 +158,12 @@ export default function Form({ contentType = null, users = [], assignedUsers = [
                         {/* Cabecera del formulario */}
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                                <h1 className="font-heading text-2xl font-bold tracking-tight text-[#293951] dark:text-[#ffffff] sm:text-3xl">
+                                <h1 className="font-heading text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
                                     {isEditing
                                         ? `Editar ${contentType.name}`
                                         : 'Crear Nuevo Tipo de Contenido'}
                                 </h1>
-                                <p className="mt-1.5 text-base text-[#95aac9] dark:text-[#a7a6a8]">
+                                <p className="mt-1.5 text-base text-slate-500 dark:text-slate-400">
                                     Diseña el esquema técnico, asigna el cliente y define los campos personalizados.
                                 </p>
                             </div>
@@ -219,7 +218,7 @@ export default function Form({ contentType = null, users = [], assignedUsers = [
                         <div className="flex items-center justify-end gap-4 pt-4">
                             <Link
                                 href={route('admin.content-types.index')}
-                                className="text-sm font-semibold text-[#95aac9] hover:text-[#293951] dark:text-[#a7a6a8] dark:hover:text-[#ffffff]"
+                                className="text-sm font-semibold text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                             >
                                 Cancelar
                             </Link>
@@ -229,7 +228,6 @@ export default function Form({ contentType = null, users = [], assignedUsers = [
                             </PrimaryButton>
                         </div>
                     </form>
-                </div>
             </div>
         </>
     );

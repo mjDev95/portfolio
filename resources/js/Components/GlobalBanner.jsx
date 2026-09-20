@@ -24,7 +24,7 @@ export default function GlobalBanner({ feedback, onClose }) {
                     exit={{ opacity: 0, y: -16, scale: 0.94, x: '-50%' }}
                     transition={{ type: 'spring', damping: 24, stiffness: 380 }}
                     style={{ left: '50%' }}
-                    className="fixed top-6 z-50 flex items-center gap-3.5 rounded-full bg-white/95 px-5 py-3 shadow-2xl backdrop-blur-xl border border-[#e3ebf6] dark:bg-[#1e2126]/95 dark:border-[#282d35] dark:shadow-black/60 pointer-events-auto max-w-lg"
+                    className="fixed top-6 z-50 flex items-center gap-3.5 rounded-full bg-white/95 px-5 py-3 shadow-2xl backdrop-blur-xl border border-slate-200/80 dark:bg-[#161b24]/95 dark:border-slate-800 dark:shadow-black/60 pointer-events-auto max-w-lg"
                 >
                     {/* Ícono de estado en píldora circular */}
                     <div
@@ -44,7 +44,7 @@ export default function GlobalBanner({ feedback, onClose }) {
                     {/* Texto informativo */}
                     <div className="flex flex-col min-w-0 pr-1">
                         <div className="flex items-center gap-2">
-                            <span className="font-heading text-xs font-bold tracking-tight text-[#293951] dark:text-[#ffffff] truncate">
+                            <span className="font-heading text-xs font-bold tracking-tight text-slate-900 dark:text-white truncate">
                                 {feedback.title}
                             </span>
                             <span
@@ -54,7 +54,7 @@ export default function GlobalBanner({ feedback, onClose }) {
                             />
                         </div>
                         {feedback.message && (
-                            <p className="text-[11px] text-[#95aac9] dark:text-[#a7a6a8] truncate max-w-xs">
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-xs">
                                 {feedback.message}
                             </p>
                         )}
@@ -64,7 +64,7 @@ export default function GlobalBanner({ feedback, onClose }) {
                     <button
                         type="button"
                         onClick={onClose}
-                        className="rounded-full p-1 text-[#95aac9] transition-colors hover:bg-[#ebf1f7] hover:text-[#293951] dark:text-[#a7a6a8] dark:hover:bg-[#282d35] dark:hover:text-[#ffffff]"
+                        className="rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
                         title="Cerrar notificación"
                         aria-label="Cerrar notificación"
                     >

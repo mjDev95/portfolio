@@ -2,14 +2,14 @@ import { FileCheck, Sparkles, Check, Info } from 'lucide-react';
 
 export default function ImageCompressionSection({ compression, onCompressionChange }) {
     return (
-        <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-[#1e2126] dark:shadow-none sm:p-7">
+        <div className="rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24] sm:p-7">
             <div className="flex items-center gap-2.5">
                 <FileCheck className="h-5 w-5 text-brand-primary" />
-                <h2 className="text-base font-bold text-[#293951] dark:text-[#ffffff]">
+                <h2 className="text-base font-bold text-slate-900 dark:text-white">
                     Compresión y Optimización de Imágenes
                 </h2>
             </div>
-            <p className="mt-1 text-sm text-[#95aac9] dark:text-[#a7a6a8]">
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 Elige el motor de procesamiento WebP aplicado a los archivos multimedia que subas a la plataforma.
             </p>
 
@@ -28,8 +28,8 @@ export default function ImageCompressionSection({ compression, onCompressionChan
                     onClick={() => onCompressionChange('lossless')}
                     className={`flex flex-col items-start rounded-2xl p-5 text-start transition ${
                         compression === 'lossless'
-                            ? 'bg-brand-primary/15 text-brand-primary ring-2 ring-brand-primary/40 dark:bg-brand-primary/20 dark:text-brand-primary'
-                            : 'bg-[#ebf1f7] text-[#95aac9] hover:bg-white hover:text-[#293951] dark:bg-[#16191c] dark:text-[#a7a6a8] dark:hover:bg-[#20252b] dark:hover:text-[#ffffff]'
+                            ? 'border-2 border-brand-primary/60 bg-brand-primary/10 text-brand-primary ring-1 ring-brand-primary/30 dark:bg-brand-primary/20 dark:text-brand-primary'
+                            : 'border border-slate-200/80 bg-[#f8f9fb] text-slate-500 hover:border-slate-300 hover:text-slate-900 dark:border-slate-800 dark:bg-[#12161f] dark:text-slate-400 dark:hover:border-slate-700 dark:hover:text-white'
                     }`}
                 >
                     <div className="flex w-full items-center justify-between">
@@ -38,10 +38,10 @@ export default function ImageCompressionSection({ compression, onCompressionChan
                                 <FileCheck className="h-5 w-5" />
                             </div>
                             <div>
-                                <span className="text-base font-bold text-[#293951] dark:text-[#ffffff] block">
+                                <span className="text-base font-bold text-slate-900 dark:text-white block">
                                     WebP Lossless (Original)
                                 </span>
-                                <span className="text-[11px] text-[#95aac9] dark:text-[#a7a6a8]">
+                                <span className="text-[11px] text-slate-500 dark:text-slate-400">
                                     Fidelidad 100% sin pérdida
                                 </span>
                             </div>
@@ -52,7 +52,7 @@ export default function ImageCompressionSection({ compression, onCompressionChan
                             </span>
                         )}
                     </div>
-                    <p className="mt-3 text-xs leading-relaxed text-[#95aac9] dark:text-[#a7a6a8]">
+                    <p className="mt-3 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
                         Mantiene intactos los píxeles originales y canales alfa. Recomendado para diagramas, UI mockups, capturas nítidas y logotipos donde cada detalle cuenta.
                     </p>
                 </button>
@@ -63,8 +63,8 @@ export default function ImageCompressionSection({ compression, onCompressionChan
                     onClick={() => onCompressionChange('lossy90')}
                     className={`flex flex-col items-start rounded-2xl p-5 text-start transition ${
                         compression === 'lossy90'
-                            ? 'bg-emerald-500/15 text-emerald-600 ring-2 ring-emerald-500/40 dark:bg-emerald-500/20 dark:text-emerald-400'
-                            : 'bg-[#ebf1f7] text-[#95aac9] hover:bg-white hover:text-[#293951] dark:bg-[#16191c] dark:text-[#a7a6a8] dark:hover:bg-[#20252b] dark:hover:text-[#ffffff]'
+                            ? 'border-2 border-emerald-500/60 bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400'
+                            : 'border border-slate-200/80 bg-[#f8f9fb] text-slate-500 hover:border-slate-300 hover:text-slate-900 dark:border-slate-800 dark:bg-[#12161f] dark:text-slate-400 dark:hover:border-slate-700 dark:hover:text-white'
                     }`}
                 >
                     <div className="flex w-full items-center justify-between">
@@ -73,7 +73,7 @@ export default function ImageCompressionSection({ compression, onCompressionChan
                                 <Sparkles className="h-5 w-5" />
                             </div>
                             <div>
-                                <span className="text-base font-bold text-[#293951] dark:text-[#ffffff] block">
+                                <span className="text-base font-bold text-slate-900 dark:text-white block">
                                     WebP Optimizado 90%
                                 </span>
                                 <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
@@ -87,7 +87,7 @@ export default function ImageCompressionSection({ compression, onCompressionChan
                             </span>
                         )}
                     </div>
-                    <p className="mt-3 text-xs leading-relaxed text-[#95aac9] dark:text-[#a7a6a8]">
+                    <p className="mt-3 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
                         Aplica compresión visual al 90% preservando la resolución nativa y reduciendo drásticamente el peso del archivo. Ideal para galerías pesadas y fotografías.
                     </p>
                 </button>

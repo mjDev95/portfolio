@@ -46,11 +46,11 @@ export default function UpdatePasswordForm({ className = '' }) {
     return (
         <section className={className}>
             <header>
-                <h2 className="font-heading text-lg font-bold text-[#293951] dark:text-white">
+                <h2 className="font-heading text-lg font-bold text-slate-900 dark:text-white">
                     Cambiar Contraseña
                 </h2>
 
-                <p className="mt-1 text-sm text-[#95aac9] dark:text-[#a7a6a8]">
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                     Asegúrate de que tu cuenta utilice una contraseña robusta y segura.
                 </p>
             </header>

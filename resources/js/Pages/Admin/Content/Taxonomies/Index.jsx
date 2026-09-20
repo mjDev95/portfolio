@@ -188,13 +188,12 @@ export default function Index({ contentType, taxonomyType = 'categories', items 
         <>
             <Head title={`${pluralName} — ${contentType.name}`} />
 
-            <div className="py-8">
-                <div className="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
-                    {/* ── Cabecera Principal ── */}
+            <div className="w-full space-y-8">
+                {/* ── Cabecera Principal ── */}
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <div className="flex items-center gap-3">
-                                <h1 className="font-heading text-2xl font-bold tracking-tight text-[#293951] dark:text-[#ffffff] sm:text-3xl">
+                                <h1 className="font-heading text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
                                     {pluralName} de {contentType.name}
                                 </h1>
                                 <span className="inline-flex items-center gap-2 rounded-full bg-blue-500/10 px-3 py-1 text-sm font-medium text-brand-primary">
@@ -202,7 +201,7 @@ export default function Index({ contentType, taxonomyType = 'categories', items 
                                     {taxonomyList.length} {totalItems > taxonomyList.length ? `de ${totalItems}` : ''} {pluralName.toLowerCase()}
                                 </span>
                             </div>
-                            <p className="mt-1.5 text-base text-[#95aac9] dark:text-[#a7a6a8]">
+                            <p className="mt-1.5 text-base text-slate-500 dark:text-slate-400">
                                 Clasifica y organiza las publicaciones de tu modelo {contentType.singular_name.toLowerCase()}.
                             </p>
                         </div>
@@ -210,7 +209,7 @@ export default function Index({ contentType, taxonomyType = 'categories', items 
                         <div className="flex items-center gap-3">
                             <Link
                                 href={route('admin.content.index', contentType.slug)}
-                                className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-[#293951] shadow-sm transition hover:bg-[#ebf1f7] dark:bg-[#1e2126] dark:text-[#ffffff] dark:hover:bg-[#282d35]"
+                                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-xs transition hover:border-slate-300 hover:text-slate-900 dark:border-slate-700 dark:bg-[#161b24] dark:text-slate-200 dark:hover:text-white"
                             >
                                 <ArrowLeft className="h-4 w-4" />
                                 Ver {contentType.name}
@@ -225,13 +224,13 @@ export default function Index({ contentType, taxonomyType = 'categories', items 
                     <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
                         {/* COLUMNA IZQUIERDA: Formulario de Alta / Edición (4 de 12) */}
                         <div className="lg:col-span-4" ref={formRef}>
-                            <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-[#1e2126]">
+                            <div className="rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24]">
                                 <div className="mb-5 flex items-center justify-between">
                                     <div className="flex items-center gap-2.5">
-                                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#ebf1f7] text-brand-primary dark:bg-[#16191c]">
+                                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary ring-1 ring-brand-primary/20">
                                             {editingItem ? <Edit2 className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
                                         </div>
-                                        <h2 className="font-heading text-base font-bold text-[#293951] dark:text-[#ffffff]">
+                                        <h2 className="font-heading text-base font-bold text-slate-900 dark:text-white">
                                             {editingItem ? `Editar ${singularName}` : `Añadir ${singularName}`}
                                         </h2>
                                     </div>
@@ -239,7 +238,7 @@ export default function Index({ contentType, taxonomyType = 'categories', items 
                                         <button
                                             type="button"
                                             onClick={cancelEditing}
-                                            className="inline-flex items-center gap-1 text-xs font-semibold text-[#95aac9] hover:text-[#293951] dark:text-[#a7a6a8] dark:hover:text-white"
+                                            className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                                             title="Cancelar edición"
                                         >
                                             <RotateCcw className="h-3 w-3" />
@@ -262,7 +261,7 @@ export default function Index({ contentType, taxonomyType = 'categories', items 
                                             required
                                             autoFocus={Boolean(editingItem)}
                                         />
-                                        <p className="mt-1 text-[11px] text-[#95aac9] dark:text-[#a7a6a8]">
+                                        <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
                                             El nombre visible tal como aparecerá en el sitio y en los filtros.
                                         </p>
                                         <InputError message={errors.name} className="mt-1" />
@@ -279,24 +278,27 @@ export default function Index({ contentType, taxonomyType = 'categories', items 
                                             placeholder="ej. mi-categoria"
                                             className="mt-1 w-full font-mono text-xs"
                                         />
-                                        <p className="mt-1 text-[11px] text-[#95aac9] dark:text-[#a7a6a8]">
+                                        <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
                                             La parte de la URL para este término (solo minúsculas, números y guiones).
                                         </p>
                                         <InputError message={errors.slug} className="mt-1" />
                                     </div>
 
-                                    {/* Descripción (Solo Categorías) */}
+                                    {/* Descripción (Opcional, solo en Categorías) */}
                                     {isCategory && (
                                         <div>
                                             <InputLabel htmlFor="taxonomy_description" value="Descripción (Opcional)" />
                                             <textarea
                                                 id="taxonomy_description"
-                                                rows="3"
+                                                rows={3}
                                                 value={data.description}
                                                 onChange={(e) => setData('description', e.target.value)}
-                                                placeholder="Breve explicación del propósito de esta categoría..."
-                                                className="mt-1 w-full rounded-xl border border-[#e3ebf6] bg-[#f8fafc] px-3.5 py-2.5 text-xs text-[#293951] placeholder-[#95aac9] focus:border-brand-primary focus:outline-none dark:border-[#282d35] dark:bg-[#16191c] dark:text-[#ffffff] dark:placeholder-[#606770]"
+                                                placeholder="Una breve descripción del propósito de esta categoría..."
+                                                className="mt-1 w-full rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-900 shadow-inner focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-800 dark:bg-[#12161f] dark:text-white"
                                             />
+                                            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+                                                La descripción no se muestra de forma predeterminada, pero puede usarse en temas.
+                                            </p>
                                             <InputError message={errors.description} className="mt-1" />
                                         </div>
                                     )}
@@ -319,28 +321,28 @@ export default function Index({ contentType, taxonomyType = 'categories', items 
                         {/* COLUMNA DERECHA: Listado en Tiempo Real (8 de 12) */}
                         <div className="space-y-4 lg:col-span-8">
                             {/* Barra de Filtro y Búsqueda */}
-                            <div className="flex flex-col gap-4 rounded-2xl bg-white p-4 shadow-sm dark:bg-[#1e2126] sm:flex-row sm:items-center sm:justify-between">
+                            <div className="flex flex-col gap-4 rounded-[28px] border border-slate-100/90 bg-white p-4 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24] sm:flex-row sm:items-center sm:justify-between">
                                 <div className="relative flex-1">
-                                    <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#95aac9]" />
+                                    <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                                     <input
                                         type="text"
                                         value={search}
                                         onChange={handleSearchChange}
                                         placeholder={`Buscar ${pluralName.toLowerCase()} en ${contentType.name}...`}
-                                        className="w-full rounded-xl bg-[#f8fafc] py-2 pl-10 pr-9 text-xs text-[#293951] placeholder-[#95aac9] shadow-inner focus:outline-none focus:ring-2 focus:ring-brand-primary dark:bg-[#16191c] dark:text-[#ffffff] dark:placeholder-[#606770]"
+                                        className="w-full rounded-xl border-0 bg-slate-50 py-2 pl-10 pr-9 text-xs text-slate-900 placeholder-slate-400 shadow-inner focus:outline-none focus:ring-2 focus:ring-brand-primary dark:bg-[#12161f] dark:text-white dark:placeholder-slate-500"
                                     />
                                     {search && (
                                         <button
                                             type="button"
                                             onClick={clearSearch}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#95aac9] hover:text-[#293951] dark:text-[#606770] dark:hover:text-white"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-900 dark:hover:text-white"
                                             title="Limpiar búsqueda"
                                         >
                                             <X className="h-3.5 w-3.5" />
                                         </button>
                                     )}
                                 </div>
-                                <span className="text-xs text-[#95aac9] dark:text-[#a7a6a8] shrink-0">
+                                <span className="text-xs text-slate-500 dark:text-slate-400 shrink-0">
                                     Mostrando {taxonomyList.length} {totalItems > taxonomyList.length ? `de ${totalItems}` : ''} {taxonomyList.length === 1 ? singularName.toLowerCase() : pluralName.toLowerCase()}
                                 </span>
                             </div>
@@ -348,13 +350,13 @@ export default function Index({ contentType, taxonomyType = 'categories', items 
                             {/* Lista de Items */}
                             {taxonomyList.length === 0 ? (
                                 <div className="flex w-full flex-col items-center justify-center py-16 text-center">
-                                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#ebf1f7] text-brand-primary dark:bg-[#16191c]">
+                                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-brand-primary dark:bg-[#12161f]">
                                         <Icon className="h-7 w-7" />
                                     </div>
-                                    <h3 className="mt-4 font-heading text-base font-bold text-[#293951] dark:text-[#ffffff]">
+                                    <h3 className="mt-4 font-heading text-base font-bold text-slate-900 dark:text-white">
                                         {search ? 'Sin coincidencias' : `No hay ${pluralName.toLowerCase()} creadas`}
                                     </h3>
-                                    <p className="mt-1 max-w-sm text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                                    <p className="mt-1 max-w-sm text-xs text-slate-500 dark:text-slate-400">
                                         {search
                                             ? `No se encontraron ${pluralName.toLowerCase()} que coincidan con "${search}".`
                                             : `Comienza añadiendo la primera ${singularName.toLowerCase()} usando el formulario de la izquierda.`}
@@ -363,7 +365,7 @@ export default function Index({ contentType, taxonomyType = 'categories', items 
                                         <button
                                             type="button"
                                             onClick={clearSearch}
-                                            className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[#ebf1f7] px-4 py-2 text-xs font-semibold text-[#293951] transition-colors hover:bg-[#dfe7ef] dark:bg-[#16191c] dark:text-white dark:hover:bg-[#282d35]"
+                                            className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-[#202735] dark:text-slate-300 dark:hover:bg-[#2a3447]"
                                         >
                                             Limpiar filtro de búsqueda
                                         </button>
@@ -376,30 +378,30 @@ export default function Index({ contentType, taxonomyType = 'categories', items 
                                         return (
                                             <div
                                                 key={item.id}
-                                                className={`group flex w-full flex-col gap-3 rounded-2xl bg-white p-4 shadow-sm transition-shadow duration-200 hover:shadow-md dark:bg-[#1e2126] sm:flex-row sm:items-center sm:justify-between ${
+                                                className={`group flex w-full flex-col gap-3 rounded-2xl border border-slate-100/90 bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md dark:border-slate-800/80 dark:bg-[#161b24] sm:flex-row sm:items-center sm:justify-between ${
                                                     isBeingEdited
-                                                        ? 'ring-2 ring-brand-primary bg-blue-50/20 dark:bg-blue-950/20'
+                                                        ? 'ring-2 ring-brand-primary bg-brand-primary/5 dark:bg-brand-primary/10'
                                                         : ''
                                                 }`}
                                             >
                                                 {/* Izquierda: Icono + Nombre + Slug + Descripción */}
                                                 <div className="flex min-w-0 flex-1 items-start gap-3.5">
-                                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#ebf1f7] text-brand-primary dark:bg-[#16191c]">
+                                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary ring-1 ring-brand-primary/20">
                                                         <Icon className="h-5 w-5" />
                                                     </div>
 
                                                     <div className="min-w-0 flex-1">
                                                         <div className="flex flex-wrap items-center gap-2">
-                                                            <span className="font-heading text-sm font-bold text-[#293951] dark:text-[#ffffff]">
+                                                            <span className="font-heading text-sm font-bold text-slate-900 dark:text-white">
                                                                 {item.name}
                                                             </span>
-                                                            <span className="rounded-md bg-[#f5f7fa] px-2 py-0.5 font-mono text-[11px] text-[#95aac9] dark:bg-[#16191c] dark:text-[#a7a6a8]">
+                                                            <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 font-mono text-[11px] text-slate-500 dark:border-slate-800 dark:bg-[#12161f] dark:text-slate-400">
                                                                 /{item.slug}
                                                             </span>
                                                         </div>
 
                                                         {item.description && (
-                                                            <p className="mt-1 line-clamp-2 text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                                                            <p className="mt-1 line-clamp-2 text-xs text-slate-500 dark:text-slate-400">
                                                                 {item.description}
                                                             </p>
                                                         )}
@@ -415,7 +417,7 @@ export default function Index({ contentType, taxonomyType = 'categories', items 
                                                                 : route('admin.content.index', contentType.slug)
                                                         }
                                                         title="Filtrar publicaciones con esta taxonomía"
-                                                        className="inline-flex items-center gap-1.5 rounded-lg bg-[#ebf1f7] px-2.5 py-1 text-xs font-semibold text-brand-primary transition hover:bg-[#dfe7ef] dark:bg-[#16191c] dark:hover:bg-[#282d35]"
+                                                        className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 transition hover:border-brand-primary hover:text-brand-primary dark:border-slate-700 dark:bg-[#202735] dark:text-slate-300 dark:hover:text-brand-primary"
                                                     >
                                                         <FileText className="h-3.5 w-3.5" />
                                                         <span>
@@ -428,10 +430,10 @@ export default function Index({ contentType, taxonomyType = 'categories', items 
                                                         <button
                                                             type="button"
                                                             onClick={() => startEditing(item)}
-                                                            className={`inline-flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
+                                                            className={`inline-flex h-8 w-8 items-center justify-center rounded-full border transition-all ${
                                                                 isBeingEdited
-                                                                    ? 'bg-brand-primary text-white'
-                                                                    : 'bg-[#f5f7fa] text-[#95aac9] hover:bg-[#ebf1f7] hover:text-brand-primary dark:bg-[#16191c] dark:text-[#a7a6a8] dark:hover:text-brand-primary'
+                                                                    ? 'border-brand-primary bg-brand-primary text-white'
+                                                                    : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-brand-primary dark:border-slate-700 dark:bg-[#202735] dark:text-slate-400 dark:hover:text-brand-primary'
                                                             }`}
                                                             title="Editar"
                                                         >
@@ -441,7 +443,7 @@ export default function Index({ contentType, taxonomyType = 'categories', items 
                                                         <button
                                                             type="button"
                                                             onClick={() => setDeletingItem(item)}
-                                                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#f5f7fa] text-[#95aac9] transition-colors hover:bg-red-50 hover:text-red-500 dark:bg-[#16191c] dark:text-[#a7a6a8] dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                                                            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-red-200/60 bg-red-50/50 text-red-600 transition-colors hover:bg-red-100/80 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20"
                                                             title="Eliminar"
                                                         >
                                                             <Trash2 className="h-3.5 w-3.5" />
@@ -455,13 +457,13 @@ export default function Index({ contentType, taxonomyType = 'categories', items 
                                     {/* Centinela y Feedback de Scroll Infinito */}
                                     <div ref={sentinelRef} className="py-6 flex flex-col items-center justify-center gap-2">
                                         {loadingMore && (
-                                            <div className="flex items-center gap-2 text-xs font-medium text-[#95aac9] dark:text-[#a7a6a8] bg-[#f8fafc] dark:bg-[#16191c] px-4 py-2 rounded-full shadow-sm">
+                                            <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400 bg-slate-50 border border-slate-200/80 dark:border-slate-800 dark:bg-[#12161f] px-4 py-2 rounded-full shadow-xs">
                                                 <Loader2 className="h-4 w-4 animate-spin text-brand-primary" />
                                                 <span>Cargando más {pluralName.toLowerCase()}...</span>
                                             </div>
                                         )}
                                         {!hasMore && taxonomyList.length > 0 && totalItems > 20 && (
-                                            <p className="text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                                            <p className="text-xs text-slate-500 dark:text-slate-400">
                                                 Has llegado al final de las {pluralName.toLowerCase()} ({totalItems} en total)
                                             </p>
                                         )}
@@ -470,16 +472,15 @@ export default function Index({ contentType, taxonomyType = 'categories', items 
                             )}
                         </div>
                     </div>
-                </div>
             </div>
 
             {/* Modal de Confirmación para Eliminar Taxonomía */}
             <Modal show={Boolean(deletingItem)} onClose={() => setDeletingItem(null)} maxWidth="sm">
                 <div className="p-6">
-                    <h2 className="font-heading text-lg font-bold text-[#293951] dark:text-[#ffffff]">
+                    <h2 className="font-heading text-lg font-bold text-slate-900 dark:text-white">
                         ¿Eliminar {singularName}?
                     </h2>
-                    <p className="mt-2 text-sm text-[#95aac9] dark:text-[#a7a6a8]">
+                    <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
                         ¿Estás seguro de que deseas eliminar <strong>{deletingItem?.name}</strong>?
                     </p>
                     <p className="mt-2 rounded-xl bg-amber-50 p-3 text-xs text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">

@@ -41,24 +41,24 @@ export default function Login({ status, canResetPassword }) {
             )}
 
             <div className="mb-6 text-center">
-                <h1 className="font-heading text-xl font-bold text-[#293951] dark:text-[#ffffff]">
+                <h1 className="font-heading text-xl font-bold text-slate-900 dark:text-white">
                     Acceso al Panel
                 </h1>
-                <p className="mt-1 text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                     Ingresa tus credenciales para administrar tus contenidos y preferencias.
                 </p>
             </div>
 
             <form onSubmit={submit} className="space-y-4">
                 <div>
-                    <InputLabel htmlFor="email" value="Correo Electrónico" className="text-xs font-semibold uppercase tracking-wider text-[#95aac9] dark:text-[#a7a6a8]" />
+                    <InputLabel htmlFor="email" value="Correo Electrónico" className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400" />
 
                     <TextInput
                         id="email"
                         type="email"
                         name="email"
                         value={data.email}
-                        className="mt-1.5 block w-full rounded-xl border-0 bg-[#ebf1f7] px-4 py-2.5 text-sm text-[#293951] shadow-sm focus:bg-white focus:ring-2 focus:ring-brand-primary dark:bg-[#16191c] dark:text-[#ffffff] dark:focus:bg-[#16191c]"
+                        className="mt-1.5 block w-full rounded-2xl border border-slate-200/80 bg-white px-4 py-2.5 text-sm text-slate-900 shadow-xs focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-800 dark:bg-[#12161f] dark:text-white"
                         autoComplete="username"
                         isFocused={true}
                         placeholder="admin@ejemplo.com"
@@ -70,7 +70,7 @@ export default function Login({ status, canResetPassword }) {
 
                 <div>
                     <div className="flex items-center justify-between">
-                        <InputLabel htmlFor="password" value="Contraseña" className="text-xs font-semibold uppercase tracking-wider text-[#95aac9] dark:text-[#a7a6a8]" />
+                        <InputLabel htmlFor="password" value="Contraseña" className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400" />
                         {canResetPassword && (
                             <Link
                                 href={route('admin.password.request')}
@@ -86,7 +86,7 @@ export default function Login({ status, canResetPassword }) {
                         type="password"
                         name="password"
                         value={data.password}
-                        className="mt-1.5 block w-full rounded-xl border-0 bg-[#ebf1f7] px-4 py-2.5 text-sm text-[#293951] shadow-sm focus:bg-white focus:ring-2 focus:ring-brand-primary dark:bg-[#16191c] dark:text-[#ffffff] dark:focus:bg-[#16191c]"
+                        className="mt-1.5 block w-full rounded-2xl border border-slate-200/80 bg-white px-4 py-2.5 text-sm text-slate-900 shadow-xs focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-800 dark:bg-[#12161f] dark:text-white"
                         autoComplete="current-password"
                         placeholder="••••••••"
                         onChange={(e) => setData('password', e.target.value)}
@@ -102,28 +102,28 @@ export default function Login({ status, canResetPassword }) {
                             name="remember"
                             checked={data.remember}
                             onChange={(e) => setData('remember', e.target.checked)}
-                            className="rounded-lg border-0 bg-[#ebf1f7] text-brand-primary focus:ring-brand-primary dark:bg-[#16191c]"
+                            className="rounded border-slate-300 text-brand-primary focus:ring-brand-primary dark:border-slate-700 dark:bg-[#12161f]"
                         />
-                        <span className="text-xs font-medium text-[#293951] dark:text-[#ffffff]">
+                        <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
                             Recordar sesión en este dispositivo
                         </span>
                     </label>
                 </div>
 
                 {/* ── Check 2: Consentimiento de cookies y caché obligatorio ── */}
-                <div className="rounded-xl bg-[#ebf1f7]/60 p-3 dark:bg-[#16191c]/60">
+                <div className="rounded-2xl border border-slate-100 bg-[#f8f9fb] p-3.5 dark:border-slate-800 dark:bg-[#12161f]">
                     <label className="flex cursor-pointer items-start gap-2.5">
                         <Checkbox
                             name="consent_cache_cookies"
                             checked={consentAccepted}
                             onChange={(e) => setConsentAccepted(e.target.checked)}
-                            className="mt-0.5 rounded-lg border-0 bg-white text-brand-primary focus:ring-brand-primary dark:bg-[#1e2126]"
+                            className="mt-0.5 rounded border-slate-300 text-brand-primary focus:ring-brand-primary dark:border-slate-700 dark:bg-[#161b24]"
                         />
                         <div className="text-xs">
-                            <span className="font-semibold text-[#293951] dark:text-[#ffffff]">
+                            <span className="font-semibold text-slate-900 dark:text-white">
                                 Consentimiento de cookies esenciales y caché
                             </span>
-                            <p className="mt-0.5 text-[11px] leading-relaxed text-[#95aac9] dark:text-[#a7a6a8]">
+                            <p className="mt-0.5 text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
                                 Acepto el almacenamiento seguro de sesión y la memoria caché para autenticarme de forma protegida.
                             </p>
                         </div>
@@ -140,9 +140,9 @@ export default function Login({ status, canResetPassword }) {
                 {/* ── Botón de Iniciar Sesión ── */}
                 <div className="pt-2">
                     <PrimaryButton
-                        className={`w-full justify-center rounded-xl py-2.5 text-sm font-semibold transition ${
+                        className={`w-full justify-center rounded-full py-2.5 text-sm font-semibold transition ${
                             !consentAccepted
-                                ? 'cursor-not-allowed bg-gray-400 opacity-60 hover:bg-gray-400 dark:bg-gray-700'
+                                ? 'cursor-not-allowed bg-slate-400 opacity-60 hover:bg-slate-400 dark:bg-slate-700'
                                 : 'bg-brand-primary hover:bg-brand-primary-hover'
                         }`}
                         disabled={processing || !consentAccepted}

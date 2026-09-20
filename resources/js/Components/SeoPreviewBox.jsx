@@ -23,7 +23,7 @@ export default function SeoPreviewBox({
     const descLength = (metaDescription || '').length;
 
     const getCounterColor = (len, maxOptimal, maxLimit) => {
-        if (len === 0) return 'text-[#95aac9] dark:text-[#606770]';
+        if (len === 0) return 'text-slate-400 dark:text-slate-500';
         if (len <= maxOptimal) return 'text-emerald-500 font-medium';
         if (len <= maxLimit) return 'text-amber-500 font-semibold';
         return 'text-red-500 font-bold';
@@ -32,13 +32,13 @@ export default function SeoPreviewBox({
     return (
         <div className="space-y-6">
             {/* Live Google Search Preview (SERP snippet) */}
-            <div className="rounded-xl bg-[#f8fafc] p-4 transition-colors dark:bg-[#121517]">
-                <div className="mb-2.5 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#95aac9] dark:text-[#a7a6a8]">
+            <div className="rounded-2xl border border-slate-100 bg-[#f8f9fb] p-4 transition-colors dark:border-slate-800 dark:bg-[#12161f]">
+                <div className="mb-2.5 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     <Globe className="h-3.5 w-3.5 text-brand-primary" />
                     <span>Vista previa en Google Search (SERP)</span>
                 </div>
 
-                <div className="rounded-xl bg-white p-4 shadow-sm dark:bg-[#16191c]">
+                <div className="rounded-xl border border-slate-100 bg-white p-4 shadow-xs dark:border-slate-800/80 dark:bg-[#161b24]">
                     <div className="flex items-center gap-2 text-xs text-[#5f6368] dark:text-[#9aa0a6]">
                         <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#e8f0fe] text-[10px] font-bold text-[#1a73e8] dark:bg-[#1e2838] dark:text-[#8ab4f8]">
                             P
@@ -97,7 +97,7 @@ export default function SeoPreviewBox({
                     <textarea
                         id="meta_description"
                         rows={3}
-                        className="w-full rounded-xl border border-[#e3ebf6] bg-white px-3.5 py-2.5 text-sm text-[#293951] placeholder-[#95aac9] transition-all focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20 dark:border-[#282d35] dark:bg-[#16191c] dark:text-[#ffffff] dark:placeholder-[#606770]"
+                        className="w-full rounded-2xl border border-slate-200/80 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition-all focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-800 dark:bg-[#12161f] dark:text-white dark:placeholder:text-slate-500 shadow-xs"
                         value={metaDescription || ''}
                         onChange={(e) => onChange('meta_description', e.target.value)}
                         placeholder={defaultDescription || 'Resumen atractivo para captar clics en Google...'}
@@ -121,7 +121,7 @@ export default function SeoPreviewBox({
                         onChange={(e) => onChange('meta_keywords', e.target.value)}
                         placeholder="ej: react, laravel, consultoría, desarrollo"
                     />
-                    <p className="mt-1 text-xs text-[#95aac9] dark:text-[#a7a6a8]">
+                    <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
                         Separa los términos con comas.
                     </p>
                     {errors.meta_keywords && (
