@@ -26,7 +26,17 @@ class SecureFileUploader
     public static function storeWithThumbnail(UploadedFile $file, string $directory, ?string $compressionMode = null): array
     {
         $mime = $file->getMimeType();
-        $isImage = in_array($mime, ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']);
+        $ext = strtolower($file->getClientOriginalExtension());
+        $isImage = in_array($mime, [
+            'image/jpeg',
+            'image/jpg',
+            'image/png',
+            'image/webp',
+            'image/heif',
+            'image/heic',
+            'image/heif-sequence',
+            'image/heic-sequence',
+        ], true) || in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'heif', 'heic'], true);
 
         // WordPress-style YYYY/MM path organization
         $year = date('Y');
@@ -50,15 +60,17 @@ class SecureFileUploader
             $mainRelativePath = $baseDir.'/'.$filename;
             $mainAbsolutePath = $disk->path($mainRelativePath);
 
+            $formatHint = $ext ?: $mime;
+
             // Comprimir según la preferencia seleccionada
             if ($compression === 'lossy90') {
-                $converted = ImageOptimizer::convertToWebpLossy($file->getRealPath(), $mainAbsolutePath, 90);
+                $converted = ImageOptimizer::convertToWebpLossy($file->getRealPath(), $mainAbsolutePath, 90, $formatHint);
             } else {
-                $converted = ImageOptimizer::convertToWebpLossless($file->getRealPath(), $mainAbsolutePath);
+                $converted = ImageOptimizer::convertToWebpLossless($file->getRealPath(), $mainAbsolutePath, true, $formatHint);
             }
 
             if (! $converted) {
-                $extension = strtolower($file->getClientOriginalExtension()) ?: 'jpg';
+                $extension = $ext ?: 'jpg';
                 $filename = self::resolveUniqueFilename($baseDir, $baseSlug, $extension);
                 $mainRelativePath = $file->storeAs($baseDir, $filename, 'public');
                 $mainAbsolutePath = $disk->path($mainRelativePath);
@@ -70,13 +82,13 @@ class SecureFileUploader
             $thumbAbsolutePath = $disk->path($thumbRelativePath);
 
             $thumbSource = file_exists($mainAbsolutePath) ? $mainAbsolutePath : $file->getRealPath();
-            $thumbGenerated = ImageOptimizer::generateGridThumbnail($thumbSource, $thumbAbsolutePath, 360, 80);
+            $thumbGenerated = ImageOptimizer::generateGridThumbnail($thumbSource, $thumbAbsolutePath, 360, 80, $formatHint);
 
             return [
                 'file_path' => $mainRelativePath,
                 'thumbnail_path' => $thumbGenerated ? $thumbRelativePath : null,
                 'file_name' => self::sanitizeOriginalFilename($file->getClientOriginalName()),
-                'mime_type' => $converted ? 'image/webp' : $mime,
+                'mime_type' => $converted ? 'image/webp' : ($mime ?: 'image/heif'),
                 'file_size' => file_exists($mainAbsolutePath) ? (int) filesize($mainAbsolutePath) : (int) $file->getSize(),
             ];
         }

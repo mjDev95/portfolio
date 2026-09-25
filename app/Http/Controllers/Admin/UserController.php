@@ -127,7 +127,7 @@ class UserController extends Controller
         $assignedCpts = $user->assignedContentTypes->isNotEmpty() ? $user->assignedContentTypes : $user->contentTypes;
 
         $recentContents = $user->contents()
-            ->with(['contentType:id,name,slug,icon', 'media' => fn ($q) => $q->where('collection', 'thumbnail')])
+            ->with(['contentType:id,name,slug,icon', 'media' => fn ($q) => $q->where('content_media.collection', 'thumbnail')])
             ->orderByDesc('created_at')
             ->limit(8)
             ->get(['id', 'content_type_id', 'title', 'slug', 'status', 'published_at', 'created_at']);

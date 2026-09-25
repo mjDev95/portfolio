@@ -17,7 +17,7 @@ class SessionAndTransitionFlowTest extends TestCase
         $response = $this->actingAs($user)->post('/logout');
 
         $this->assertGuest();
-        $response->assertRedirect('/login');
+        $response->assertRedirect(route('admin.login'));
     }
 
     public function test_admin_logout_also_redirects_to_login(): void
@@ -27,12 +27,12 @@ class SessionAndTransitionFlowTest extends TestCase
         $response = $this->actingAs($user)->post('/admin/logout');
 
         $this->assertGuest();
-        $response->assertRedirect('/login');
+        $response->assertRedirect(route('admin.login'));
     }
 
     public function test_unauthenticated_user_can_access_login_page(): void
     {
-        $response = $this->get('/login');
+        $response = $this->get(route('admin.login'));
 
         $response->assertStatus(200);
     }

@@ -6,15 +6,17 @@ import { useState, useEffect } from 'react';
 import { Settings, Save } from 'lucide-react';
 import UserProfileCard from '@/Components/Preferences/UserProfileCard';
 import ThemeModeSection from '@/Components/Preferences/ThemeModeSection';
-import ColorPaletteSection, { DEFAULT_COLORS } from '@/Components/Preferences/ColorPaletteSection';
+import ColorPaletteSection, { DEFAULT_COLORS, DEFAULT_CLIENT_COLORS } from '@/Components/Preferences/ColorPaletteSection';
 import EditorSettingsSection from '@/Components/Preferences/EditorSettingsSection';
 import ImageCompressionSection from '@/Components/Preferences/ImageCompressionSection';
 import CacheManagementSection from '@/Components/Preferences/CacheManagementSection';
-import { applySuperAdminPalette, resetClientPalette } from '@/Support/brandTheme';
+import { applySuperAdminPalette, applyClientPalette, resetClientPalette } from '@/Support/brandTheme';
 
 export default function Edit({ preference, palettes = [] }) {
     const { auth } = usePage().props;
     const user = auth?.user;
+    const isSuperAdmin = user?.role === 'admin';
+    const defaultColors = isSuperAdmin ? DEFAULT_COLORS : DEFAULT_CLIENT_COLORS;
 
     const [theme, setTheme] = useState('dark');
     const [tableDensity, setTableDensity] = useState('comfortable');
@@ -25,7 +27,7 @@ export default function Edit({ preference, palettes = [] }) {
 
     // Paleta de 2 Colores de Marca (+ Colores de Estado Opcionales)
     const [selectedPaletteId, setSelectedPaletteId] = useState(preference?.color_palette_id ?? null);
-    const [colors, setColors] = useState(DEFAULT_COLORS);
+    const [colors, setColors] = useState(defaultColors);
     const [showStatusColors, setShowStatusColors] = useState(false);
     const [previewBackground, setPreviewBackground] = useState('auto');
 
@@ -55,32 +57,31 @@ export default function Edit({ preference, palettes = [] }) {
         if (typeof preference?.email_notifications === 'boolean') {
             setEmailNotifications(preference.email_notifications);
         }
-        if (preference?.color_palette_id) {
+        if (preference?.color_palette_id && isSuperAdmin) {
             setSelectedPaletteId(preference.color_palette_id);
         }
 
         const customPalette = preference?.color_palette;
-        let initialColors = DEFAULT_COLORS;
+        let initialColors = defaultColors;
         if (customPalette?.colors && typeof customPalette.colors === 'object') {
             initialColors = {
-                primary: customPalette.colors.primary || DEFAULT_COLORS.primary,
-                secondary: customPalette.colors.secondary || DEFAULT_COLORS.secondary,
-                accent: customPalette.colors.accent || customPalette.colors.secondary || DEFAULT_COLORS.secondary,
-                success: customPalette.colors.success || DEFAULT_COLORS.success,
-                danger: customPalette.colors.danger || DEFAULT_COLORS.danger,
-                warning: customPalette.colors.warning || DEFAULT_COLORS.warning,
-                info: customPalette.colors.info || DEFAULT_COLORS.info,
+                primary: customPalette.colors.primary || defaultColors.primary,
+                secondary: customPalette.colors.secondary || defaultColors.secondary,
+                accent: customPalette.colors.accent || customPalette.colors.secondary || defaultColors.secondary,
+                success: customPalette.colors.success || defaultColors.success,
+                danger: customPalette.colors.danger || defaultColors.danger,
+                warning: customPalette.colors.warning || defaultColors.warning,
+                info: customPalette.colors.info || defaultColors.info,
             };
             setColors(initialColors);
         } else {
-            setColors(DEFAULT_COLORS);
+            setColors(defaultColors);
         }
 
-        const isSuperAdmin = user?.role === 'admin';
         if (isSuperAdmin) {
             applySuperAdminPalette(initialColors);
         } else {
-            resetClientPalette();
+            applyClientPalette(initialColors, user?.id);
         }
     }, [preference, user?.theme, user?.role]);
 
@@ -97,16 +98,17 @@ export default function Edit({ preference, palettes = [] }) {
             [key]: value,
         };
         setColors(nextColors);
-        const isSuperAdmin = user?.is_admin || user?.role === 'admin';
-        if (isSuperAdmin && (key === 'primary' || key === 'secondary' || key === 'accent')) {
+        if (isSuperAdmin) {
             applySuperAdminPalette(nextColors);
+        } else {
+            applyClientPalette(nextColors, user?.id);
         }
     };
 
     const handleSelectPalette = (palette) => {
         setSelectedPaletteId(palette.id || null);
-        const palPrimary = palette.primary_color || palette.primary || DEFAULT_COLORS.primary;
-        const palSecondary = palette.secondary_color || palette.secondary || DEFAULT_COLORS.secondary;
+        const palPrimary = palette.primary_color || palette.primary || defaultColors.primary;
+        const palSecondary = palette.secondary_color || palette.secondary || defaultColors.secondary;
         const palAccent = palette.accent_color || palette.accent || palSecondary;
 
         const nextColors = {
@@ -116,9 +118,11 @@ export default function Edit({ preference, palettes = [] }) {
             accent: palAccent,
         };
         setColors(nextColors);
-        const isSuperAdmin = user?.is_admin || user?.role === 'admin';
+
         if (isSuperAdmin) {
             applySuperAdminPalette(nextColors);
+        } else {
+            applyClientPalette(nextColors, user?.id);
         }
     };
 
@@ -128,10 +132,11 @@ export default function Edit({ preference, palettes = [] }) {
 
     const handleResetDefaults = () => {
         setSelectedPaletteId(null);
-        setColors(DEFAULT_COLORS);
-        const isSuperAdmin = user?.is_admin || user?.role === 'admin';
+        setColors(defaultColors);
         if (isSuperAdmin) {
-            applySuperAdminPalette(DEFAULT_COLORS);
+            applySuperAdminPalette(defaultColors);
+        } else {
+            resetClientPalette(user?.id);
         }
     };
 
@@ -139,10 +144,12 @@ export default function Edit({ preference, palettes = [] }) {
         e?.preventDefault();
         setSaving(true);
 
-        const isSuperAdmin = user?.is_admin || user?.role === 'admin';
         if (isSuperAdmin) {
             applySuperAdminPalette(colors);
             window.dispatchEvent(new CustomEvent('admin-palette-changed', { detail: colors }));
+        } else {
+            applyClientPalette(colors, user?.id);
+            window.dispatchEvent(new CustomEvent('client-palette-changed', { detail: colors }));
         }
 
         // Ensure theme applied to DOM and storage
@@ -157,9 +164,9 @@ export default function Edit({ preference, palettes = [] }) {
             editor_mode: editorMode,
             image_compression: imageCompression,
             email_notifications: emailNotifications,
-            color_palette_id: selectedPaletteId,
+            color_palette_id: isSuperAdmin ? selectedPaletteId : null,
             color_palette: {
-                id: selectedPaletteId ? String(selectedPaletteId) : 'custom',
+                id: isSuperAdmin && selectedPaletteId ? String(selectedPaletteId) : 'custom',
                 colors: {
                     primary: colors.primary,
                     secondary: colors.secondary,
@@ -176,9 +183,9 @@ export default function Edit({ preference, palettes = [] }) {
                 editor_mode: editorMode,
                 image_compression: imageCompression,
                 email_notifications: emailNotifications,
-                color_palette_id: selectedPaletteId,
+                color_palette_id: isSuperAdmin ? selectedPaletteId : null,
                 color_palette: {
-                    id: selectedPaletteId ? String(selectedPaletteId) : 'custom',
+                    id: isSuperAdmin && selectedPaletteId ? String(selectedPaletteId) : 'custom',
                     colors: {
                         primary: colors.primary,
                         secondary: colors.secondary,
@@ -248,7 +255,7 @@ export default function Edit({ preference, palettes = [] }) {
 
     return (
         <>
-            <Head title="Preferencias del Administrador — Admin" />
+            <Head title={`${isSuperAdmin ? 'Preferencias del Administrador' : 'Preferencias de Usuario'} — Admin`} />
 
             <div className="w-full space-y-8">
                 {/* ── A. Header Principal ───────────────────────────────────── */}
@@ -260,10 +267,12 @@ export default function Edit({ preference, palettes = [] }) {
                                 </div>
                                 <div>
                                     <h1 className="font-heading text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
-                                        Preferencias del Administrador
+                                        {isSuperAdmin ? 'Preferencias del Administrador' : 'Preferencias de Usuario'}
                                     </h1>
                                     <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                                        Configuración global de apariencia, colores de marca del sitio público y comportamiento del panel.
+                                        {isSuperAdmin
+                                            ? 'Configuración global de apariencia, colores de marca del sitio público y comportamiento del panel.'
+                                            : 'Configuración de apariencia y preferencias personales de tu cuenta en el panel.'}
                                     </p>
                                 </div>
                             </div>
@@ -287,7 +296,7 @@ export default function Edit({ preference, palettes = [] }) {
                     {/* ── C. Tarjeta 2: Apariencia del Panel (Tema) ─────────────── */}
                     <ThemeModeSection theme={theme} onThemeChange={handleThemeChange} />
 
-                    {/* ── D. Tarjeta 3: Paleta de Colores del Portafolio ────────── */}
+                    {/* ── D. Tarjeta 3: Paleta de Colores (Portafolio para Super Admin / Personal para Clientes) ── */}
                     <ColorPaletteSection
                         colors={colors}
                         onColorChange={handleColorChange}
@@ -300,6 +309,7 @@ export default function Edit({ preference, palettes = [] }) {
                         availablePalettes={palettes}
                         selectedPaletteId={selectedPaletteId}
                         onSelectPalette={handleSelectPalette}
+                        isSuperAdmin={isSuperAdmin}
                     />
 
                     {/* ── E. Tarjeta 4, 5, 6: Ajustes del Editor y Densidad ──────── */}
@@ -320,8 +330,8 @@ export default function Edit({ preference, palettes = [] }) {
                         onCompressionChange={setImageCompression}
                     />
 
-                    {/* ── G. Tarjeta 8: Rendimiento y Mantenimiento de Caché ─────── */}
-                    <CacheManagementSection />
+                    {/* ── G. Tarjeta 8: Rendimiento y Mantenimiento de Caché (Exclusivo Super Admin) ── */}
+                    {isSuperAdmin && <CacheManagementSection />}
 
                     {/* ── G. Barra de Acciones Inferior ─────────────────────────── */}
                     <div className="sticky bottom-6 z-30 rounded-[28px] border border-slate-100/90 bg-white/95 p-5 shadow-lg backdrop-blur-md dark:border-slate-800/80 dark:bg-[#161b24]/95">

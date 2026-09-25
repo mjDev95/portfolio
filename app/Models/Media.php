@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Media extends Model
@@ -63,6 +64,13 @@ class Media extends Model
         return $this->belongsTo(Content::class);
     }
 
+    public function contents(): BelongsToMany
+    {
+        return $this->belongsToMany(Content::class, 'content_media')
+            ->withPivot(['id', 'collection', 'order'])
+            ->withTimestamps();
+    }
+
     public function mediable(): MorphTo
     {
         return $this->morphTo();
@@ -76,6 +84,21 @@ class Media extends Model
     // ─────────────────────────────────────────────
     // Accessors
     // ─────────────────────────────────────────────
+
+    /**
+     * Contextual collection accessor: returns the collection defined on the pivot
+     * when attached to a content item, falling back to the base library collection.
+     */
+    public function collection(): Attribute
+    {
+        return Attribute::get(function () {
+            if ($this->pivot && isset($this->pivot->collection)) {
+                return $this->pivot->collection;
+            }
+
+            return $this->attributes['collection'] ?? 'library';
+        });
+    }
 
     /**
      * Public URL for this file via the storage symlink.

@@ -31,9 +31,13 @@ export default function UserProfileCard({ user }) {
                             <h2 className="text-lg font-bold text-slate-900 dark:text-white">
                                 {user?.name}
                             </h2>
-                            <span className="inline-flex items-center gap-1 rounded-full bg-brand-primary/10 px-2.5 py-0.5 text-xs font-semibold text-brand-primary dark:bg-brand-primary/20 dark:text-brand-primary">
-                                <Shield className="h-3 w-3" />
-                                Administrador
+                            <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                                user?.role === 'admin'
+                                    ? 'bg-brand-primary/10 text-brand-primary dark:bg-brand-primary/20 dark:text-brand-primary'
+                                    : 'bg-brand-secondary/10 text-brand-secondary dark:bg-brand-secondary/20 dark:text-brand-secondary'
+                            }`}>
+                                {user?.role === 'admin' ? <Shield className="h-3 w-3" /> : <UserIcon className="h-3 w-3" />}
+                                {user?.role_name || (user?.role === 'admin' ? 'Administrador' : 'Cliente')}
                             </span>
                         </div>
                         <div className="mt-1 flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">

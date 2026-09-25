@@ -193,16 +193,6 @@ export default function Index({ palettes = [], activePaletteId = null }) {
                 {/* ── 1. Cabecera Principal ─────────────────────────────────── */}
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <div className="flex items-center gap-2">
-                                <span className="inline-flex items-center gap-1 rounded-full bg-brand-accent/10 px-3 py-1 text-xs font-semibold text-brand-accent dark:bg-brand-accent/20 dark:text-brand-accent">
-                                    <Sparkles className="h-3 w-3" />
-                                    Sistema de Diseño & Branding
-                                </span>
-                                <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                                    v1.0
-                                </span>
-                            </div>
-
                             <h1 className="mt-2 font-heading text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
                                 Identidad Corporativa & Catálogo de Color
                             </h1>

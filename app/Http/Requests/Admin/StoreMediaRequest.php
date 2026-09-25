@@ -19,7 +19,7 @@ class StoreMediaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => ['required', 'image', 'mimes:jpeg,jpg,png,webp', 'max:5120'],
+            'file' => ['required', 'image', 'mimes:jpeg,jpg,png,webp,heif,heic', 'max:20480'],
             'collection' => ['nullable', 'string', Rule::in(['thumbnail', 'hero', 'gallery', 'post_cover', 'library'])],
             'caption' => ['nullable', 'string', 'max:255'],
             'order' => ['nullable', 'integer', 'min:0'],

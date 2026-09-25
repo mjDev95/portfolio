@@ -27,7 +27,7 @@ class ContentController extends Controller
 
         $contents = Content::where('content_type_id', $cpt->id)
             ->with([
-                'media' => fn ($q) => $q->where('collection', 'thumbnail'),
+                'media' => fn ($q) => $q->where('content_media.collection', 'thumbnail'),
                 'categories',
                 'tags',
             ])

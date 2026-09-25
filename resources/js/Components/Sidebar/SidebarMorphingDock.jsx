@@ -1,12 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Link } from '@inertiajs/react';
-import {
-    LayoutGrid,
-    Settings,
-    Share2,
-    LogOut,
-} from 'lucide-react';
+import { LayoutGrid } from 'lucide-react';
 
 /**
  * Botonera del Sidebar integrada directamente con la caja de navegación.
@@ -17,6 +11,7 @@ import {
  * - El fondo activo es del color de la caja (bg-[#f8f9fb] dark:bg-[#161b24]).
  * - Nace directamente desde la base de la caja (sin mt-6), actuando como una pestaña (tab)
  *   que se desliza horizontalmente al botón pulsado con esquinas cóncavas orgánicas.
+ * - Logout removido (ubicado en el dropdown superior de perfil).
  */
 export default function SidebarMorphingDock({
     activeMode = 'menu',
@@ -26,40 +21,28 @@ export default function SidebarMorphingDock({
     const tabs = [
         {
             id: 'menu',
-            label: 'Principal',
+            label: 'Menú',
             icon: LayoutGrid,
-            title: 'Vista General y Contenidos',
-        },
-        {
-            id: 'modules',
-            label: 'Módulos',
-            icon: Share2,
-            title: 'Tipos de Contenido y Taxonomías',
-        },
-        {
-            id: 'settings',
-            label: 'Ajustes',
-            icon: Settings,
-            title: 'Configuración y Preferencias',
+            title: 'Menú Principal',
         },
     ];
 
     return (
-        <div className={`relative flex items-center justify-between bg-transparent px-0 pt-0 ${className}`}>
+        <div className={`relative flex items-center bg-transparent px-0 pt-0 ${className}`}>
             {tabs.map((tab, index) => {
                 const Icon = tab.icon;
-                const isActive = activeMode === tab.id;
+                const isActive = true;
                 const isFirst = index === 0;
 
                 return (
                     <motion.button
                         key={tab.id}
                         type="button"
-                        onClick={() => onSelectMode(tab.id)}
+                        onClick={() => onSelectMode?.(tab.id)}
                         whileTap={{ scale: 0.88 }}
                         title={tab.title}
                         aria-label={tab.label}
-                        className="group relative flex h-11 flex-1 items-center justify-center text-xs font-semibold"
+                        className="group relative flex h-11 w-20 shrink-0 items-center justify-center text-xs font-semibold"
                     >
                         {/* ── Pestaña activa (Tab) del color de la caja, extendiéndose desde la caja ── */}
                         {isActive && (
@@ -122,18 +105,6 @@ export default function SidebarMorphingDock({
                     </motion.button>
                 );
             })}
-
-            {/* ── Botón Cerrar Sesión (sin fondo propio) ─────────────────────────── */}
-            <Link
-                href={route('admin.logout')}
-                method="post"
-                as="button"
-                title="Cerrar Sesión"
-                aria-label="Cerrar Sesión"
-                className="group relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-slate-400 hover:text-red-600 hover:bg-red-50/50 dark:hover:bg-red-950/20 transition-colors duration-200"
-            >
-                <LogOut className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
-            </Link>
         </div>
     );
 }

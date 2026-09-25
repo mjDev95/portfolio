@@ -3,6 +3,7 @@ import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
+import LiquidMorphingButton from '@/Components/LiquidMorphingButton';
 import { useState } from 'react';
 import { Plus, X, Loader2 } from 'lucide-react';
 
@@ -130,19 +131,15 @@ export default function TaxonomyModal({
                     <SecondaryButton onClick={handleClose} disabled={loading}>
                         Cancelar
                     </SecondaryButton>
-                    <PrimaryButton disabled={loading || !name.trim()}>
-                        {loading ? (
-                            <span className="flex items-center gap-2">
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                                Guardando...
-                            </span>
-                        ) : (
-                            <span className="flex items-center gap-1.5">
-                                <Plus className="h-4 w-4" />
-                                Guardar
-                            </span>
-                        )}
-                    </PrimaryButton>
+                    <LiquidMorphingButton
+                        type="submit"
+                        processing={loading}
+                        disabled={loading || !name.trim()}
+                        label="Guardar"
+                        loadingLabel="Guardando..."
+                        successLabel="¡Guardado!"
+                        icon={Plus}
+                    />
                 </div>
             </form>
         </Modal>

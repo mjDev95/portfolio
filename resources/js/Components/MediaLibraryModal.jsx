@@ -20,6 +20,8 @@ import {
     CheckCircle2,
     AlertCircle,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import LiquidDropzone from '@/Components/LiquidDropzone';
 
 export default function MediaLibraryModal({
     show = false,
@@ -46,6 +48,7 @@ export default function MediaLibraryModal({
     const fileInputRef = useRef(null);
     const [copiedUrl, setCopiedUrl] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [showDropzone, setShowDropzone] = useState(false);
 
     // Estado para edición asíncrona de metadatos (WordPress style)
     const [metaTitle, setMetaTitle] = useState('');
@@ -272,10 +275,23 @@ export default function MediaLibraryModal({
     // Procesar lista de archivos
     const processFiles = (fileList) => {
         if (!fileList || fileList.length === 0) return;
-        const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+        const validTypes = [
+            'image/jpeg',
+            'image/png',
+            'image/webp',
+            'image/jpg',
+            'image/heif',
+            'image/heic',
+            'image/heif-sequence',
+            'image/heic-sequence',
+        ];
+        const validExts = ['jpg', 'jpeg', 'png', 'webp', 'heif', 'heic'];
 
         Array.from(fileList).forEach((file) => {
-            if (validTypes.includes(file.type)) {
+            const ext = file.name?.split('.').pop()?.toLowerCase() || '';
+            const isValid = validTypes.includes(file.type) || validExts.includes(ext);
+
+            if (isValid) {
                 uploadSingleFile(file);
             } else {
                 window.dispatchEvent(
@@ -283,7 +299,7 @@ export default function MediaLibraryModal({
                         detail: {
                             type: 'error',
                             title: 'Formato no soportado',
-                            message: `"${file.name}" debe ser JPEG, PNG o WebP.`,
+                            message: `"${file.name}" debe ser JPEG, PNG, WebP o HEIF/HEIC.`,
                         },
                     })
                 );
@@ -466,7 +482,7 @@ export default function MediaLibraryModal({
                                     type="file"
                                     ref={fileInputRef}
                                     multiple
-                                    accept="image/jpeg,image/png,image/webp,image/jpg"
+                                    accept="image/jpeg,image/png,image/webp,image/jpg,image/heif,image/heic,.heif,.heic"
                                     className="hidden"
                                     onChange={(e) => {
                                         processFiles(e.target.files);
@@ -475,11 +491,11 @@ export default function MediaLibraryModal({
                                 />
                                 <button
                                     type="button"
-                                    onClick={() => fileInputRef.current?.click()}
+                                    onClick={() => setShowDropzone((prev) => !prev)}
                                     className="inline-flex items-center gap-1.5 rounded-full bg-brand-primary px-4 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-primary-hover active:scale-95"
                                 >
-                                    <Plus className="h-4 w-4" />
-                                    Subir nueva imagen
+                                    <Plus className={`h-4 w-4 transition-transform duration-200 ${showDropzone ? 'rotate-45' : ''}`} />
+                                    <span>{showDropzone ? 'Cerrar zona' : 'Subir nueva imagen'}</span>
                                 </button>
 
                                 {/* Cerrar */}
@@ -553,6 +569,27 @@ export default function MediaLibraryModal({
                             )}
                         </div>
 
+                        {/* Zona de Carga Líquida con Tensión Superficial */}
+                        <AnimatePresence>
+                            {showDropzone && (
+                                <motion.div
+                                    initial={{ opacity: 0, height: 0, scale: 0.96 }}
+                                    animate={{ opacity: 1, height: 'auto', scale: 1 }}
+                                    exit={{ opacity: 0, height: 0, scale: 0.96 }}
+                                    transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+                                    className="overflow-hidden p-4 bg-slate-50/50 dark:bg-[#12161f]/50 border-b border-slate-100 dark:border-slate-800"
+                                >
+                                    <LiquidDropzone
+                                        compact
+                                        onFilesDrop={(files) => {
+                                            processFiles(files);
+                                            setShowDropzone(false);
+                                        }}
+                                    />
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
                         {/* Modal Body: Grid a la izquierda + Panel de detalles a la derecha */}
                         <div className="flex-1 flex overflow-hidden">
                             {/* Grid de Medios */}
@@ -565,24 +602,11 @@ export default function MediaLibraryModal({
                                         </div>
                                     </div>
                                 ) : mediaItems.length === 0 ? (
-                                    <div className="flex flex-col items-center justify-center h-80 rounded-[28px] p-8 text-center bg-slate-50/50 dark:bg-[#12161f]/50 border border-slate-100 dark:border-slate-800">
-                                        <div className="h-16 w-16 rounded-3xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 mb-3">
-                                            <UploadCloud className="h-8 w-8" />
-                                        </div>
-                                        <h4 className="text-base font-bold text-slate-900 dark:text-white font-heading">
-                                            Sin imágenes encontradas
-                                        </h4>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm">
-                                            Arrastra archivos de imagen desde cualquier carpeta de tu equipo para subirlos al instante
-                                        </p>
-                                        <button
-                                            type="button"
-                                            onClick={() => fileInputRef.current?.click()}
-                                            className="mt-4 inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white px-4 py-2 text-xs font-semibold text-brand-primary transition hover:bg-slate-50 dark:border-slate-800 dark:bg-[#161b24]"
-                                        >
-                                            <Plus className="h-4 w-4" />
-                                            Seleccionar desde el equipo
-                                        </button>
+                                    <div className="py-6 px-4">
+                                        <LiquidDropzone
+                                            compact
+                                            onFilesDrop={processFiles}
+                                        />
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5">

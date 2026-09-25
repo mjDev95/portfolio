@@ -330,4 +330,39 @@ class MediaUploadAndBulkOperationsTest extends TestCase
         $this->assertEquals('Pie de foto', $media->caption);
         $this->assertEquals('Enlace Descripción', $media->description);
     }
+
+    public function test_heif_and_heic_upload_is_supported_and_stored_successfully(): void
+    {
+        $this->actingAs($this->user);
+
+        // Subida de archivo .heif
+        $heifFile = UploadedFile::fake()->create('foto-iphone.heif', 500, 'image/heif');
+
+        $response1 = $this->postJson(route('admin.media.store'), [
+            'file' => $heifFile,
+            'collection' => 'library',
+        ]);
+
+        $response1->assertSuccessful();
+
+        $media1 = Media::find($response1->json('id'));
+        $this->assertNotNull($media1);
+        $this->assertEquals('foto-iphone.heif', $media1->file_name);
+        $this->assertNotEmpty($media1->file_path);
+
+        // Subida de archivo .heic
+        $heicFile = UploadedFile::fake()->create('retrato-apple.heic', 600, 'image/heic');
+
+        $response2 = $this->postJson(route('admin.media.store'), [
+            'file' => $heicFile,
+            'collection' => 'library',
+        ]);
+
+        $response2->assertSuccessful();
+
+        $media2 = Media::find($response2->json('id'));
+        $this->assertNotNull($media2);
+        $this->assertEquals('retrato-apple.heic', $media2->file_name);
+        $this->assertNotEmpty($media2->file_path);
+    }
 }

@@ -1,5 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import ContentSubnav from './Partials/ContentSubnav';
+import SegmentedLiquidFilter from '@/Components/SegmentedLiquidFilter';
+import TaxonomyManager from './Partials/TaxonomyManager';
 import SecondaryButton from '@/Components/SecondaryButton';
 import DangerButton from '@/Components/DangerButton';
 import Modal from '@/Components/Modal';
@@ -57,7 +59,18 @@ export default function Index({
     filters = {},
     assignedClients = [],
     isAdmin = false,
+    statusCounts = { all: 0, published: 0, draft: 0, archived: 0 },
+    initialTab = 'contents',
 }) {
+    const [activeTab, setActiveTab] = useState(() => {
+        if (initialTab && initialTab !== 'contents') return initialTab;
+        if (typeof window !== 'undefined') {
+            const path = window.location.pathname;
+            if (path.endsWith('/categories')) return 'categories';
+            if (path.endsWith('/tags')) return 'tags';
+        }
+        return 'contents';
+    });
     const [search, setSearch] = useState(filters.search || '');
     const [statusFilter, setStatusFilter] = useState(filters.status || '');
     const [categoryFilter, setCategoryFilter] = useState(filters.category_id || '');
@@ -237,15 +250,29 @@ export default function Index({
                         <div>
                             <div className="flex items-center gap-3">
                                 <h1 className="font-heading text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
-                                    {contentType.name}
+                                    {activeTab === 'categories'
+                                        ? `Categorías de ${contentType.name}`
+                                        : activeTab === 'tags'
+                                        ? `Etiquetas de ${contentType.name}`
+                                        : contentType.name}
                                 </h1>
-                                <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                                    <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-                                    {items.length} {total > items.length ? `de ${total}` : ''} publicaciones
-                                </span>
+                                {activeTab === 'contents' && (
+                                    <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                                        {isSearching ? (
+                                            <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-500" />
+                                        ) : (
+                                            <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+                                        )}
+                                        {items.length} {total > items.length ? `de ${total}` : ''} publicaciones
+                                    </span>
+                                )}
                             </div>
                             <p className="mt-1.5 text-base text-slate-500 dark:text-slate-400">
-                                Administra y publica tus {contentType.name.toLowerCase()}.
+                                {activeTab === 'categories'
+                                    ? `Clasifica y organiza las publicaciones de tu modelo ${contentType.singular_name.toLowerCase()}.`
+                                    : activeTab === 'tags'
+                                    ? `Etiqueta y relaciona las publicaciones de tu modelo ${contentType.singular_name.toLowerCase()}.`
+                                    : `Administra y publica tus ${contentType.name.toLowerCase()}.`}
                             </p>
                         </div>
 
@@ -292,92 +319,160 @@ export default function Index({
                         </div>
                     </div>
 
-                    {/* ── Subnavegación Contextual (Pestañas) ── */}
-                    <ContentSubnav contentType={contentType} activeTab="contents" />
+                    {/* ── Subnavegación Contextual (Pestañas con Transición Elástica) ── */}
+                    <ContentSubnav
+                        contentType={contentType}
+                        activeTab={activeTab}
+                        onTabChange={(tabKey) => {
+                            setActiveTab(tabKey);
+                            const targetUrl = tabKey === 'contents'
+                                ? route('admin.content.index', contentType.slug)
+                                : tabKey === 'categories'
+                                ? route('admin.content.categories.index', contentType.slug)
+                                : route('admin.content.tags.index', contentType.slug);
+                            window.history.pushState({}, '', targetUrl);
+                        }}
+                    />
 
-                    {/* ── Filtro por Cliente (Super Admin cuando hay múltiples clientes) ── */}
-                    {isAdmin && assignedClients && assignedClients.length > 1 && (
-                        <div className="flex flex-wrap items-center justify-between gap-3 rounded-[28px] border border-slate-100/90 bg-white p-4 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24]">
-                            <div className="flex items-center gap-3">
-                                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                                    Filtrar por Cliente:
-                                </span>
-                                <select
-                                    value={clientFilter}
-                                    onChange={handleClientChange}
-                                    className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-700 dark:bg-[#12161f] dark:text-white"
-                                >
-                                    <option value="">Todos los Clientes Asignados</option>
-                                    {assignedClients.map((client) => (
-                                        <option key={client.id} value={client.id}>
-                                            {client.name} ({client.email})
-                                        </option>
-                                    ))}
-                                </select>
-                                {clientFilter && (
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setClientFilter('');
-                                            executeFilter(search, statusFilter, categoryFilter, '');
-                                        }}
-                                        className="text-xs font-medium text-brand-primary hover:underline"
-                                    >
-                                        Mostrar todos
-                                    </button>
+                    {/* ── Vistas por Pestaña (Sin recarga de página) ── */}
+                    {activeTab === 'categories' ? (
+                        <TaxonomyManager
+                            contentType={contentType}
+                            taxonomyType="categories"
+                            items={categories}
+                            onSelectCategoryForFilter={(catId) => {
+                                setCategoryFilter(catId);
+                                setActiveTab('contents');
+                                executeFilter(search, statusFilter, catId, clientFilter);
+                                window.history.pushState({}, '', route('admin.content.index', contentType.slug));
+                            }}
+                        />
+                    ) : activeTab === 'tags' ? (
+                        <TaxonomyManager
+                            contentType={contentType}
+                            taxonomyType="tags"
+                            items={tags}
+                        />
+                    ) : (
+                        <>
+                            {/* ── Filtro de Estado Líquido y Filtros Secundarios ── */}
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <SegmentedLiquidFilter
+                                    value={statusFilter}
+                                    onChange={handleStatusChange}
+                                    counts={statusCounts}
+                                />
+
+                                {/* Filtro rápido por categoría si está habilitado */}
+                                {contentType.has_categories && categories.length > 0 && (
+                                    <div className="flex items-center gap-2.5">
+                                        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                                            Categoría:
+                                        </span>
+                                        <select
+                                            value={categoryFilter}
+                                            onChange={handleCategoryChange}
+                                            className="rounded-2xl border border-slate-200/80 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-800 shadow-xs focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-700/80 dark:bg-[#161b24] dark:text-slate-200"
+                                        >
+                                            <option value="">Todas las categorías</option>
+                                            {categories.map((cat) => (
+                                                <option key={cat.id} value={cat.id}>
+                                                    {cat.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {categoryFilter && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setCategoryFilter('');
+                                                    executeFilter(search, statusFilter, '', clientFilter);
+                                                }}
+                                                className="text-xs font-medium text-brand-primary hover:underline"
+                                            >
+                                                Limpiar
+                                            </button>
+                                        )}
+                                    </div>
                                 )}
                             </div>
 
-                            <span className="text-xs text-slate-500 dark:text-slate-400">
-                                Mostrando contenidos de {clientFilter ? (assignedClients.find(c => String(c.id) === String(clientFilter))?.name || 'cliente seleccionado') : 'todos los clientes'}
-                            </span>
-                        </div>
-                    )}
+                            {/* ── Filtro por Cliente (Super Admin cuando hay múltiples clientes) ── */}
+                            {isAdmin && assignedClients && assignedClients.length > 1 && (
+                                <div className="flex flex-wrap items-center justify-between gap-3 rounded-[28px] border border-slate-100/90 bg-white p-4 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24]">
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                                            Filtrar por Cliente:
+                                        </span>
+                                        <select
+                                            value={clientFilter}
+                                            onChange={handleClientChange}
+                                            className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-700 dark:bg-[#12161f] dark:text-white"
+                                        >
+                                            <option value="">Mis publicaciones (Solo creados por mí)</option>
+                                            {assignedClients.map((client) => (
+                                                <option key={client.id} value={client.id}>
+                                                    {client.name} ({client.email})
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {clientFilter && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setClientFilter('');
+                                                    executeFilter(search, statusFilter, categoryFilter, '');
+                                                }}
+                                                className="text-xs font-medium text-brand-primary hover:underline"
+                                            >
+                                                Ver solo mis publicaciones
+                                            </button>
+                                        )}
+                                    </div>
 
-                    {/* Lista Unificada sin Tablas */}
-                    {isSearching ? (
-                        <div className="flex w-full flex-col items-center justify-center py-20 text-center">
-                            <Loader2 className="h-9 w-9 animate-spin text-brand-primary" />
-                            <h3 className="mt-4 font-heading text-base font-bold text-slate-900 dark:text-white">
-                                Buscando publicaciones...
-                            </h3>
-                            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                                {search ? `Filtrando resultados para "${search}"` : 'Cargando publicaciones filtradas...'}
-                            </p>
-                        </div>
-                    ) : items.length === 0 ? (
-                        <div className="flex w-full flex-col items-center justify-center py-16 text-center">
-                            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-brand-primary dark:bg-[#12161f]">
-                                <Icon className="h-8 w-8" />
-                            </div>
-                            <h3 className="mt-4 font-heading text-lg font-bold text-slate-900 dark:text-white">
-                                {search ? 'Sin coincidencias' : 'No se encontraron publicaciones'}
-                            </h3>
-                            <p className="mt-1 max-w-md text-sm text-slate-500 dark:text-slate-400">
-                                {search
-                                    ? `No hay publicaciones en ${contentType.name} que coincidan con "${search}".`
-                                    : `Comienza creando el primer elemento para tu tipo de contenido ${contentType.name}.`}
-                            </p>
-                            {search ? (
-                                <button
-                                    type="button"
-                                    onClick={clearSearch}
-                                    className="mt-5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-[#202735] dark:text-slate-300 dark:hover:bg-[#2a3447]"
-                                >
-                                    Limpiar filtro de búsqueda
-                                </button>
-                            ) : (
-                                <Link
-                                    href={route('admin.content.create', contentType.slug)}
-                                    className="mt-6 inline-flex items-center gap-2 rounded-full bg-brand-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-primary-hover"
-                                >
-                                    <Plus className="h-4 w-4" />
-                                    Crear {contentType.singular_name}
-                                </Link>
+                                    <span className="text-xs text-slate-500 dark:text-slate-400">
+                                        {clientFilter
+                                            ? `Viendo publicaciones de: ${assignedClients.find((c) => String(c.id) === String(clientFilter))?.name || 'cliente'}`
+                                            : 'Viendo solo tus publicaciones'}
+                                    </span>
+                                </div>
                             )}
-                        </div>
-                    ) : (
-                        <div className="w-full space-y-4">
+
+                            {/* Lista Unificada sin Tablas - Fluida sin saltos */}
+                            <div className={`w-full space-y-4 transition-opacity duration-200 ${isSearching ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
+                                {items.length === 0 && !isSearching ? (
+                                    <div className="flex w-full flex-col items-center justify-center py-16 text-center">
+                                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-brand-primary dark:bg-[#12161f]">
+                                            <Icon className="h-8 w-8" />
+                                        </div>
+                                        <h3 className="mt-4 font-heading text-lg font-bold text-slate-900 dark:text-white">
+                                            {search ? 'Sin coincidencias' : 'No se encontraron publicaciones'}
+                                        </h3>
+                                        <p className="mt-1 max-w-md text-sm text-slate-500 dark:text-slate-400">
+                                            {search
+                                                ? `No hay publicaciones en ${contentType.name} que coincidan con "${search}".`
+                                                : `Comienza creando el primer elemento para tu tipo de contenido ${contentType.name}.`}
+                                        </p>
+                                        {search ? (
+                                            <button
+                                                type="button"
+                                                onClick={clearSearch}
+                                                className="mt-5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-[#202735] dark:text-slate-300 dark:hover:bg-[#2a3447]"
+                                            >
+                                                Limpiar filtro de búsqueda
+                                            </button>
+                                        ) : (
+                                            <Link
+                                                href={route('admin.content.create', contentType.slug)}
+                                                className="mt-6 inline-flex items-center gap-2 rounded-full bg-brand-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-primary-hover"
+                                            >
+                                                <Plus className="h-4 w-4" />
+                                                Crear {contentType.singular_name}
+                                            </Link>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="w-full space-y-4">
                             {items.map((item, index) => (
                                 <div
                                     key={item.id}
@@ -513,7 +608,10 @@ export default function Index({
                             </div>
                         </div>
                     )}
-            </div>
+                </div>
+            </>
+        )}
+    </div>
 
             {/* Modal de confirmación para eliminar contenido */}
             <Modal show={Boolean(deletingContent)} onClose={() => setDeletingContent(null)} maxWidth="sm">

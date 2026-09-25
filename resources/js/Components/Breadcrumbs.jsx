@@ -21,6 +21,7 @@ const ROUTE_LABELS = {
     taxonomies: 'Taxonomías',
     categories: 'Categorías',
     tags: 'Etiquetas',
+    login: 'Acceso',
 };
 
 /**

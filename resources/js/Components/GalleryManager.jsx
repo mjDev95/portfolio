@@ -191,9 +191,22 @@ export default function GalleryManager({ content, galleryImages = [], onOpenLibr
             setIsDroppingExternalFiles(false);
             externalDragCounter.current = 0;
 
-            const validFiles = Array.from(e.dataTransfer.files).filter((f) =>
-                ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'].includes(f.type)
-            );
+            const validTypes = [
+                'image/jpeg',
+                'image/png',
+                'image/webp',
+                'image/jpg',
+                'image/heif',
+                'image/heic',
+                'image/heif-sequence',
+                'image/heic-sequence',
+            ];
+            const validExts = ['jpg', 'jpeg', 'png', 'webp', 'heif', 'heic'];
+
+            const validFiles = Array.from(e.dataTransfer.files).filter((f) => {
+                const ext = f.name?.split('.').pop()?.toLowerCase() || '';
+                return validTypes.includes(f.type) || validExts.includes(ext);
+            });
 
             if (validFiles.length === 0) {
                 window.dispatchEvent(
@@ -201,7 +214,7 @@ export default function GalleryManager({ content, galleryImages = [], onOpenLibr
                         detail: {
                             type: 'error',
                             title: 'Formato inválido',
-                            message: 'Por favor arrastra archivos JPEG, PNG o WebP.',
+                            message: 'Por favor arrastra archivos JPEG, PNG, WebP o HEIF/HEIC.',
                         },
                     })
                 );
@@ -219,7 +232,11 @@ export default function GalleryManager({ content, galleryImages = [], onOpenLibr
 
         const token = document.querySelector('meta[name="csrf-token"]')?.content;
         try {
-            const res = await fetch(route('admin.media.destroy', mediaId), {
+            const url = content?.id
+                ? `${route('admin.media.destroy', mediaId)}?content_id=${content.id}`
+                : route('admin.media.destroy', mediaId);
+
+            const res = await fetch(url, {
                 method: 'DELETE',
                 headers: {
                     'X-CSRF-TOKEN': token,

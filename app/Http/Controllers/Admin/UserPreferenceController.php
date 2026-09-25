@@ -19,23 +19,32 @@ class UserPreferenceController extends Controller
      */
     public function edit(Request $request): Response
     {
-        $preference = $request->user()->preference;
-        $palettes = ColorPalette::orderBy('order')
-            ->orderBy('id')
-            ->get([
-                'id',
-                'name',
-                'slug',
-                'primary_color',
-                'secondary_color',
-                'tertiary_color',
-                'accent_color',
-                'dark_neutral',
-                'light_neutral',
-                'is_master',
-                'is_system',
-                'tagline',
-            ]);
+        $user = $request->user();
+        $isAdmin = $user->isAdmin();
+        $preference = $user->preference;
+
+        $palettesQuery = ColorPalette::orderBy('order')->orderBy('id');
+
+        if (! $isAdmin) {
+            // Clients must NEVER see Super Admin or master palettes
+            $palettesQuery->where('user_id', $user->id)
+                ->where('is_master', false);
+        }
+
+        $palettes = $palettesQuery->get([
+            'id',
+            'name',
+            'slug',
+            'primary_color',
+            'secondary_color',
+            'tertiary_color',
+            'accent_color',
+            'dark_neutral',
+            'light_neutral',
+            'is_master',
+            'is_system',
+            'tagline',
+        ]);
 
         return Inertia::render('Admin/Preferences/Edit', [
             'preference' => $preference ? [
@@ -125,8 +134,28 @@ class UserPreferenceController extends Controller
             $attributes['color_palette_id'] = $incomingSettings['color_palette_id'];
         }
 
+        // Security check: Clients must not select master or admin-owned palettes
+        if (! $request->user()->isAdmin() && ! empty($attributes['color_palette_id'])) {
+            $allowedPalette = ColorPalette::where('id', $attributes['color_palette_id'])
+                ->where('user_id', $request->user()->id)
+                ->where('is_master', false)
+                ->exists();
+
+            if (! $allowedPalette) {
+                $attributes['color_palette_id'] = null;
+            }
+        }
+
         if ($request->has('color_palette') || isset($incomingSettings['color_palette'])) {
-            $attributes['color_palette'] = $request->input('color_palette') ?? $incomingSettings['color_palette'];
+            $rawColorPalette = $request->input('color_palette') ?? $incomingSettings['color_palette'];
+            // If client, ensure they cannot save Super Admin colors
+            if (! $request->user()->isAdmin() && is_array($rawColorPalette) && isset($rawColorPalette['colors']['primary'])) {
+                $primaryHex = strtoupper(trim((string) $rawColorPalette['colors']['primary']));
+                if ($primaryHex === '#CB2128' || $primaryHex === '#CC282F') {
+                    $rawColorPalette = null;
+                }
+            }
+            $attributes['color_palette'] = $rawColorPalette;
         } elseif (! empty($attributes['color_palette_id'])) {
             $palette = ColorPalette::find($attributes['color_palette_id']);
             if ($palette) {

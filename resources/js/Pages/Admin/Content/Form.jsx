@@ -9,7 +9,7 @@ import PublishingSidebar from '@/Components/ContentForm/PublishingSidebar';
 import TaxonomySidebar from '@/Components/ContentForm/TaxonomySidebar';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { useState } from 'react';
-import { ArrowLeft, Globe } from 'lucide-react';
+import { ArrowLeft, Globe, ExternalLink } from 'lucide-react';
 
 export default function Form({
     contentType,
@@ -217,16 +217,29 @@ export default function Form({
             />
 
             <div className="w-full space-y-8">
-                {/* Botón Volver */}
-                    <div>
-                        <Link
-                            href={route('admin.content.index', contentType.slug)}
-                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 transition-colors hover:text-brand-primary dark:text-slate-400"
+                {/* Cabecera con Botón Volver y Ver Publicación */}
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                    <Link
+                        href={route('admin.content.index', contentType.slug)}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 transition-colors hover:text-brand-primary dark:text-slate-400"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                        Volver a {contentType.name}
+                    </Link>
+
+                    {contentType.is_public && isEditing && content?.slug && (
+                        <a
+                            href={`/${contentType.public_slug || contentType.slug}/${content.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-xs transition hover:border-brand-primary hover:text-brand-primary dark:border-slate-800 dark:bg-[#161b24] dark:text-slate-200 dark:hover:text-brand-primary"
+                            title="Abrir publicación en pestaña nueva"
                         >
-                            <ArrowLeft className="h-4 w-4" />
-                            Volver a {contentType.name}
-                        </Link>
-                    </div>
+                            <ExternalLink className="h-3.5 w-3.5 text-brand-primary" />
+                            <span>Ver publicación</span>
+                        </a>
+                    )}
+                </div>
 
                     <form onSubmit={handleSubmit} className="space-y-8">
                         {/* Layout de 2 Columnas estilo WordPress */}
@@ -236,6 +249,7 @@ export default function Form({
                                 {/* Bloque 1: Título, Permalink, Extracto y Markdown Body */}
                                 <ContentMainFields
                                     contentType={contentType}
+                                    content={content}
                                     data={data}
                                     setData={setData}
                                     errors={errors}
@@ -298,6 +312,8 @@ export default function Form({
                                     data={data}
                                     setData={setData}
                                     processing={processing}
+                                    content={content}
+                                    contentType={contentType}
                                 />
 
                                 {/* Sidebar 2: Taxonomías (Categorías y Tags) */}
@@ -401,4 +417,8 @@ export default function Form({
     );
 }
 
-Form.layout = (page) => <AuthenticatedLayout>{page}</AuthenticatedLayout>;
+Form.layout = (page) => (
+    <AuthenticatedLayout showBreadcrumbs={Boolean(page.props.content?.id)}>
+        {page}
+    </AuthenticatedLayout>
+);

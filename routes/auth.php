@@ -16,10 +16,8 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 Route::middleware('guest')->group(function () {
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])
-        ->name('login');
-
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    Route::get('login', fn () => redirect()->route('admin.login'))->name('login');
+    Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('login.post');
 });
 
 Route::middleware('auth')->group(function () {
@@ -32,7 +30,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('login', [AuthenticatedSessionController::class, 'create'])
             ->name('login');
 
-        Route::post('login', [AuthenticatedSessionController::class, 'store']);
+        Route::post('login', [AuthenticatedSessionController::class, 'store'])
+            ->name('login.store');
 
         Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
             ->name('password.request');

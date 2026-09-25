@@ -52,33 +52,76 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
 
             'auth' => [
-                'user' => $request->user() ? [
-                    'id' => $request->user()->id,
-                    'name' => $request->user()->name,
-                    'email' => $request->user()->email,
-                    'role' => $request->user()->role?->slug ?? 'user',
-                    'role_name' => $request->user()->role?->name ?? 'Usuario',
-                    'has_telemetry' => (bool) $request->user()->has_telemetry,
-                    'is_active' => (bool) $request->user()->is_active,
-                    'theme' => $request->user()->preference?->theme ?? 'system',
-                    'color_palette' => $request->user()->preference?->colorPalette ? [
-                        'id' => $request->user()->preference->colorPalette->id,
-                        'name' => $request->user()->preference->colorPalette->name,
-                        'primary' => $request->user()->preference->colorPalette->primary_color,
-                        'secondary' => $request->user()->preference->colorPalette->secondary_color,
-                        'tertiary' => $request->user()->preference->colorPalette->tertiary_color,
-                        'accent' => $request->user()->preference->colorPalette->accent_color,
-                    ] : ($request->user()->preference?->color_palette['colors'] ?? null),
-                ] : null,
+                'user' => $request->user() ? (function () use ($request) {
+                    $user = $request->user();
+                    $isAdmin = $user->isAdmin();
+                    $pref = $user->preference;
+                    $palette = $pref?->colorPalette;
+
+                    if (! $isAdmin && $palette && ($palette->is_master || ($palette->user_id !== null && $palette->user_id !== $user->id))) {
+                        $palette = null;
+                    }
+
+                    $colors = null;
+                    if ($palette) {
+                        $colors = [
+                            'id' => $palette->id,
+                            'name' => $palette->name,
+                            'primary' => $palette->primary_color,
+                            'secondary' => $palette->secondary_color,
+                            'tertiary' => $palette->tertiary_color,
+                            'accent' => $palette->accent_color,
+                        ];
+                    } elseif ($isAdmin && ! empty($pref?->color_palette['colors'])) {
+                        $colors = $pref->color_palette['colors'];
+                    } elseif (! $isAdmin && ! empty($pref?->color_palette['colors'])) {
+                        $customColors = $pref->color_palette['colors'];
+                        $primaryHex = strtoupper(trim((string) ($customColors['primary'] ?? '')));
+                        if ($primaryHex !== '#CB2128' && $primaryHex !== '#CC282F') {
+                            $colors = $customColors;
+                        }
+                    }
+
+                    return [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'role' => $user->role?->slug ?? 'user',
+                        'role_name' => $user->role?->name ?? 'Usuario',
+                        'has_telemetry' => (bool) $user->has_telemetry,
+                        'is_active' => (bool) $user->is_active,
+                        'theme' => $pref?->theme ?? 'system',
+                        'color_palette' => $colors,
+                    ];
+                })() : null,
             ],
 
             'content_types' => $request->user()
                 ? PortfolioCacheService::rememberUserCptIds($request->user()->id, function () use ($request) {
-                    return ContentType::where(function ($q) use ($request) {
-                        $q->where('content_types.user_id', $request->user()->id)
-                            ->orWhereHas('users', fn ($uq) => $uq->where('users.id', $request->user()->id));
+                    $user = $request->user();
+
+                    return ContentType::where(function ($q) use ($user) {
+                        $q->whereHas('users', fn ($uq) => $uq->where('users.id', $user->id))
+                            ->orWhere(function ($fallback) use ($user) {
+                                $fallback->where('content_types.user_id', $user->id)
+                                    ->doesntHave('users');
+                            });
                     })
-                        ->select(['content_types.id', 'content_types.name', 'content_types.singular_name', 'content_types.slug', 'content_types.icon', 'content_types.order', 'content_types.is_public', 'content_types.public_slug'])
+                        ->withCount([
+                            'contents' => fn ($cq) => $cq->where('user_id', $user->id),
+                        ])
+                        ->select([
+                            'content_types.id',
+                            'content_types.name',
+                            'content_types.singular_name',
+                            'content_types.slug',
+                            'content_types.icon',
+                            'content_types.order',
+                            'content_types.is_public',
+                            'content_types.public_slug',
+                            'content_types.has_categories',
+                            'content_types.has_tags',
+                        ])
                         ->distinct()
                         ->orderBy('order')
                         ->get()
@@ -91,6 +134,7 @@ class HandleInertiaRequests extends Middleware
                 'error' => fn () => $request->session()->get('error'),
                 'warning' => fn () => $request->session()->get('warning'),
                 'info' => fn () => $request->session()->get('info'),
+                'public_url' => fn () => $request->session()->get('public_url'),
             ],
         ];
     }

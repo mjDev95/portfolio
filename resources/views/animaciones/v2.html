@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liquid FAB Button con GSAP</title>
+  <!-- Cargando GSAP para la física elástica y deformación líquida -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #e5e5eb;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* Marco limpio tipo mockup Figma idéntico al tutorial */
+    .figma-canvas {
+      width: 380px;
+      height: 640px;
+      background: #fdfdfd;
+      border-radius: 44px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      padding-bottom: 72px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Escenario central del FAB */
+    .fab-stage {
+      position: relative;
+      width: 76px;
+      height: 76px;
+    }
+
+    /* 
+      Capa del filtro Gooey SVG (recreación del Layer Blur + Color Dodge/Burn de Figma)
+      Límites amplificados para que el líquido se estire libremente sin bordes cortados
+    */
+    .liquid-layer {
+      position: absolute;
+      inset: 0;
+      filter: url('#liquid-goo');
+      pointer-events: none;
+    }
+
+    /* Gotas de fluido viscoso */
+    .blob {
+      position: absolute;
+      background-color: #0d0d0d;
+      border-radius: 50%;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      will-change: transform;
+    }
+
+    .blob-main {
+      width: 76px;
+      height: 76px;
+      z-index: 1;
+    }
+
+    .blob-sub {
+      width: 52px;
+      height: 52px;
+      z-index: 2;
+    }
+
+    /* 
+      Capa de iconos nítidos (fuera del filtro de desenfoque para máxima nitidez)
+    */
+    .buttons-layer {
+      position: absolute;
+      inset: 0;
+    }
+
+    .fab-btn {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      outline: none;
+      user-select: none;
+      border-radius: 50%;
+      will-change: transform, opacity;
+    }
+
+    /* Botón disparador principal (+) */
+    .btn-main {
+      width: 76px;
+      height: 76px;
+      z-index: 10;
+    }
+
+    .btn-main svg {
+      width: 32px;
+      height: 32px;
+      stroke-width: 2.6;
+      stroke: #ffffff;
+      will-change: transform;
+    }
+
+    /* Botones secundarios (lápiz y avión de papel) */
+    .btn-sub {
+      width: 52px;
+      height: 52px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 8;
+    }
+
+    .btn-sub svg {
+      width: 22px;
+      height: 22px;
+      stroke-width: 2.2;
+      stroke: #ffffff;
+      fill: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 
+    Filtro de tensión superficial líquida:
+    feGaussianBlur genera el halo y feColorMatrix fuerza la unión de gotas al tocarse.
+  -->
+  <svg style="position: absolute; width: 0; height: 0;" aria-hidden="true">
+    <defs>
+      <filter id="liquid-goo" x="-100%" y="-300%" width="300%" height="500%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="11" result="blur" />
+        <feColorMatrix in="blur" mode="matrix" 
+          values="1 0 0 0 0  
+                  0 1 0 0 0  
+                  0 0 1 0 0  
+                  0 0 0 34 -11" result="goo" />
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- Marco estético de Figma -->
+  <main class="figma-canvas">
+    <div class="fab-stage">
+
+      <!-- Capa 1: Gotas de fluido deformables por GSAP -->
+      <div class="liquid-layer">
+        <div class="blob blob-main" id="blobMain"></div>
+        <div class="blob blob-sub" id="blob1"></div>
+        <div class="blob blob-sub" id="blob2"></div>
+      </div>
+
+      <!-- Capa 2: Iconos limpios e interacción -->
+      <div class="buttons-layer">
+        <!-- 2: Avión de papel (Enviar) -->
+        <button class="fab-btn btn-sub" id="btn2" aria-label="Enviar">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+
+        <!-- 1: Lápiz (Editar) -->
+        <button class="fab-btn btn-sub" id="btn1" aria-label="Editar">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+        </button>
+
+        <!-- Botón principal (+) -->
+        <button class="fab-btn btn-main" id="btnMain" aria-label="Abrir menú">
+          <svg id="plusIcon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // Referencias a elementos del DOM
+    const btnMain = document.getElementById('btnMain');
+    const plusIcon = document.getElementById('plusIcon');
+    const blobMain = document.getElementById('blobMain');
+    const blob1 = document.getElementById('blob1');
+    const blob2 = document.getElementById('blob2');
+    const btn1 = document.getElementById('btn1');
+    const btn2 = document.getElementById('btn2');
+
+    // Estado abierto/cerrado
+    let isOpen = false;
+
+    // Timeline principal de GSAP (pausada al inicio)
+    const tl = gsap.timeline({ 
+      paused: true,
+      defaults: { ease: "power2.inOut" }
+    });
+
+    /*
+      CONSTRUCCIÓN DE LA ANIMACIÓN LÍQUIDA:
+      1. Giro del '+' a 'x'.
+      2. Compresión inicial de la gota base (Squash) como preparación para impulsar el fluido.
+      3. Gotas secundarias suben alargándose verticalmente (scaleY > 1, scaleX < 1)
+         lo que rompe por completo la sensación de círculos rígidos.
+      4. Al desprenderse del cuello líquido, rebotan elásticamente (elastic.out)
+         recuperando su forma esférica pura.
+      5. Los iconos blancos aparecen sincronizados en el momento en que cada gota desacelera.
+    */
+
+    tl
+      // 1. Rotación del icono central
+      .to(plusIcon, {
+        rotation: 45,
+        duration: 0.45,
+        ease: "back.out(1.8)"
+      }, 0)
+
+      // 2. Compresión de rebote en la base líquida
+      .to(blobMain, {
+        scaleX: 1.14,
+        scaleY: 0.88,
+        duration: 0.16,
+        ease: "power2.out"
+      }, 0)
+      .to(blobMain, {
+        scaleX: 1,
+        scaleY: 1,
+        duration: 0.45,
+        ease: "elastic.out(1.1, 0.45)"
+      }, 0.16)
+
+      // 3. Gota 1 (Lápiz): Se dispara estirándose y luego se asienta con elasticidad
+      .to(blob1, {
+        y: -84,
+        duration: 0.55,
+        ease: "back.out(1.4)"
+      }, 0.05)
+      .fromTo(blob1, 
+        { scaleY: 1, scaleX: 1 },
+        { 
+          keyframes: [
+            { scaleY: 1.45, scaleX: 0.72, duration: 0.22, ease: "power1.out" },
+            { scaleY: 1, scaleX: 1, duration: 0.38, ease: "elastic.out(1.2, 0.4)" }
+          ]
+        }, 
+        0.05
+      )
+
+      // 4. Gota 2 (Avión): Se desprende en cascada y viaja más alto con mayor estiramiento
+      .to(blob2, {
+        y: -156,
+        duration: 0.65,
+        ease: "back.out(1.4)"
+      }, 0.12)
+      .fromTo(blob2, 
+        { scaleY: 1, scaleX: 1 },
+        { 
+          keyframes: [
+            { scaleY: 1.5, scaleX: 0.68, duration: 0.26, ease: "power1.out" },
+            { scaleY: 1, scaleX: 1, duration: 0.42, ease: "elastic.out(1.2, 0.4)" }
+          ]
+        }, 
+        0.12
+      )
+
+      // 5. Iconos limpios: se desplazan y desvanecen sincronizados con las gotas
+      .to(btn1, {
+        y: -84,
+        opacity: 1,
+        duration: 0.55,
+        ease: "back.out(1.4)",
+        onStart: () => { btn1.style.pointerEvents = 'auto'; }
+      }, 0.05)
+      .to(btn2, {
+        y: -156,
+        opacity: 1,
+        duration: 0.65,
+        ease: "back.out(1.4)",
+        onStart: () => { btn2.style.pointerEvents = 'auto'; }
+      }, 0.12);
+
+    // Event listener para alternar la animación
+    btnMain.addEventListener('click', () => {
+      isOpen = !isOpen;
+
+      if (isOpen) {
+        tl.timeScale(1).play();
+      } else {
+        // Al retraerse, la succión de regreso es ligeramente más rápida
+        btn1.style.pointerEvents = 'none';
+        btn2.style.pointerEvents = 'none';
+        tl.timeScale(1.35).reverse();
+      }
+    });
+  </script>
+</body>
+</html>

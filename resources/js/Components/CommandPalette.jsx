@@ -163,30 +163,56 @@ export default function CommandPalette({
 
     return (
         <>
+            {/* Filtro SVG Gooey para la apertura líquida del buscador */}
+            <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
+                <defs>
+                    <filter id="command-palette-goo" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur" />
+                        <feColorMatrix
+                            in="blur"
+                            mode="matrix"
+                            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -8"
+                            result="goo"
+                        />
+                        <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+                    </filter>
+                </defs>
+            </svg>
+
             <AnimatePresence>
                 {isOpen && (
                     <>
                         {/* Overlay translúcido suave para cerrar al hacer clic afuera sin bloquear la vista */}
                         <div
-                            className="fixed inset-0 z-40 bg-black/15 dark:bg-black/40 backdrop-blur-[2px]"
+                            className="fixed inset-0 z-40 bg-black/20 dark:bg-black/50 backdrop-blur-xs"
                             onClick={onClose}
                         />
 
-                        {/* Píldora Flotante Centrada (Estilo idéntico a GlobalBanner) */}
+                        {/* Píldora Flotante Centrada con Física Líquida Gooey (Squash & Stretch Drop) */}
                         <motion.div
-                            initial={{ opacity: 0, y: -24, scale: 0.95, x: '-50%' }}
-                            animate={{ opacity: 1, y: 0, scale: 1, x: '-50%' }}
-                            exit={{ opacity: 0, y: -16, scale: 0.95, x: '-50%' }}
-                            transition={{ type: 'spring', damping: 25, stiffness: 380 }}
+                            initial={{ opacity: 0, y: -44, scaleX: 0.55, scaleY: 1.45, x: '-50%' }}
+                            animate={{ opacity: 1, y: 0, scaleX: 1, scaleY: 1, x: '-50%' }}
+                            exit={{ opacity: 0, y: -32, scaleX: 0.65, scaleY: 1.3, x: '-50%' }}
+                            transition={{
+                                type: 'spring',
+                                damping: 22,
+                                stiffness: 420,
+                                mass: 0.75,
+                            }}
                             style={{ left: '50%' }}
-                            className="fixed top-6 z-50 w-[94vw] max-w-xl pointer-events-auto"
+                            className="fixed top-5 sm:top-6 z-50 w-[94vw] max-w-xl pointer-events-auto"
                         >
                             {/* Píldora Input principal */}
                             <div className="flex items-center gap-3 rounded-full bg-white/95 px-4 py-2.5 shadow-2xl backdrop-blur-xl border border-slate-200/80 dark:bg-[#161b24]/95 dark:border-slate-800/80 dark:shadow-black/60">
-                                {/* Ícono lupa */}
-                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-primary/10 text-brand-primary dark:bg-brand-primary/20">
+                                {/* Ícono lupa con pop elástico */}
+                                <motion.div
+                                    initial={{ scale: 0.4, rotate: -20 }}
+                                    animate={{ scale: 1, rotate: 0 }}
+                                    transition={{ type: 'spring', stiffness: 500, damping: 22, delay: 0.05 }}
+                                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-primary/10 text-brand-primary dark:bg-brand-primary/20"
+                                >
                                     <Search className="h-4 w-4" />
-                                </div>
+                                </motion.div>
 
                                 {/* Contexto activo si existe */}
                                 {activeContext && (
@@ -256,14 +282,19 @@ export default function CommandPalette({
                                 </button>
                             </div>
 
-                            {/* Desplegable Flotante de Resultados */}
+                            {/* Desplegable Flotante de Resultados con Elastic Spring Drop */}
                             <AnimatePresence>
                                 {(results.commands.length > 0 || results.items.length > 0 || (query && !loading)) && (
                                     <motion.div
-                                        initial={{ opacity: 0, y: 8, scale: 0.98 }}
-                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        exit={{ opacity: 0, y: 6, scale: 0.98 }}
-                                        transition={{ duration: 0.15 }}
+                                        initial={{ opacity: 0, y: -10, scaleY: 0.75, scaleX: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scaleY: 1, scaleX: 1 }}
+                                        exit={{ opacity: 0, y: -8, scaleY: 0.8, scaleX: 0.96 }}
+                                        transition={{
+                                            type: 'spring',
+                                            stiffness: 420,
+                                            damping: 26,
+                                            mass: 0.8,
+                                        }}
                                         className="mt-2 w-full overflow-hidden rounded-3xl border border-slate-200/80 bg-white/95 shadow-2xl backdrop-blur-2xl dark:border-slate-800 dark:bg-[#161b24]/95 dark:shadow-black/60 p-2 max-h-[60vh] overflow-y-auto space-y-3"
                                     >
                                         {/* Comandos y Acciones Rápidas */}

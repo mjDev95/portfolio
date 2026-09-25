@@ -50,33 +50,71 @@ class Content extends Model
     protected static function booted(): void
     {
         static::creating(function (Content $content): void {
-            if (empty($content->slug)) {
-                $content->slug = static::uniqueSlugFrom($content->title, $content->user_id);
+            $source = ! empty($content->slug) ? $content->slug : $content->title;
+            $content->slug = static::uniqueSlugFrom($source, $content->user_id, $content->id);
+        });
+
+        static::updating(function (Content $content): void {
+            if ($content->isDirty('slug') || empty($content->slug)) {
+                $source = ! empty($content->slug) ? $content->slug : $content->title;
+                $content->slug = static::uniqueSlugFrom($source, $content->user_id, $content->id);
             }
         });
     }
 
-    public static function uniqueSlugFrom(string $title, ?int $userId = null): string
+    public static function uniqueSlugFrom(string $source, ?int $userId = null, ?int $ignoreId = null): string
     {
-        $base = Str::slug($title);
-        $slug = $base;
-        $i = 1;
-
-        $query = static::where('slug', $slug);
-        if ($userId) {
-            $query->where('user_id', $userId);
+        $base = Str::slug($source);
+        if (blank($base)) {
+            $base = 'item';
         }
 
-        while ($query->exists()) {
-            $slug = "{$base}-{$i}";
-            $i++;
-            $query = static::where('slug', $slug);
-            if ($userId) {
-                $query->where('user_id', $userId);
+        $root = $base;
+        $startSuffix = 1;
+
+        $prefix = $base;
+        if (preg_match('/^(.*)-(\d+)$/', $base, $matches)) {
+            $prefix = $matches[1];
+        }
+
+        $query = static::withTrashed();
+        if ($userId !== null) {
+            $query->where('user_id', $userId);
+        }
+        if ($ignoreId !== null) {
+            $query->where('id', '!=', $ignoreId);
+        }
+
+        $existingSlugs = $query->where(function ($q) use ($base, $prefix) {
+            $q->where('slug', $base)
+                ->orWhere('slug', $prefix)
+                ->orWhere('slug', 'LIKE', "{$base}-%")
+                ->orWhere('slug', 'LIKE', "{$prefix}-%");
+        })->pluck('slug')->all();
+
+        $existingSet = array_flip($existingSlugs);
+
+        // If base itself is free, return it directly
+        if (! isset($existingSet[$base])) {
+            return $base;
+        }
+
+        // Base is taken. If base ends with -\d+ AND its prefix exists in the database,
+        // continue the existing sequence instead of creating something like mi-post-1-1
+        if (preg_match('/^(.*)-(\d+)$/', $base, $matches)) {
+            $potentialRoot = $matches[1];
+            if (isset($existingSet[$potentialRoot])) {
+                $root = $potentialRoot;
+                $startSuffix = (int) $matches[2] + 1;
             }
         }
 
-        return $slug;
+        $i = $startSuffix;
+        while (isset($existingSet["{$root}-{$i}"])) {
+            $i++;
+        }
+
+        return "{$root}-{$i}";
     }
 
     // ─────────────────────────────────────────────

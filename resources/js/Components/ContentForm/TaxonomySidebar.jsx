@@ -1,4 +1,6 @@
 import TaxonomyModal from '@/Components/TaxonomyModal';
+import BubblePopTag from '@/Components/BubblePopTag';
+import { AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
 
@@ -86,24 +88,18 @@ export default function TaxonomySidebar({
                             No hay etiquetas creadas.
                         </p>
                     ) : (
-                        <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto">
-                            {tagList.map((tag) => {
-                                const isSelected = selectedTags.includes(tag.id);
-                                return (
-                                    <button
+                        <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto p-1">
+                            <AnimatePresence mode="popLayout">
+                                {tagList.map((tag) => (
+                                    <BubblePopTag
                                         key={tag.id}
-                                        type="button"
-                                        onClick={() => onToggleTag(tag.id)}
-                                        className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                                            isSelected
-                                                ? 'bg-brand-primary text-white shadow-xs'
-                                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200/80 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
-                                        }`}
-                                    >
-                                        #{tag.name}
-                                    </button>
-                                );
-                            })}
+                                        label={tag.name}
+                                        selected={selectedTags.includes(tag.id)}
+                                        onToggle={() => onToggleTag(tag.id)}
+                                        prefix="#"
+                                    />
+                                ))}
+                            </AnimatePresence>
                         </div>
                     )}
                 </div>

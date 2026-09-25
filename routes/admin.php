@@ -107,6 +107,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'active'
     // ── Media Library (polymorphic) ───────────────────────────────────────
     Route::get('media', [MediaController::class, 'index'])->name('media.index');
     Route::post('media', [MediaController::class, 'store'])->name('media.store');
+    Route::match(['get', 'post'], 'media/download-bulk', [MediaController::class, 'downloadBulk'])->name('media.download-bulk');
+    Route::get('media/{media}/download', [MediaController::class, 'download'])->name('media.download');
     Route::post('media/bulk-destroy', [MediaController::class, 'bulkDestroy'])->name('media.bulk-destroy');
     Route::match(['put', 'patch'], 'media/{media}', [MediaController::class, 'update'])->name('media.update');
     Route::post('media/attach', [MediaController::class, 'attach'])->name('media.attach');

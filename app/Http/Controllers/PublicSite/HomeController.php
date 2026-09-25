@@ -27,7 +27,7 @@ class HomeController extends Controller
             ? Content::query()
                 ->whereIn('id', $featuredIds)
                 ->with([
-                    'media' => fn ($q) => $q->where('collection', 'thumbnail'),
+                    'media' => fn ($q) => $q->where('content_media.collection', 'thumbnail'),
                     'contentType',
                 ])
                 ->orderBy('sort_order')

@@ -36,7 +36,7 @@ class ContentController extends Controller
         $user = auth()->user();
         $isAdmin = $user->isAdmin();
 
-        $targetUserId = ! $isAdmin ? $user->id : ($request->filled('client_id') ? (int) $request->input('client_id') : null);
+        $targetUserId = ($isAdmin && $request->filled('client_id')) ? (int) $request->input('client_id') : $user->id;
         $contentType->setRelation('customFields', $contentType->fieldsForUser($targetUserId));
 
         $query = $contentType->contents()
@@ -44,13 +44,12 @@ class ContentController extends Controller
             ->orderBy('sort_order')
             ->orderByDesc('created_at');
 
-        // Aislamiento estricto de cliente: si no es admin, SOLO ve sus propios contenidos
-        if (! $isAdmin) {
-            $query->where('contents.user_id', $user->id);
+        // Aislamiento estricto de usuario: por defecto TODOS (incluido Super Admin) ven únicamente
+        // las publicaciones creadas por sí mismos, a menos que el admin filtre explícitamente por un cliente.
+        if ($isAdmin && $request->filled('client_id')) {
+            $query->where('contents.user_id', (int) $request->input('client_id'));
         } else {
-            if ($clientId = $request->input('client_id')) {
-                $query->where('contents.user_id', $clientId);
-            }
+            $query->where('contents.user_id', $user->id);
         }
 
         if ($search = $request->input('search')) {
@@ -58,12 +57,37 @@ class ContentController extends Controller
         }
 
         if ($status = $request->input('status')) {
-            $query->where('status', $status);
+            if ($status !== 'all' && $status !== '') {
+                $query->where('status', $status);
+            }
         }
 
         if ($categoryId = $request->input('category_id')) {
             $query->whereHas('categories', fn ($q) => $q->where('categories.id', $categoryId));
         }
+
+        // Conteo reactivo estilo WordPress para pestañas de estado (Todos, Publicados, Borradores, Archivados)
+        $statusCountsQuery = Content::where('content_type_id', $contentType->id);
+        if ($isAdmin && $request->filled('client_id')) {
+            $statusCountsQuery->where('contents.user_id', (int) $request->input('client_id'));
+        } else {
+            $statusCountsQuery->where('contents.user_id', $user->id);
+        }
+
+        if ($search) {
+            $statusCountsQuery->where('title', 'like', "%{$search}%");
+        }
+
+        if ($categoryId) {
+            $statusCountsQuery->whereHas('categories', fn ($q) => $q->where('categories.id', $categoryId));
+        }
+
+        $statusCounts = [
+            'all' => (clone $statusCountsQuery)->count(),
+            'published' => (clone $statusCountsQuery)->where('status', 'published')->count(),
+            'draft' => (clone $statusCountsQuery)->where('status', 'draft')->count(),
+            'archived' => (clone $statusCountsQuery)->where('status', 'archived')->count(),
+        ];
 
         $perPage = min((int) $request->input('per_page', 20), 100);
         $contents = $query->paginate($perPage)->withQueryString();
@@ -72,7 +96,7 @@ class ContentController extends Controller
             return response()->json($contents);
         }
 
-        $taxUserId = ! $isAdmin ? $user->id : ($request->input('client_id') ?: $contentType->user_id);
+        $taxUserId = ($isAdmin && $request->filled('client_id')) ? (int) $request->input('client_id') : $user->id;
         $categories = $contentType->has_categories
             ? Category::where('user_id', $taxUserId)
                 ->where(fn ($q) => $q->where('content_type_id', $contentType->id)->orWhereNull('content_type_id'))
@@ -94,6 +118,7 @@ class ContentController extends Controller
             'categories' => $categories,
             'tags' => $tags,
             'assignedClients' => $assignedClients,
+            'statusCounts' => $statusCounts,
             'filters' => $request->only(['search', 'status', 'category_id', 'client_id']),
         ]);
     }
@@ -135,11 +160,14 @@ class ContentController extends Controller
         $rules = $this->buildValidationRules($contentType);
         $validated = $request->validate($rules);
 
+        $rawSlug = ! empty($validated['slug']) ? $validated['slug'] : $validated['title'];
+        $slug = Content::uniqueSlugFrom($rawSlug, auth()->id());
+
         $contentData = [
             'user_id' => auth()->id(),
             'content_type_id' => $contentType->id,
             'title' => $validated['title'],
-            'slug' => $validated['slug'] ?? Content::uniqueSlugFrom($validated['title'], auth()->id()),
+            'slug' => $slug,
             'excerpt' => $validated['excerpt'] ?? null,
             'body' => $validated['body'] ?? null,
             'custom_values' => $validated['custom_values'] ?? [],
@@ -183,13 +211,18 @@ class ContentController extends Controller
             ]);
         }
 
+        $publicUrl = $contentType->is_public ? url(($contentType->public_slug ?: $contentType->slug).'/'.$content->slug) : null;
+
         if ($request->boolean('_from_modal')) {
-            return back()->with('success', "{$contentType->singular_name} guardado con éxito.");
+            return back()
+                ->with('success', "{$contentType->singular_name} guardado con éxito.")
+                ->with('public_url', $publicUrl);
         }
 
         return redirect()
             ->route('admin.content.edit', [$contentType->slug, $content->id])
-            ->with('success', "{$contentType->singular_name} guardado con éxito.");
+            ->with('success', "{$contentType->singular_name} guardado con éxito.")
+            ->with('public_url', $publicUrl);
     }
 
     public function edit(string $typeSlug, Content $content): Response
@@ -232,25 +265,8 @@ class ContentController extends Controller
 
         // Manejo de miniatura / thumbnail: eliminar, reemplazar por archivo o asignar de biblioteca
         if ($request->boolean('remove_thumbnail')) {
-            if ($thumb = $content->media()->where('collection', 'thumbnail')->first()) {
-                $isUsedElsewhere = Media::where('file_path', $thumb->file_path)
-                    ->where('id', '!=', $thumb->id)
-                    ->exists();
-                if (! $isUsedElsewhere) {
-                    SecureFileUploader::delete($thumb->file_path);
-                }
-                $thumb->delete();
-            }
+            $content->media()->wherePivot('collection', 'thumbnail')->detach();
         } elseif ($request->hasFile('thumbnail')) {
-            if ($thumb = $content->media()->where('collection', 'thumbnail')->first()) {
-                $isUsedElsewhere = Media::where('file_path', $thumb->file_path)
-                    ->where('id', '!=', $thumb->id)
-                    ->exists();
-                if (! $isUsedElsewhere) {
-                    SecureFileUploader::delete($thumb->file_path);
-                }
-                $thumb->delete();
-            }
             $this->attachMediaFile($content, $request->file('thumbnail'), 'thumbnail');
         } elseif ($request->filled('thumbnail_media_id')) {
             $this->attachLibraryMedia($content, (int) $request->input('thumbnail_media_id'), 'thumbnail');
@@ -258,33 +274,19 @@ class ContentController extends Controller
 
         // Manejo de hero_image: eliminar, reemplazar por archivo o asignar de biblioteca
         if ($request->boolean('remove_hero_image')) {
-            if ($hero = $content->media()->where('collection', 'hero')->first()) {
-                $isUsedElsewhere = Media::where('file_path', $hero->file_path)
-                    ->where('id', '!=', $hero->id)
-                    ->exists();
-                if (! $isUsedElsewhere) {
-                    SecureFileUploader::delete($hero->file_path);
-                }
-                $hero->delete();
-            }
+            $content->media()->wherePivot('collection', 'hero')->detach();
         } elseif ($request->hasFile('hero_image')) {
-            if ($hero = $content->media()->where('collection', 'hero')->first()) {
-                $isUsedElsewhere = Media::where('file_path', $hero->file_path)
-                    ->where('id', '!=', $hero->id)
-                    ->exists();
-                if (! $isUsedElsewhere) {
-                    SecureFileUploader::delete($hero->file_path);
-                }
-                $hero->delete();
-            }
             $this->attachMediaFile($content, $request->file('hero_image'), 'hero');
         } elseif ($request->filled('hero_media_id')) {
             $this->attachLibraryMedia($content, (int) $request->input('hero_media_id'), 'hero');
         }
 
+        $rawSlug = ! empty($validated['slug']) ? $validated['slug'] : $content->slug;
+        $slug = Content::uniqueSlugFrom($rawSlug, $content->user_id, $content->id);
+
         $content->update([
             'title' => $validated['title'],
-            'slug' => $validated['slug'] ?? $content->slug,
+            'slug' => $slug,
             'excerpt' => $validated['excerpt'] ?? null,
             'body' => $validated['body'] ?? null,
             'custom_values' => $validated['custom_values'] ?? [],
@@ -313,13 +315,18 @@ class ContentController extends Controller
             ]);
         }
 
+        $publicUrl = $contentType->is_public ? url(($contentType->public_slug ?: $contentType->slug).'/'.$content->slug) : null;
+
         if ($request->boolean('_from_modal')) {
-            return back()->with('success', "{$contentType->singular_name} actualizado con éxito.");
+            return back()
+                ->with('success', "{$contentType->singular_name} actualizado con éxito.")
+                ->with('public_url', $publicUrl);
         }
 
         return redirect()
             ->route('admin.content.edit', [$contentType->slug, $content->id])
-            ->with('success', "{$contentType->singular_name} actualizado con éxito.");
+            ->with('success', "{$contentType->singular_name} actualizado con éxito.")
+            ->with('public_url', $publicUrl);
     }
 
     public function destroy(string $typeSlug, Content $content): RedirectResponse
@@ -362,14 +369,9 @@ class ContentController extends Controller
 
     protected function buildValidationRules(ContentType $contentType, ?int $contentId = null): array
     {
-        $slugRule = Rule::unique('contents', 'slug')->where('user_id', auth()->id());
-        if ($contentId) {
-            $slugRule->ignore($contentId);
-        }
-
         $rules = [
             'title' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255', 'alpha_dash', $slugRule],
+            'slug' => ['nullable', 'string', 'max:255', 'alpha_dash'],
             'excerpt' => ['nullable', 'string'],
             'body' => ['nullable', 'string'],
             'status' => ['required', 'string', Rule::in(['draft', 'published', 'archived'])],
@@ -379,8 +381,8 @@ class ContentController extends Controller
             'meta_title' => ['nullable', 'string', 'max:70'],
             'meta_description' => ['nullable', 'string', 'max:160'],
             'meta_keywords' => ['nullable', 'string', 'max:255'],
-            'thumbnail' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:5120'],
-            'hero_image' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:5120'],
+            'thumbnail' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp,heif,heic', 'max:20480'],
+            'hero_image' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp,heif,heic', 'max:20480'],
             'remove_thumbnail' => ['nullable', 'boolean'],
             'remove_hero_image' => ['nullable', 'boolean'],
             'thumbnail_media_id' => ['nullable', 'integer', 'exists:media,id'],
@@ -429,19 +431,32 @@ class ContentController extends Controller
 
     protected function attachMediaFile(Content $content, $file, string $collection): Media
     {
-        $path = SecureFileUploader::store($file, 'media/'.$collection);
+        $uploadResult = SecureFileUploader::storeWithThumbnail($file, 'media/library');
 
-        return $content->media()->create([
+        $media = Media::create([
             'user_id' => auth()->id(),
-            'content_id' => $content->id,
             'disk' => 'public',
-            'file_path' => $path,
+            'file_path' => $uploadResult['file_path'],
+            'thumbnail_path' => $uploadResult['thumbnail_path'],
             'file_name' => SecureFileUploader::sanitizeOriginalFilename($file->getClientOriginalName()),
-            'mime_type' => $file->getMimeType(),
-            'file_size' => $file->getSize(),
-            'collection' => $collection,
+            'mime_type' => $uploadResult['mime_type'],
+            'file_size' => $uploadResult['file_size'],
+            'collection' => 'library',
             'order' => 0,
         ]);
+
+        if (in_array($collection, ['thumbnail', 'hero'], true)) {
+            $content->media()->wherePivot('collection', $collection)->detach();
+        }
+
+        $content->media()->syncWithoutDetaching([
+            $media->id => [
+                'collection' => $collection,
+                'order' => 0,
+            ],
+        ]);
+
+        return $media;
     }
 
     protected function attachLibraryMedia(Content $content, int $mediaId, string $collection): ?Media
@@ -454,30 +469,17 @@ class ContentController extends Controller
             return null;
         }
 
-        // Si ya tenía miniatura o hero previo, limpiar el anterior de forma segura
-        if ($old = $content->media()->where('collection', $collection)->first()) {
-            $isUsedElsewhere = Media::where('file_path', $old->file_path)
-                ->where('id', '!=', $old->id)
-                ->exists();
-            if (! $isUsedElsewhere) {
-                SecureFileUploader::delete($old->file_path);
-            }
-            $old->delete();
+        if (in_array($collection, ['thumbnail', 'hero'], true)) {
+            $content->media()->wherePivot('collection', $collection)->detach();
         }
 
-        return $content->media()->create([
-            'user_id' => auth()->id(),
-            'content_id' => $content->id,
-            'disk' => $source->disk,
-            'file_path' => $source->file_path,
-            'file_name' => $source->file_name,
-            'mime_type' => $source->mime_type,
-            'file_size' => $source->file_size,
-            'collection' => $collection,
-            'caption' => $source->caption,
-            'order' => 0,
-            'mediable_id' => $content->id,
-            'mediable_type' => Content::class,
+        $content->media()->syncWithoutDetaching([
+            $source->id => [
+                'collection' => $collection,
+                'order' => 0,
+            ],
         ]);
+
+        return $source;
     }
 }

@@ -49,7 +49,7 @@ class AuthenticationTest extends TestCase
         $response = $this->actingAs($user)->post('/admin/logout');
 
         $this->assertGuest();
-        $response->assertRedirect('/login');
+        $response->assertRedirect(route('admin.login'));
     }
 
     public function test_authenticated_user_accessing_login_is_redirected_to_admin_dashboard(): void
@@ -63,7 +63,7 @@ class AuthenticationTest extends TestCase
 
     public function test_unauthenticated_user_can_access_login(): void
     {
-        $response = $this->get('/login');
+        $response = $this->get(route('admin.login'));
 
         $response->assertStatus(200);
     }

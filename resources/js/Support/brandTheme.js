@@ -1,5 +1,5 @@
 /**
- * Helper de Tema y Paleta Dinámica para el Super Admin
+ * Helper de Tema y Paleta Dinámica Exclusiva por Usuario (Super Admin vs Cliente)
  * Convierte colores HEX a RGB y deriva matices para variables CSS de Tailwind.
  */
 
@@ -47,34 +47,31 @@ export function shadeColor(color, percent) {
 }
 
 /**
- * Aplica la paleta personalizada del Super Admin al elemento <html>
- * Inyecta las variables CSS que Tailwind consume en tiempo real.
+ * Inyecta las variables CSS de paleta en document.documentElement.
  */
-export function applySuperAdminPalette(colors = {}) {
+function injectPaletteCssVariables(colors = {}) {
     if (typeof document === 'undefined') return;
 
     const root = document.documentElement;
-    root.classList.add('is-super-admin');
 
-    const primary = colors.primary || '#CB2128';
-    const secondary = colors.secondary || '#DFB136';
-    const tertiary = colors.tertiary || '#1D4ED8';
-    const accent = colors.accent || '#F59E0B';
-
-    const primaryRgb = hexToRgbString(primary) || '203 33 40';
+    const primary = colors.primary;
+    const primaryRgb = hexToRgbString(primary);
     const primaryHover = shadeColor(primary, -12);
     const primaryDark = shadeColor(primary, -25);
     const primarySubtle = shadeColor(primary, 88);
 
-    const secondaryRgb = hexToRgbString(secondary) || '223 177 54';
+    const secondary = colors.secondary;
+    const secondaryRgb = hexToRgbString(secondary);
     const secondaryHover = shadeColor(secondary, -12);
     const secondarySubtle = shadeColor(secondary, 88);
 
-    const tertiaryRgb = hexToRgbString(tertiary) || '29 78 216';
+    const tertiary = colors.tertiary;
+    const tertiaryRgb = hexToRgbString(tertiary);
     const tertiaryHover = shadeColor(tertiary, -12);
     const tertiarySubtle = shadeColor(tertiary, 88);
 
-    const accentRgb = hexToRgbString(accent) || '245 158 11';
+    const accent = colors.accent;
+    const accentRgb = hexToRgbString(accent);
     const accentHover = shadeColor(accent, -12);
     const accentSubtle = shadeColor(accent, 88);
 
@@ -98,8 +95,31 @@ export function applySuperAdminPalette(colors = {}) {
     root.style.setProperty('--brand-accent-rgb', accentRgb);
     root.style.setProperty('--brand-accent-hover', accentHover);
     root.style.setProperty('--brand-accent-subtle', accentSubtle);
+}
+
+/**
+ * Aplica la paleta personalizada del Super Admin al elemento <html>
+ */
+export function applySuperAdminPalette(colors = {}, userId = null) {
+    if (typeof document === 'undefined') return;
+
+    const root = document.documentElement;
+    root.classList.add('is-super-admin');
+
+    const primary = colors.primary || '#CB2128';
+    const secondary = colors.secondary || '#DFB136';
+    const tertiary = colors.tertiary || '#1D4ED8';
+    const accent = colors.accent || '#F59E0B';
+
+    injectPaletteCssVariables({ primary, secondary, tertiary, accent });
 
     try {
+        if (userId) {
+            localStorage.setItem(`user_palette_${userId}_primary`, primary);
+            localStorage.setItem(`user_palette_${userId}_secondary`, secondary);
+            localStorage.setItem(`user_palette_${userId}_tertiary`, tertiary);
+            localStorage.setItem(`user_palette_${userId}_accent`, accent);
+        }
         localStorage.setItem('admin_palette_primary', primary);
         localStorage.setItem('admin_palette_secondary', secondary);
         localStorage.setItem('admin_palette_tertiary', tertiary);
@@ -108,37 +128,31 @@ export function applySuperAdminPalette(colors = {}) {
 }
 
 /**
- * Restablece los estilos para un usuario con rol cliente/estándar
- * Remueve la clase de super admin y cualquier variable en línea.
+ * Aplica la paleta exclusiva de Cliente / Usuario Estándar.
+ * Garantiza que NUNCA se vean los hovers o tonos de Super Admin.
  */
-export function resetClientPalette() {
+export function applyClientPalette(colors = {}, userId = null) {
     if (typeof document === 'undefined') return;
 
     const root = document.documentElement;
     root.classList.remove('is-super-admin');
 
-    root.style.removeProperty('--brand-primary');
-    root.style.removeProperty('--brand-primary-rgb');
-    root.style.removeProperty('--brand-primary-hover');
-    root.style.removeProperty('--brand-primary-dark');
-    root.style.removeProperty('--brand-primary-subtle');
+    // Colores exclusivos de cliente (o los que tenga asignados)
+    const primary = colors.primary || '#2787F5';
+    const secondary = colors.secondary || '#6c757d';
+    const tertiary = colors.tertiary || '#00B4D8';
+    const accent = colors.accent || '#DFB136';
 
-    root.style.removeProperty('--brand-secondary');
-    root.style.removeProperty('--brand-secondary-rgb');
-    root.style.removeProperty('--brand-secondary-hover');
-    root.style.removeProperty('--brand-secondary-subtle');
-
-    root.style.removeProperty('--brand-tertiary');
-    root.style.removeProperty('--brand-tertiary-rgb');
-    root.style.removeProperty('--brand-tertiary-hover');
-    root.style.removeProperty('--brand-tertiary-subtle');
-
-    root.style.removeProperty('--brand-accent');
-    root.style.removeProperty('--brand-accent-rgb');
-    root.style.removeProperty('--brand-accent-hover');
-    root.style.removeProperty('--brand-accent-subtle');
+    injectPaletteCssVariables({ primary, secondary, tertiary, accent });
 
     try {
+        if (userId) {
+            localStorage.setItem(`user_palette_${userId}_primary`, primary);
+            localStorage.setItem(`user_palette_${userId}_secondary`, secondary);
+            localStorage.setItem(`user_palette_${userId}_tertiary`, tertiary);
+            localStorage.setItem(`user_palette_${userId}_accent`, accent);
+        }
+        // Limpiar las claves globales de admin para evitar contaminación cruzada
         localStorage.removeItem('admin_palette_primary');
         localStorage.removeItem('admin_palette_secondary');
         localStorage.removeItem('admin_palette_tertiary');
@@ -146,3 +160,14 @@ export function resetClientPalette() {
     } catch (e) {}
 }
 
+/**
+ * Restablece los estilos para un usuario cliente a los valores de fábrica.
+ */
+export function resetClientPalette(userId = null) {
+    applyClientPalette({
+        primary: '#2787F5',
+        secondary: '#6c757d',
+        tertiary: '#00B4D8',
+        accent: '#DFB136',
+    }, userId);
+}

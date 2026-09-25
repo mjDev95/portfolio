@@ -9,7 +9,12 @@ class ImageOptimizer
      * Si WebP Lossless genera un archivo mayor que el original (común en JPEGs con ruido de compresión),
      * aplica WebP de ultra-alta fidelidad (Q90) para garantizar compresión real sin pérdida perceptible.
      */
-    public static function convertToWebpLossless(string $sourcePath, string $destinationPath, bool $preventBloat = true): bool
+    /**
+     * Convierte una imagen a WebP preservando resolución nativa, fidelidad cromática y transparencia.
+     * Si WebP Lossless genera un archivo mayor que el original (común en JPEGs con ruido de compresión),
+     * aplica WebP de ultra-alta fidelidad (Q90) para garantizar compresión real sin pérdida perceptible.
+     */
+    public static function convertToWebpLossless(string $sourcePath, string $destinationPath, bool $preventBloat = true, ?string $hint = null): bool
     {
         if (! file_exists($sourcePath)) {
             return false;
@@ -19,7 +24,33 @@ class ImageOptimizer
             @ini_set('memory_limit', '512M');
         }
 
-        $image = self::createImageResource($sourcePath);
+        // Si es HEIF/HEIC, usar conversión directa con Imagick si está disponible (rápida y fiel)
+        if (self::isHeif($sourcePath, $hint) && extension_loaded('imagick')) {
+            try {
+                $imagick = new \Imagick($sourcePath);
+                if (method_exists($imagick, 'autoOrient')) {
+                    $imagick->autoOrient();
+                }
+
+                self::ensureDirectoryExists(dirname($destinationPath));
+                $imagick->setImageFormat('webp');
+                $imagick->setOption('webp:lossless', 'true');
+                $written = $imagick->writeImage($destinationPath);
+                $imagick->destroy();
+
+                if ($written && file_exists($destinationPath) && filesize($destinationPath) > 0) {
+                    if ($preventBloat && filesize($destinationPath) > filesize($sourcePath)) {
+                        return self::convertToWebpLossy($sourcePath, $destinationPath, 90, $hint);
+                    }
+
+                    return true;
+                }
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+
+        $image = self::createImageResource($sourcePath, $hint);
         if (! $image) {
             return false;
         }
@@ -51,7 +82,7 @@ class ImageOptimizer
      * Convierte una imagen a WebP con compresión de alta calidad (calidad por defecto 90).
      * Reduce drásticamente el peso del archivo preservando gran nitidez visual y canal alfa.
      */
-    public static function convertToWebpLossy(string $sourcePath, string $destinationPath, int $quality = 90): bool
+    public static function convertToWebpLossy(string $sourcePath, string $destinationPath, int $quality = 90, ?string $hint = null): bool
     {
         if (! file_exists($sourcePath)) {
             return false;
@@ -61,7 +92,29 @@ class ImageOptimizer
             @ini_set('memory_limit', '512M');
         }
 
-        $image = self::createImageResource($sourcePath);
+        // Si es HEIF/HEIC, usar conversión directa con Imagick
+        if (self::isHeif($sourcePath, $hint) && extension_loaded('imagick')) {
+            try {
+                $imagick = new \Imagick($sourcePath);
+                if (method_exists($imagick, 'autoOrient')) {
+                    $imagick->autoOrient();
+                }
+
+                self::ensureDirectoryExists(dirname($destinationPath));
+                $imagick->setImageFormat('webp');
+                $imagick->setImageCompressionQuality(max(1, min(100, $quality)));
+                $written = $imagick->writeImage($destinationPath);
+                $imagick->destroy();
+
+                if ($written && file_exists($destinationPath) && filesize($destinationPath) > 0) {
+                    return true;
+                }
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+
+        $image = self::createImageResource($sourcePath, $hint);
         if (! $image) {
             return false;
         }
@@ -120,13 +173,13 @@ class ImageOptimizer
      * Genera una miniatura ultraligera (~15-25 KB) para cuadrículas y tablas del admin en WebP.
      * Escala proporcionalmente hasta un máximo de $maxDim manteniendo aspecto y canal alfa.
      */
-    public static function generateGridThumbnail(string $sourcePath, string $destinationPath, int $maxDim = 360, int $quality = 82): bool
+    public static function generateGridThumbnail(string $sourcePath, string $destinationPath, int $maxDim = 360, int $quality = 82, ?string $hint = null): bool
     {
         if (! file_exists($sourcePath)) {
             return false;
         }
 
-        $image = self::createImageResource($sourcePath);
+        $image = self::createImageResource($sourcePath, $hint);
         if (! $image) {
             return false;
         }
@@ -166,27 +219,147 @@ class ImageOptimizer
     }
 
     /**
-     * Carga el recurso GD desde archivo según el tipo de imagen.
+     * Determina con precisión si un archivo es HEIF/HEIC mediante hint, extensión, MIME y bytes mágicos ftyp.
+     */
+    public static function isHeif(string $path, ?string $hint = null): bool
+    {
+        if ($hint) {
+            $hintLower = strtolower($hint);
+            if (in_array($hintLower, ['heif', 'heic', 'image/heif', 'image/heic', 'image/heif-sequence', 'image/heic-sequence'], true)) {
+                return true;
+            }
+        }
+
+        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        if (in_array($ext, ['heif', 'heic'], true)) {
+            return true;
+        }
+
+        if (function_exists('finfo_open')) {
+            $finfo = @finfo_open(FILEINFO_MIME_TYPE);
+            if ($finfo) {
+                $detected = @finfo_file($finfo, $path);
+                @finfo_close($finfo);
+                if (in_array($detected, ['image/heif', 'image/heic', 'image/heif-sequence', 'image/heic-sequence'], true)) {
+                    return true;
+                }
+            }
+        }
+
+        // Detección por bytes mágicos ISOBMFF (offset 4 'ftyp' seguido de major brand compatible con HEIF)
+        if (file_exists($path) && filesize($path) >= 16) {
+            $fp = @fopen($path, 'rb');
+            if ($fp) {
+                $bytes = fread($fp, 24);
+                fclose($fp);
+                if (substr($bytes, 4, 4) === 'ftyp') {
+                    $majorBrand = substr($bytes, 8, 4);
+                    if (in_array($majorBrand, ['heic', 'heix', 'hevc', 'heim', 'heis', 'heif', 'mif1', 'msf1'], true)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Carga el recurso GD desde archivo según el tipo de imagen (soporta JPEG, PNG, WebP y HEIF/HEIC).
      *
      * @return \GdImage|resource|false
      */
-    protected static function createImageResource(string $path)
+    protected static function createImageResource(string $path, ?string $hint = null)
     {
-        $info = @getimagesize($path);
-        if (! $info) {
-            $content = @file_get_contents($path);
+        // Soporte nativo para HEIF / HEIC (.heif, .heic)
+        if (self::isHeif($path, $hint)) {
+            $heifImage = self::createImageFromHeif($path);
+            if ($heifImage) {
+                if (! imageistruecolor($heifImage)) {
+                    imagepalettetotruecolor($heifImage);
+                }
 
-            return $content ? @imagecreatefromstring($content) : false;
+                return $heifImage;
+            }
         }
 
+        $info = @getimagesize($path);
         $mime = $info['mime'] ?? '';
 
-        return match ($mime) {
+        $image = match ($mime) {
             'image/jpeg', 'image/jpg' => @imagecreatefromjpeg($path),
             'image/png' => @imagecreatefrompng($path),
             'image/webp' => @imagecreatefromwebp($path),
             default => false,
         };
+
+        if (! $image) {
+            $content = @file_get_contents($path);
+            $image = $content ? @imagecreatefromstring($content) : false;
+        }
+
+        if ($image && ! imageistruecolor($image)) {
+            imagepalettetotruecolor($image);
+        }
+
+        return $image;
+    }
+
+    /**
+     * Decodifica una imagen HEIF/HEIC usando Imagick (con autoOrient EXIF) o sips (en macOS).
+     *
+     * @return \GdImage|resource|false
+     */
+    protected static function createImageFromHeif(string $path)
+    {
+        // Estrategia 1: Extensión Imagick con libheif
+        if (extension_loaded('imagick')) {
+            try {
+                $imagick = new \Imagick;
+                $imagick->readImage($path);
+
+                if (method_exists($imagick, 'autoOrient')) {
+                    $imagick->autoOrient();
+                }
+
+                $imagick->setImageFormat('png');
+                $blob = $imagick->getImageBlob();
+                $imagick->destroy();
+
+                if ($blob) {
+                    $gd = @imagecreatefromstring($blob);
+                    if ($gd) {
+                        return $gd;
+                    }
+                }
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+
+        // Estrategia 2: Fallback con sips en macOS
+        if (PHP_OS_FAMILY === 'Darwin' && file_exists('/usr/bin/sips')) {
+            $tmpPng = tempnam(sys_get_temp_dir(), 'heif_conv_').'.png';
+            $cmd = '/usr/bin/sips -s format png '.escapeshellarg($path).' --out '.escapeshellarg($tmpPng).' 2>&1';
+            exec($cmd, $output, $returnCode);
+
+            if ($returnCode === 0 && file_exists($tmpPng)) {
+                $content = @file_get_contents($tmpPng);
+                @unlink($tmpPng);
+                if ($content) {
+                    $gd = @imagecreatefromstring($content);
+                    if ($gd) {
+                        return $gd;
+                    }
+                }
+            }
+            @unlink($tmpPng);
+        }
+
+        // Estrategia 3: GD directo si la versión instalada soporta heif en imagecreatefromstring
+        $content = @file_get_contents($path);
+
+        return $content ? @imagecreatefromstring($content) : false;
     }
 
     /**

@@ -65,10 +65,10 @@ class ServerAuthorizationAndHistorySecurityTest extends TestCase
         $this->actingAs($this->client);
 
         $logoutResponse = $this->post('/logout');
-        $logoutResponse->assertRedirect('/login');
+        $logoutResponse->assertRedirect(route('admin.login'));
 
         // Subsequent visit to login receives clearHistory = true
-        $loginResponse = $this->get('/login');
+        $loginResponse = $this->get(route('admin.login'));
         $loginResponse->assertOk();
 
         $page = $loginResponse->viewData('page');

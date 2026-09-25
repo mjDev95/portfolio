@@ -9,6 +9,8 @@ use App\Models\Media;
 use App\Support\SecureFileUploader;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -34,8 +36,16 @@ class MediaController extends Controller
         }
 
         if ($collection = $request->input('collection')) {
-            if ($collection !== 'all') {
-                $query->where('collection', $collection);
+            if ($collection === 'library') {
+                $query->where(function ($q) {
+                    $q->where('collection', 'library')
+                        ->orWhereDoesntHave('contents');
+                });
+            } elseif (in_array($collection, ['thumbnail', 'hero', 'gallery'], true)) {
+                $query->where(function ($q) use ($collection) {
+                    $q->where('collection', $collection)
+                        ->orWhereHas('contents', fn ($cq) => $cq->where('content_media.collection', $collection));
+                });
             }
         }
 
@@ -97,6 +107,18 @@ class MediaController extends Controller
             'mediable_type' => $mediableType,
         ]);
 
+        if ($mediableType === 'App\\Models\\Content' && $mediableId) {
+            $content = Content::find($mediableId);
+            if ($content) {
+                $content->media()->syncWithoutDetaching([
+                    $media->id => [
+                        'collection' => $collection,
+                        'order' => (int) $request->validated('order', 0),
+                    ],
+                ]);
+            }
+        }
+
         return response()->json($media);
     }
 
@@ -118,44 +140,25 @@ class MediaController extends Controller
         $content = Content::findOrFail($validated['content_id']);
         $this->authorize('update', $content);
 
-        // If attaching as thumbnail or hero, safely detach/delete previous one for this content
+        // If attaching as thumbnail or hero, safely detach previous one for this content
         if (in_array($validated['collection'], ['thumbnail', 'hero'], true)) {
-            if ($old = $content->media()->where('collection', $validated['collection'])->first()) {
-                $isUsedElsewhere = Media::where('file_path', $old->file_path)
-                    ->where('id', '!=', $old->id)
-                    ->exists();
-
-                if (! $isUsedElsewhere) {
-                    SecureFileUploader::delete($old->file_path);
-                }
-                $old->delete();
-            }
+            $content->media()->wherePivot('collection', $validated['collection'])->detach();
         }
 
         $order = $validated['collection'] === 'gallery'
-            ? (($content->media()->where('collection', 'gallery')->max('order') ?? -1) + 1)
+            ? (($content->media()->wherePivot('collection', 'gallery')->max('content_media.order') ?? -1) + 1)
             : 0;
 
-        $media = Media::create([
-            'user_id' => auth()->id(),
-            'content_id' => $content->id,
-            'disk' => $source->disk,
-            'file_path' => $source->file_path,
-            'thumbnail_path' => $source->thumbnail_path,
-            'file_name' => $source->file_name,
-            'title' => $source->title,
-            'alt' => $source->alt,
-            'description' => $source->description,
-            'mime_type' => $source->mime_type,
-            'file_size' => $source->file_size,
-            'collection' => $validated['collection'],
-            'caption' => $source->caption,
-            'order' => $order,
-            'mediable_id' => $content->id,
-            'mediable_type' => Content::class,
+        $content->media()->syncWithoutDetaching([
+            $source->id => [
+                'collection' => $validated['collection'],
+                'order' => $order,
+            ],
         ]);
 
-        return response()->json($media);
+        $source->collection = $validated['collection'];
+
+        return response()->json($source);
     }
 
     /**
@@ -207,11 +210,20 @@ class MediaController extends Controller
     }
 
     /**
-     * Delete a media record and its physical file from disk (if not referenced elsewhere).
+     * Delete a media record and its physical file from disk (if not referenced elsewhere),
+     * or detach it from a specific content item if content_id is passed.
      */
-    public function destroy(Media $media): JsonResponse
+    public function destroy(Request $request, Media $media): JsonResponse
     {
         abort_unless($media->user_id === auth()->id() || auth()->user()->isAdmin(), 403);
+
+        // Si se especificó content_id, solo desasociar de esa publicación sin borrar el activo de la biblioteca
+        if ($request->filled('content_id')) {
+            $contentId = (int) $request->input('content_id');
+            $media->contents()->detach($contentId);
+
+            return response()->json(['detached' => true]);
+        }
 
         $isUsedElsewhere = Media::where('file_path', $media->file_path)
             ->where('id', '!=', $media->id)
@@ -280,5 +292,97 @@ class MediaController extends Controller
             'success' => true,
             'deletedCount' => $deletedCount,
         ]);
+    }
+
+    /**
+     * Download a single media file as .webp.
+     */
+    public function download(Media $media)
+    {
+        abort_unless($media->user_id === auth()->id(), 403);
+
+        $disk = Storage::disk($media->disk ?? 'public');
+        if (! $disk->exists($media->file_path)) {
+            abort(404, 'File not found');
+        }
+
+        $baseName = pathinfo($media->file_name, PATHINFO_FILENAME);
+        $downloadName = Str::slug($baseName ?: 'imagen').'.webp';
+
+        return $disk->download($media->file_path, $downloadName, [
+            'Content-Type' => 'image/webp',
+        ]);
+    }
+
+    /**
+     * Download multiple media files in bulk as .webp (direct single download if 1, or zip if > 1).
+     * Expects: { ids: [1, 2, 3] } via POST or GET (e.g. ids comma separated or array)
+     */
+    public function downloadBulk(Request $request)
+    {
+        $rawIds = $request->input('ids');
+        if (is_string($rawIds)) {
+            $rawIds = array_filter(explode(',', $rawIds));
+        }
+
+        $request->merge(['ids' => $rawIds]);
+
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:media,id'],
+        ]);
+
+        $mediaItems = Media::whereIn('id', $validated['ids'])
+            ->where('user_id', auth()->id())
+            ->get();
+
+        if ($mediaItems->isEmpty()) {
+            abort(404, 'No media found.');
+        }
+
+        // If only 1 file is requested, return it directly as .webp
+        if ($mediaItems->count() === 1) {
+            return $this->download($mediaItems->first());
+        }
+
+        // Multiple files -> create a ZIP archive containing the .webp files
+        $disk = Storage::disk('public');
+        $tempDir = storage_path('app/temp');
+        if (! file_exists($tempDir)) {
+            mkdir($tempDir, 0755, true);
+        }
+
+        $zipFileName = 'imagenes-webp-'.now()->format('Ymd-His').'.zip';
+        $zipPath = $tempDir.'/'.$zipFileName;
+
+        $zip = new \ZipArchive;
+        if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+            abort(500, 'Unable to create zip file');
+        }
+
+        $usedNames = [];
+        foreach ($mediaItems as $media) {
+            $fullPath = $disk->path($media->file_path);
+            if (file_exists($fullPath)) {
+                $baseName = Str::slug(pathinfo($media->file_name, PATHINFO_FILENAME)) ?: 'imagen';
+                $entryName = $baseName.'.webp';
+
+                // Prevent name collisions inside the ZIP
+                $i = 1;
+                while (isset($usedNames[$entryName])) {
+                    $entryName = "{$baseName}-{$i}.webp";
+                    $i++;
+                }
+                $usedNames[$entryName] = true;
+
+                $zip->addFile($fullPath, $entryName);
+            }
+        }
+
+        $zip->close();
+
+        return response()->download($zipPath, $zipFileName, [
+            'Content-Type' => 'application/zip',
+        ])->deleteFileAfterSend(true);
     }
 }

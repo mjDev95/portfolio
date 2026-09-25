@@ -5,6 +5,8 @@ import GlobalBanner from '@/Components/GlobalBanner';
 import LocomotiveScrollbar from '@/Components/LocomotiveScrollbar';
 import RoundThemeToggle from '@/Components/RoundThemeToggle';
 import SidebarMorphingDock from '@/Components/Sidebar/SidebarMorphingDock';
+import LiquidFab from '@/Components/LiquidFab';
+import TopbarProfileDropdown from '@/Components/TopbarProfileDropdown';
 import { Link, usePage, router } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
@@ -32,7 +34,6 @@ import {
     X,
     ChevronDown,
     Share2,
-    Bell,
     ExternalLink,
     LayoutGrid,
     Type,
@@ -41,8 +42,9 @@ import {
     Cpu,
     ShieldCheck,
     ArrowLeft,
+    Tag as TagIcon,
 } from 'lucide-react';
-import { applySuperAdminPalette, resetClientPalette } from '@/Support/brandTheme';
+import { applySuperAdminPalette, applyClientPalette, resetClientPalette } from '@/Support/brandTheme';
 
 const ICON_MAP = {
     Briefcase,
@@ -58,7 +60,7 @@ const ICON_MAP = {
     MessageSquare,
 };
 
-export default function AuthenticatedLayout({ header, children }) {
+export default function AuthenticatedLayout({ header, children, showBreadcrumbs = true }) {
     const { props = {}, url = '' } = usePage();
     const pagePath = url.split('?')[0];
     const user = props.auth?.user;
@@ -66,6 +68,12 @@ export default function AuthenticatedLayout({ header, children }) {
     const contentTypes = props.content_types || [];
     const flash = props.flash || {};
     const errors = props.errors || {};
+
+    const isCreatePage =
+        pagePath.endsWith('/create') ||
+        url.includes('/create') ||
+        props.breadcrumbs === false ||
+        showBreadcrumbs === false;
 
     const [feedback, setFeedback] = useState(null);
     const [isNavigating, setIsNavigating] = useState(false);
@@ -152,30 +160,57 @@ export default function AuthenticatedLayout({ header, children }) {
         };
     }, []);
 
-    // Sincronización y reactividad de paleta de 4 colores para Super Admin
+    // Sincronización y reactividad de paleta exclusiva por usuario y rol
     useEffect(() => {
         const isSuperAdmin = user?.role === 'admin';
+        const userId = user?.id;
+        const userPalette = user?.color_palette || {};
+
         if (isSuperAdmin) {
-            const userPalette = user?.color_palette || {};
             applySuperAdminPalette({
-                primary: userPalette.primary || localStorage.getItem('admin_palette_primary') || '#CB2128',
-                secondary: userPalette.secondary || localStorage.getItem('admin_palette_secondary') || '#DFB136',
-                tertiary: userPalette.tertiary || localStorage.getItem('admin_palette_tertiary') || '#1D4ED8',
-                accent: userPalette.accent || localStorage.getItem('admin_palette_accent') || '#F59E0B',
-            });
+                primary: userPalette.primary || localStorage.getItem(`user_palette_${userId}_primary`) || localStorage.getItem('admin_palette_primary') || '#CB2128',
+                secondary: userPalette.secondary || localStorage.getItem(`user_palette_${userId}_secondary`) || localStorage.getItem('admin_palette_secondary') || '#DFB136',
+                tertiary: userPalette.tertiary || localStorage.getItem(`user_palette_${userId}_tertiary`) || localStorage.getItem('admin_palette_tertiary') || '#1D4ED8',
+                accent: userPalette.accent || localStorage.getItem(`user_palette_${userId}_accent`) || localStorage.getItem('admin_palette_accent') || '#F59E0B',
+            }, userId);
         } else {
-            resetClientPalette();
+            // Usuario cliente / estándar: paleta exclusiva del cliente (NUNCA tonos ni hovers de super admin)
+            let clientPrimary = userPalette.primary || localStorage.getItem(`user_palette_${userId}_primary`);
+            if (clientPrimary && (clientPrimary.toUpperCase() === '#CB2128' || clientPrimary.toUpperCase() === '#CC282F')) {
+                clientPrimary = null;
+                try {
+                    localStorage.removeItem(`user_palette_${userId}_primary`);
+                    localStorage.removeItem(`user_palette_${userId}_secondary`);
+                    localStorage.removeItem(`user_palette_${userId}_tertiary`);
+                    localStorage.removeItem(`user_palette_${userId}_accent`);
+                    localStorage.removeItem('admin_palette_primary');
+                    localStorage.removeItem('admin_palette_secondary');
+                    localStorage.removeItem('admin_palette_tertiary');
+                    localStorage.removeItem('admin_palette_accent');
+                } catch (e) {}
+            }
+
+            applyClientPalette({
+                primary: clientPrimary || '#2787F5',
+                secondary: userPalette.secondary || localStorage.getItem(`user_palette_${userId}_secondary`) || '#6c757d',
+                tertiary: userPalette.tertiary || localStorage.getItem(`user_palette_${userId}_tertiary`) || '#00B4D8',
+                accent: userPalette.accent || localStorage.getItem(`user_palette_${userId}_accent`) || '#DFB136',
+            }, userId);
         }
 
         const handlePaletteChange = (e) => {
-            if (isSuperAdmin && e.detail) {
-                applySuperAdminPalette(e.detail);
+            if (e.detail) {
+                if (isSuperAdmin) {
+                    applySuperAdminPalette(e.detail, userId);
+                } else {
+                    applyClientPalette(e.detail, userId);
+                }
             }
         };
 
         window.addEventListener('admin-palette-changed', handlePaletteChange);
         return () => window.removeEventListener('admin-palette-changed', handlePaletteChange);
-    }, [user?.role, user?.color_palette]);
+    }, [user?.role, user?.id, user?.color_palette]);
 
     // Sincronizar notificaciones flash y errores globales
     useEffect(() => {
@@ -184,6 +219,7 @@ export default function AuthenticatedLayout({ header, children }) {
                 type: 'success',
                 title: '¡Operación exitosa!',
                 message: flash.success,
+                public_url: flash.public_url || null,
             });
         } else if (flash?.error) {
             setFeedback({
@@ -245,7 +281,28 @@ export default function AuthenticatedLayout({ header, children }) {
             );
         }
         if (key === 'content-types') {
-            return url.startsWith('/admin/content-types');
+            return url === '/admin/content-types' || url.startsWith('/admin/content-types?');
+        }
+        if (key === 'content-types-create') {
+            return url.startsWith('/admin/content-types/create');
+        }
+        if (key.startsWith('cpt-cat-')) {
+            const slug = key.replace('cpt-cat-', '');
+            return url.startsWith(`/admin/${slug}/categories`);
+        }
+        if (key.startsWith('cpt-tags-')) {
+            const slug = key.replace('cpt-tags-', '');
+            return url.startsWith(`/admin/${slug}/tags`);
+        }
+        if (key.startsWith('cpt-manage-')) {
+            const slug = key.replace('cpt-manage-', '');
+            return (
+                (url === `/admin/${slug}` ||
+                url.startsWith(`/admin/${slug}/`) ||
+                url.startsWith(`/admin/${slug}?`)) &&
+                !url.includes('/categories') &&
+                !url.includes('/tags')
+            );
         }
         if (key.startsWith('cpt-')) {
             const slug = key.replace('cpt-', '');
@@ -259,15 +316,19 @@ export default function AuthenticatedLayout({ header, children }) {
         switch (key) {
             case 'media':
                 return url.startsWith('/admin/media');
-            case 'messages':
-                return url.startsWith('/admin/messages');
             case 'users':
                 return url.startsWith('/admin/users');
             case 'brand':
+            case 'brand-palette':
+            case 'brand-typography':
                 return url.startsWith('/admin/brand');
             case 'preferences':
+            case 'pref-theme':
+            case 'pref-telemetry':
+            case 'pref-cache':
                 return url.startsWith('/admin/preferences');
             case 'profile':
+            case 'user-profile':
                 return url.startsWith('/admin/profile');
             default:
                 return false;
@@ -316,17 +377,7 @@ export default function AuthenticatedLayout({ header, children }) {
 
     // Componente del Contenido del Sidebar con Píldora Deslizante y Rutas Reales
     const LeftSidebarContent = () => {
-        const [sidebarNavMode, setSidebarNavMode] = useState(() => {
-            if (typeof window !== 'undefined') {
-                const path = window.location.pathname;
-                if (path.includes('/admin/preferences') || path.includes('/admin/brand') || path.includes('/admin/profile')) {
-                    return 'settings';
-                }
-            }
-            return 'menu';
-        });
-
-        // 1. Opciones del Menú Principal
+        // Opciones del Menú Principal Unificado (Dinámico con CPTs y Accesos)
         const navItems = [
             {
                 key: 'dashboard',
@@ -334,17 +385,18 @@ export default function AuthenticatedLayout({ header, children }) {
                 label: 'Dashboard',
                 icon: <LayoutDashboard className="h-4 w-4" />,
             },
+            ...contentTypes.map((type) => ({
+                key: `cpt-${type.slug}`,
+                href: route('admin.content.index', type.slug),
+                label: type.name,
+                icon: renderNavIcon(type.icon),
+                count: type.contents_count,
+            })),
             {
                 key: 'media',
                 href: route('admin.media.index'),
                 label: 'Medios',
                 icon: <Images className="h-4 w-4" />,
-            },
-            {
-                key: 'messages',
-                href: route('admin.messages.index'),
-                label: 'Mensajes',
-                icon: <MessageSquare className="h-4 w-4" />,
             },
             ...(isAdmin
                 ? [
@@ -355,183 +407,95 @@ export default function AuthenticatedLayout({ header, children }) {
                           icon: <Users className="h-4 w-4" />,
                       },
                       {
-                          key: 'brand',
-                          href: route('admin.brand.index'),
-                          label: 'Identidad',
-                          icon: <Palette className="h-4 w-4" />,
-                      },
-                  ]
-                : []),
-        ];
-
-        // 2. Opciones de Módulos & CPTs
-        const modulesItems = [
-            ...(isAdmin
-                ? [
-                      {
                           key: 'content-types',
                           href: route('admin.content-types.index'),
                           label: 'Tipos de Contenido',
                           icon: <Boxes className="h-4 w-4" />,
                       },
-                      {
-                          key: 'content-types-create',
-                          href: route('admin.content-types.create'),
-                          label: 'Crear Tipo de Contenido',
-                          icon: <Layers className="h-4 w-4" />,
-                      },
                   ]
                 : []),
-            ...contentTypes.map((type) => ({
-                key: `cpt-${type.slug}`,
-                href: route('admin.content.index', type.slug),
-                label: type.name,
-                icon: renderNavIcon(type.icon),
-            })),
-        ];
-
-        // 3. Anclas y Subsecciones de Ajustes
-        const settingsItems = [
-            {
-                key: 'brand-palette',
-                href: route('admin.brand.index'),
-                label: 'Paleta & Colores',
-                icon: <Palette className="h-4 w-4" />,
-            },
-            {
-                key: 'brand-typography',
-                href: route('admin.brand.index') + '#typography-section',
-                label: 'Tipografía & Tokens',
-                icon: <Type className="h-4 w-4" />,
-            },
-            {
-                key: 'pref-theme',
-                href: route('admin.preferences.edit') + '#theme-section',
-                label: 'Tema Visual',
-                icon: <SunMoon className="h-4 w-4" />,
-            },
-            {
-                key: 'pref-telemetry',
-                href: route('admin.preferences.edit') + '#telemetry-section',
-                label: 'Telemetría',
-                icon: <Activity className="h-4 w-4" />,
-            },
-            {
-                key: 'pref-cache',
-                href: route('admin.preferences.edit') + '#cache-section',
-                label: 'Caché & Sistema',
-                icon: <Cpu className="h-4 w-4" />,
-            },
-            {
-                key: 'user-profile',
-                href: route('admin.profile.edit'),
-                label: 'Perfil & Seguridad',
-                icon: <ShieldCheck className="h-4 w-4" />,
-            },
         ];
 
         return (
             <div className="flex flex-col justify-between min-h-full gap-6">
                 <div>
-                    {/* Saludo Personalizado o Título de Sección con botón Volver */}
+                    {/* Saludo Personalizado */}
                     <div className="my-3 flex items-center justify-between">
                         <div>
                             <h1 className="font-heading text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-snug">
-                                {sidebarNavMode === 'settings'
-                                    ? 'Ajustes'
-                                    : sidebarNavMode === 'modules'
-                                    ? 'Módulos'
-                                    : 'Hola,'}
-                                {sidebarNavMode === 'menu' && <><br />{firstName}</>}
+                                Hola,<br />{firstName}
                             </h1>
                             <p className="mt-1 text-xs text-slate-400 font-medium">
-                                {sidebarNavMode === 'settings'
-                                    ? 'Configuración del Sistema'
-                                    : sidebarNavMode === 'modules'
-                                    ? 'Catálogo y Taxonomías'
-                                    : 'Panel de Administración'}
+                                Panel de Administración
                             </p>
                         </div>
-                        {sidebarNavMode !== 'menu' && (
-                            <button
-                                type="button"
-                                onClick={() => setSidebarNavMode('menu')}
-                                className="inline-flex items-center gap-1 rounded-full bg-slate-100 dark:bg-[#1a212d] px-2.5 py-1 text-xs font-semibold text-brand-primary hover:bg-slate-200 transition"
-                            >
-                                <ArrowLeft className="h-3.5 w-3.5" />
-                                Menú
-                            </button>
-                        )}
                     </div>
 
                     {/* Contenedor de Navegación Real con Píldora Deslizante (layoutId) */}
-                    <nav className={`bg-[#f8f9fb] p-2 space-y-1 dark:bg-[#161b24] border border-slate-100 dark:border-slate-800/80 h-[285px] overflow-y-auto custom-scrollbar transition-[border-radius] duration-200 ${
-                        sidebarNavMode === 'menu'
-                            ? 'rounded-t-[24px] rounded-bl-none rounded-br-[24px]'
-                            : 'rounded-[24px]'
-                    }`}>
-                        <AnimatePresence mode="wait" initial={false}>
-                            <motion.div
-                                key={sidebarNavMode}
-                                initial={{ opacity: 0, y: 6 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -6 }}
-                                transition={{ duration: 0.16 }}
-                                className="space-y-1"
-                            >
-                                {(sidebarNavMode === 'settings'
-                                    ? settingsItems
-                                    : sidebarNavMode === 'modules'
-                                    ? modulesItems
-                                    : navItems
-                                ).map((item) => {
-                                    const active = isLinkActive(item.key) || (sidebarNavMode === 'settings' && pagePath.includes(item.href.split('#')[0]));
-                                    return (
-                                        <Link
-                                            key={item.key}
-                                            href={item.href}
-                                            onClick={() => {
-                                                if (isFloating) {
-                                                    setIsSidebarCollapsed(true);
-                                                }
-                                            }}
-                                            className={`relative flex items-center gap-3.5 rounded-2xl px-4 py-2.5 text-sm font-semibold transition-colors duration-200 ${
-                                                active
-                                                    ? 'text-brand-primary font-bold'
-                                                    : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-                                            }`}
-                                        >
-                                            {active && (
-                                                <motion.div
-                                                    layoutId="sidebarActivePill"
-                                                    className="absolute inset-0 rounded-2xl bg-white shadow-xs dark:bg-[#202735]"
-                                                    transition={{
-                                                        type: 'spring',
-                                                        stiffness: 400,
-                                                        damping: 30,
-                                                    }}
-                                                    style={{ zIndex: 0 }}
-                                                />
-                                            )}
+                    <nav className="bg-[#f8f9fb] p-2 space-y-1 dark:bg-[#161b24] border border-slate-100 dark:border-slate-800/80 h-[285px] overflow-y-auto custom-scrollbar transition-[border-radius] duration-200 rounded-t-[24px] rounded-bl-none rounded-br-[24px]">
+                        <div className="space-y-1">
+                            {navItems.map((item) => {
+                                const active = isLinkActive(item.key);
+                                return (
+                                    <Link
+                                        key={item.key}
+                                        id={item.key === 'dashboard' ? 'sidebar-nav-dashboard' : undefined}
+                                        href={item.href}
+                                        onClick={() => {
+                                            if (isFloating) {
+                                                setIsSidebarCollapsed(true);
+                                            }
+                                        }}
+                                        className={`relative flex items-center justify-between gap-3.5 rounded-2xl px-4 py-2.5 text-sm font-semibold transition-colors duration-200 ${
+                                            active
+                                                ? 'text-brand-primary font-bold'
+                                                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                                        }`}
+                                    >
+                                        {active && (
+                                            <motion.div
+                                                layoutId="sidebarActivePill"
+                                                className="absolute inset-0 rounded-2xl bg-white shadow-xs dark:bg-[#202735] border border-slate-200/50 dark:border-slate-700/50"
+                                                transition={{
+                                                    type: 'spring',
+                                                    stiffness: 360,
+                                                    damping: 24,
+                                                    mass: 0.75,
+                                                }}
+                                                style={{ zIndex: 0 }}
+                                            />
+                                        )}
+                                        <div className="relative z-10 flex items-center gap-3.5 min-w-0">
                                             <span
-                                                className={`relative z-10 shrink-0 transition-colors duration-200 ${
+                                                className={`shrink-0 transition-colors duration-200 ${
                                                     active ? 'text-brand-primary' : 'text-slate-500 dark:text-slate-400'
                                                 }`}
                                             >
                                                 {item.icon}
                                             </span>
-                                            <span className="relative z-10 truncate">{item.label}</span>
-                                        </Link>
-                                    );
-                                })}
-                            </motion.div>
-                        </AnimatePresence>
+                                            <span className="truncate">{item.label}</span>
+                                        </div>
+
+                                        {typeof item.count === 'number' && (
+                                            <span
+                                                className={`relative z-10 rounded-full px-2 py-0.5 text-[10px] font-bold transition-colors ${
+                                                    active
+                                                        ? 'bg-brand-primary/10 text-brand-primary'
+                                                        : 'bg-slate-200/70 text-slate-600 dark:bg-slate-700/60 dark:text-slate-300'
+                                                }`}
+                                            >
+                                                {item.count}
+                                            </span>
+                                        )}
+                                    </Link>
+                                );
+                            })}
+                        </div>
                     </nav>
 
-                    {/* Botonera con Muesca Líquida (Morphing Notch Dock) */}
+                    {/* Botonera con Muesca Líquida (Morphing Notch Dock - Menú Único) */}
                     <SidebarMorphingDock
-                        activeMode={sidebarNavMode}
-                        onSelectMode={setSidebarNavMode}
+                        activeMode="menu"
                         className="relative z-10 -mt-px w-full"
                     />
                 </div>
@@ -546,14 +510,14 @@ export default function AuthenticatedLayout({ header, children }) {
                     {/* Badge del Rol con brand-primary */}
                     <div className="mt-1">
                         <span className="inline-block rounded-full bg-brand-primary px-3 py-0.5 text-[10px] font-bold text-white shadow-xs shadow-brand-primary/30 uppercase tracking-wider">
-                            {isAdmin ? 'Super Admin' : 'Editor'}
+                            {user?.role_name || (isAdmin ? 'Super Admin' : 'Cliente')}
                         </span>
                     </div>
 
                     {/* Nombre y correo real */}
                     <div className="mt-2.5">
                         <h3 className="font-heading text-sm font-bold text-slate-900 dark:text-white truncate">
-                            {user?.name || 'Administrador'}
+                            {user?.name || (isAdmin ? 'Administrador' : 'Usuario')}
                         </h3>
                         <p className="mt-0.5 text-[11px] font-medium text-slate-400 truncate">
                             {user?.email || 'admin@portfolio.test'}
@@ -609,6 +573,7 @@ export default function AuthenticatedLayout({ header, children }) {
 
             {/* Sidebar Flotante/Fijo con Animación Prémium de Framer Motion (Anclado en Top/Left, crece SOLO hacia derecha y abajo) */}
             <motion.aside
+                layoutId="admin-sidebar-container"
                 initial={false}
                 animate={
                     isSidebarCollapsed
@@ -638,10 +603,10 @@ export default function AuthenticatedLayout({ header, children }) {
                     damping: 28,
                     mass: 0.9,
                 }}
-                className={`flex fixed z-50 bg-white dark:bg-[#11151d] overflow-hidden flex-col ${
+                className={`flex fixed z-50 bg-white dark:bg-[#161b24] overflow-hidden flex-col ${
                     isSidebarCollapsed
                         ? 'border-none'
-                        : 'border border-slate-200/80 dark:border-slate-800/80'
+                        : 'border border-slate-100/90 dark:border-slate-800/80'
                 }`}
             >
                 {/* 1. Header Persistente: Logo a la izquierda + Botón Toggle a la derecha (vuela de izq a der sin desmontarse) */}
@@ -747,64 +712,37 @@ export default function AuthenticatedLayout({ header, children }) {
                             aria-hidden="true"
                         />
 
-                        {/* Breadcrumbs Escalables con Auto-Resolución y Microdatos Schema.org */}
-                        <div className="flex items-center gap-2">
-                            <Breadcrumbs items={props.breadcrumbs} />
-                        </div>
+                        {/* Breadcrumbs Escalables con Auto-Resolución y Microdatos Schema.org (Oculto en Create CPT) */}
+                        {!isCreatePage && (
+                            <div className="flex items-center gap-2">
+                                <Breadcrumbs items={props.breadcrumbs} />
+                            </div>
+                        )}
                     </div>
 
                     {/* Zona Derecha: Herramientas Globales (Buscar ⌘K, Tema, Notificaciones, Mensajes, Perfil) */}
                     <div className="flex items-center gap-2.5 sm:gap-3">
-                        {/* Botón Buscar (⌘K) */}
-                        <button
+                       
+
+                        {/* Botón Buscar (⌘K) con microinteracción elástica táctil */}
+                        <motion.button
                             type="button"
+                            whileHover={{ scale: 1.08 }}
+                            whileTap={{ scale: 0.9, scaleX: 1.12, scaleY: 0.88 }}
+                            transition={{ type: 'spring', stiffness: 500, damping: 22 }}
                             onClick={() => setIsSearchOpen(true)}
                             className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-700 shadow-xs border border-slate-200/70 transition hover:bg-slate-50 dark:bg-[#161b24] dark:border-slate-800 dark:text-slate-300 dark:hover:bg-[#202735]"
                             title="Buscar en el panel (⌘K)"
                             aria-label="Buscar"
                         >
                             <Search className="h-4 w-4" />
-                        </button>
+                        </motion.button>
 
                         {/* Botón Selector de Tema Claro/Oscuro */}
                         <RoundThemeToggle className="!h-10 !w-10 bg-white text-slate-700 shadow-xs border border-slate-200/70 hover:bg-slate-50 dark:bg-[#161b24] dark:border-slate-800 dark:text-slate-300 dark:hover:bg-[#202735]" />
 
-                        {/* Campana con punto naranja de alerta */}
-                        <Link
-                            href={route('admin.messages.index')}
-                            className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-700 shadow-xs border border-slate-200/70 transition hover:bg-slate-50 dark:bg-[#161b24] dark:border-slate-800 dark:text-slate-300 dark:hover:bg-[#202735]"
-                            title="Notificaciones"
-                        >
-                            <Bell className="h-4 w-4" />
-                            <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-[#161b24]" />
-                        </Link>
-
-                        {/* Burbuja de chat/mensajes */}
-                        <Link
-                            href={route('admin.messages.index')}
-                            className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-700 shadow-xs border border-slate-200/70 transition hover:bg-slate-50 dark:bg-[#161b24] dark:border-slate-800 dark:text-slate-300 dark:hover:bg-[#202735]"
-                            title="Mensajes"
-                        >
-                            <MessageSquare className="h-4 w-4" />
-                        </Link>
-
-                        {/* Chip del Perfil del Usuario */}
-                        <Link
-                            href={route('admin.profile.edit')}
-                            className="flex items-center gap-2.5 rounded-full py-1 pe-3 ps-1 transition hover:bg-white/70 dark:hover:bg-[#161b24]"
-                        >
-                            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-white font-bold text-xs shadow-sm ring-2 ring-white dark:ring-slate-800">
-                                {user?.name ? user.name.slice(0, 2).toUpperCase() : 'AD'}
-                            </div>
-                            <div className="hidden text-left xl:block">
-                                <p className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
-                                    Hola, {user?.name || 'Administrador'}
-                                </p>
-                                <p className="text-[10px] text-slate-400 leading-tight">
-                                    {user?.email || 'admin@portfolio.test'}
-                                </p>
-                            </div>
-                        </Link>
+                        {/* Cápsula del Perfil con Menú Dropdown Interactivo */}
+                        <TopbarProfileDropdown user={user} isAdmin={isAdmin} />
                     </div>
                 </div>
 
@@ -852,6 +790,13 @@ export default function AuthenticatedLayout({ header, children }) {
                     </AnimatePresence>
                 </main>
             </div>
+
+            {/* Botón Flotante de Acciones Rápidas Líquido (Personalizado por Usuario y CPTs) */}
+            <LiquidFab
+                user={user}
+                isAdmin={isAdmin}
+                contentTypes={contentTypes}
+            />
         </div>
     );
 }

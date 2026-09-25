@@ -56,6 +56,15 @@ export const PRESET_PALETTES = [
     },
 ];
 
+export const DEFAULT_CLIENT_COLORS = {
+    primary: '#2787F5',
+    secondary: '#6c757d',
+    success: '#198754',
+    danger: '#dc3545',
+    warning: '#ffc107',
+    info: '#0dcaf0',
+};
+
 const isValidHex = (hex) => /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(hex);
 
 export default function ColorPaletteSection({
@@ -70,10 +79,14 @@ export default function ColorPaletteSection({
     availablePalettes = [],
     selectedPaletteId = null,
     onSelectPalette = () => {},
+    isSuperAdmin = true,
 }) {
     const palettesToDisplay = availablePalettes && availablePalettes.length > 0
         ? availablePalettes
         : PRESET_PALETTES;
+
+    const defaultPrimary = isSuperAdmin ? DEFAULT_COLORS.primary : DEFAULT_CLIENT_COLORS.primary;
+    const defaultSecondary = isSuperAdmin ? DEFAULT_COLORS.secondary : DEFAULT_CLIENT_COLORS.secondary;
 
     return (
         <div className="rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24] sm:p-7">
@@ -82,23 +95,27 @@ export default function ColorPaletteSection({
                     <Palette className="h-5 w-5 text-brand-primary" />
                     <div>
                         <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                            Paleta de Colores del Portafolio
+                            {isSuperAdmin ? 'Paleta de Colores del Portafolio' : 'Colores de Interfaz de tu Cuenta'}
                         </h2>
                         <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
-                            Personaliza o selecciona los colores distintivos de tu marca para botones, enlaces y elementos interactivos.
+                            {isSuperAdmin
+                                ? 'Personaliza o selecciona los colores distintivos de tu marca para botones, enlaces y elementos interactivos.'
+                                : 'Personaliza tu color primario y secundario para botones, enlaces y elementos interactivos de tu panel.'}
                         </p>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-2.5 self-start sm:self-auto">
-                    <Link
-                        href={route('admin.brand.index')}
-                        className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-800 dark:bg-[#161b24] dark:text-slate-300 dark:hover:bg-[#1c222e]"
-                        title="Ir al catálogo maestro y gestor CRUD de paletas"
-                    >
-                        <span>Sección de Identidad</span>
-                        <ExternalLink className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
-                    </Link>
+                    {isSuperAdmin && (
+                        <Link
+                            href={route('admin.brand.index')}
+                            className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-800 dark:bg-[#161b24] dark:text-slate-300 dark:hover:bg-[#1c222e]"
+                            title="Ir al catálogo maestro y gestor CRUD de paletas"
+                        >
+                            <span>Sección de Identidad</span>
+                            <ExternalLink className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+                        </Link>
+                    )}
 
                     <button
                         type="button"
@@ -112,93 +129,95 @@ export default function ColorPaletteSection({
                 </div>
             </div>
 
-            {/* Selector de Paletas Registradas en la Base de Datos */}
-            <div className="mt-6">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-900 dark:text-white">
-                            Paletas Registradas en Base de Datos:
-                        </label>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                            Haz clic en una paleta para aplicarla instantáneamente a tu cuenta de Super Admin.
-                        </p>
+            {/* Selector de Paletas Registradas en la Base de Datos (EXCLUSIVO SUPER ADMIN) */}
+            {isSuperAdmin && (
+                <div className="mt-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-900 dark:text-white">
+                                Paletas Registradas en Base de Datos:
+                            </label>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                                Haz clic en una paleta para aplicarla instantáneamente a tu cuenta de Super Admin.
+                            </p>
+                        </div>
                     </div>
-                </div>
 
-                <div className="mt-3.5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {palettesToDisplay.map((palette) => {
-                        const palPrimary = palette.primary_color || palette.primary;
-                        const palSecondary = palette.secondary_color || palette.secondary;
-                        const isSelected =
-                            (selectedPaletteId && palette.id && selectedPaletteId === palette.id) ||
-                            (!selectedPaletteId &&
-                                colors.primary?.toUpperCase() === palPrimary?.toUpperCase() &&
-                                colors.secondary?.toUpperCase() === palSecondary?.toUpperCase());
+                    <div className="mt-3.5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        {palettesToDisplay.map((palette) => {
+                            const palPrimary = palette.primary_color || palette.primary;
+                            const palSecondary = palette.secondary_color || palette.secondary;
+                            const isSelected =
+                                (selectedPaletteId && palette.id && selectedPaletteId === palette.id) ||
+                                (!selectedPaletteId &&
+                                    colors.primary?.toUpperCase() === palPrimary?.toUpperCase() &&
+                                    colors.secondary?.toUpperCase() === palSecondary?.toUpperCase());
 
-                        return (
-                            <button
-                                key={palette.id || palette.name}
-                                type="button"
-                                onClick={() => onSelectPalette(palette)}
-                                className={`group relative flex flex-col justify-between rounded-2xl p-4 text-left transition-all ${
-                                    isSelected
-                                        ? 'bg-brand-primary/5 ring-2 ring-brand-primary shadow-sm dark:bg-brand-primary/10'
-                                        : 'border border-slate-100 bg-[#f8f9fb] hover:border-slate-200 hover:bg-white dark:border-slate-800 dark:bg-[#12161f] dark:hover:border-slate-700 dark:hover:bg-[#161b24]'
-                                }`}
-                            >
-                                <div>
-                                    <div className="flex items-center justify-between gap-2">
-                                        <div className="flex items-center gap-1.5 truncate">
-                                            <span className="font-heading text-xs font-bold text-slate-900 dark:text-white truncate">
-                                                {palette.name}
-                                            </span>
-                                            {palette.is_master && (
-                                                <span className="inline-flex items-center gap-0.5 rounded-full bg-brand-primary/10 px-1.5 py-0.2 text-[9px] font-bold text-brand-primary">
-                                                    <Sparkles className="h-2 w-2" /> Maestra
+                            return (
+                                <button
+                                    key={palette.id || palette.name}
+                                    type="button"
+                                    onClick={() => onSelectPalette(palette)}
+                                    className={`group relative flex flex-col justify-between rounded-2xl p-4 text-left transition-all ${
+                                        isSelected
+                                            ? 'bg-brand-primary/5 ring-2 ring-brand-primary shadow-sm dark:bg-brand-primary/10'
+                                            : 'border border-slate-100 bg-[#f8f9fb] hover:border-slate-200 hover:bg-white dark:border-slate-800 dark:bg-[#12161f] dark:hover:border-slate-700 dark:hover:bg-[#161b24]'
+                                    }`}
+                                >
+                                    <div>
+                                        <div className="flex items-center justify-between gap-2">
+                                            <div className="flex items-center gap-1.5 truncate">
+                                                <span className="font-heading text-xs font-bold text-slate-900 dark:text-white truncate">
+                                                    {palette.name}
+                                                </span>
+                                                {palette.is_master && (
+                                                    <span className="inline-flex items-center gap-0.5 rounded-full bg-brand-primary/10 px-1.5 py-0.2 text-[9px] font-bold text-brand-primary">
+                                                        <Sparkles className="h-2 w-2" /> Maestra
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {isSelected && (
+                                                <span className="inline-flex items-center gap-1 rounded-full bg-brand-primary px-2 py-0.5 text-[10px] font-bold text-white shadow-xs">
+                                                    <Check className="h-2.5 w-2.5" /> Activa
                                                 </span>
                                             )}
                                         </div>
+                                    </div>
 
-                                        {isSelected && (
-                                            <span className="inline-flex items-center gap-1 rounded-full bg-brand-primary px-2 py-0.5 text-[10px] font-bold text-white shadow-xs">
-                                                <Check className="h-2.5 w-2.5" /> Activa
-                                            </span>
+                                    {/* Barra de Swatches */}
+                                    <div className="mt-3.5 flex h-4 w-full overflow-hidden rounded-lg shadow-xs">
+                                        <div
+                                            className="flex-1"
+                                            style={{ backgroundColor: palPrimary }}
+                                            title={`Primario: ${palPrimary}`}
+                                        />
+                                        <div
+                                            className="flex-1"
+                                            style={{ backgroundColor: palSecondary }}
+                                            title={`Secundario: ${palSecondary}`}
+                                        />
+                                        {palette.tertiary_color && (
+                                            <div
+                                                className="flex-1"
+                                                style={{ backgroundColor: palette.tertiary_color }}
+                                                title={`Terciario: ${palette.tertiary_color}`}
+                                            />
+                                        )}
+                                        {palette.accent_color && (
+                                            <div
+                                                className="flex-1"
+                                                style={{ backgroundColor: palette.accent_color }}
+                                                title={`Acento: ${palette.accent_color}`}
+                                            />
                                         )}
                                     </div>
-                                </div>
-
-                                {/* Barra de Swatches */}
-                                <div className="mt-3.5 flex h-4 w-full overflow-hidden rounded-lg shadow-xs">
-                                    <div
-                                        className="flex-1"
-                                        style={{ backgroundColor: palPrimary }}
-                                        title={`Primario: ${palPrimary}`}
-                                    />
-                                    <div
-                                        className="flex-1"
-                                        style={{ backgroundColor: palSecondary }}
-                                        title={`Secundario: ${palSecondary}`}
-                                    />
-                                    {palette.tertiary_color && (
-                                        <div
-                                            className="flex-1"
-                                            style={{ backgroundColor: palette.tertiary_color }}
-                                            title={`Terciario: ${palette.tertiary_color}`}
-                                        />
-                                    )}
-                                    {palette.accent_color && (
-                                        <div
-                                            className="flex-1"
-                                            style={{ backgroundColor: palette.accent_color }}
-                                            title={`Acento: ${palette.accent_color}`}
-                                        />
-                                    )}
-                                </div>
-                            </button>
-                        );
-                    })}
+                                </button>
+                            );
+                        })}
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* 2 Colores Principales: Primary & Secondary */}
             <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -219,12 +238,14 @@ export default function ColorPaletteSection({
                         </span>
                     </div>
                     <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                        Color distintivo para tus botones principales de llamado a la acción (CTA), enlaces activos y elementos destacados.
+                        {isSuperAdmin
+                            ? 'Color distintivo para tus botones principales de llamado a la acción (CTA), enlaces activos y elementos destacados.'
+                            : 'Color principal para tus botones de acción, enlaces activos e indicadores de tu cuenta.'}
                     </p>
                     <div className="mt-4 flex items-center gap-3">
                         <input
                             type="color"
-                            value={isValidHex(colors.primary) ? colors.primary : '#CB2128'}
+                            value={isValidHex(colors.primary) ? colors.primary : defaultPrimary}
                             onChange={(e) => onColorChange('primary', e.target.value)}
                             className="h-11 w-14 cursor-pointer rounded-xl border-0 bg-transparent p-0.5"
                             title="Seleccionar color primario"
@@ -233,7 +254,7 @@ export default function ColorPaletteSection({
                             type="text"
                             value={colors.primary}
                             onChange={(e) => onColorChange('primary', e.target.value)}
-                            placeholder="#CB2128"
+                            placeholder={defaultPrimary}
                             maxLength={7}
                             className="w-36 rounded-2xl border border-slate-200/80 bg-white py-2 px-3 font-mono text-sm uppercase text-slate-900 shadow-xs focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-800 dark:bg-[#161b24] dark:text-white"
                         />
@@ -257,12 +278,14 @@ export default function ColorPaletteSection({
                         </span>
                     </div>
                     <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                        Color de acompañamiento para botones secundarios, filtros de categorías, etiquetas y detalles visuales de apoyo.
+                        {isSuperAdmin
+                            ? 'Color de acompañamiento para botones secundarios, filtros de categorías, etiquetas y detalles visuales de apoyo.'
+                            : 'Color de acompañamiento para botones secundarios, etiquetas y elementos secundarios de tu panel.'}
                     </p>
                     <div className="mt-4 flex items-center gap-3">
                         <input
                             type="color"
-                            value={isValidHex(colors.secondary) ? colors.secondary : '#DFB136'}
+                            value={isValidHex(colors.secondary) ? colors.secondary : defaultSecondary}
                             onChange={(e) => onColorChange('secondary', e.target.value)}
                             className="h-11 w-14 cursor-pointer rounded-xl border-0 bg-transparent p-0.5"
                             title="Seleccionar color secundario"
@@ -271,7 +294,7 @@ export default function ColorPaletteSection({
                             type="text"
                             value={colors.secondary}
                             onChange={(e) => onColorChange('secondary', e.target.value)}
-                            placeholder="#DFB136"
+                            placeholder={defaultSecondary}
                             maxLength={7}
                             className="w-36 rounded-2xl border border-slate-200/80 bg-white py-2 px-3 font-mono text-sm uppercase text-slate-900 shadow-xs focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary dark:border-slate-800 dark:bg-[#161b24] dark:text-white"
                         />

@@ -26,6 +26,8 @@ import {
     HardDrive,
     Sparkles,
 } from 'lucide-react';
+import LiquidDynamicIslandBar from '@/Components/LiquidDynamicIslandBar';
+import LiquidDropzone from '@/Components/LiquidDropzone';
 
 export default function Index({ media = {}, filters = {}, stats = {} }) {
     const {
@@ -54,6 +56,8 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
     // Estado para selección múltiple y eliminación masiva
     const [selectedIds, setSelectedIds] = useState(new Set());
     const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+    const [isBulkDownloading, setIsBulkDownloading] = useState(false);
+    const [showDropzone, setShowDropzone] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
@@ -241,10 +245,23 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
 
     const processFiles = (files) => {
         if (!files || files.length === 0) return;
-        const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+        const validTypes = [
+            'image/jpeg',
+            'image/png',
+            'image/webp',
+            'image/jpg',
+            'image/heif',
+            'image/heic',
+            'image/heif-sequence',
+            'image/heic-sequence',
+        ];
+        const validExts = ['jpg', 'jpeg', 'png', 'webp', 'heif', 'heic'];
 
         Array.from(files).forEach((file) => {
-            if (validTypes.includes(file.type)) {
+            const ext = file.name?.split('.').pop()?.toLowerCase() || '';
+            const isValid = validTypes.includes(file.type) || validExts.includes(ext);
+
+            if (isValid) {
                 uploadSingleFile(file);
             } else {
                 window.dispatchEvent(
@@ -252,7 +269,7 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                         detail: {
                             type: 'error',
                             title: 'Formato no compatible',
-                            message: `"${file.name}" debe ser JPEG, PNG o WebP.`,
+                            message: `"${file.name}" debe ser JPEG, PNG, WebP o HEIF/HEIC.`,
                         },
                     })
                 );
@@ -406,6 +423,62 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
         }
     };
 
+    const handleBulkDownload = async () => {
+        if (selectedIds.size === 0) return;
+        setIsBulkDownloading(true);
+
+        try {
+            const token = document.querySelector('meta[name="csrf-token"]')?.content;
+            const res = await fetch(route('admin.media.download-bulk'), {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                    'Content-Type': 'application/json',
+                    Accept: 'application/octet-stream, application/zip, image/webp',
+                },
+                body: JSON.stringify({ ids: Array.from(selectedIds) }),
+            });
+
+            if (res.ok) {
+                const disposition = res.headers.get('content-disposition');
+                let filename = selectedIds.size === 1 ? 'imagen.webp' : 'imagenes-webp.zip';
+                if (disposition && disposition.includes('filename=')) {
+                    const match = disposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+                    if (match && match[1]) {
+                        filename = match[1].replace(/['"]/g, '');
+                    }
+                }
+
+                const blob = await res.blob();
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(downloadUrl);
+
+                window.dispatchEvent(
+                    new CustomEvent('admin-feedback', {
+                        detail: {
+                            type: 'success',
+                            title: 'Descarga iniciada',
+                            message: `Se descargó ${filename} con éxito.`,
+                        },
+                    })
+                );
+            } else {
+                alert('No se pudo procesar la descarga de las imágenes seleccionadas.');
+            }
+        } catch (err) {
+            console.error('Fallo en la descarga:', err);
+            alert('Error de conexión al descargar.');
+        } finally {
+            setIsBulkDownloading(false);
+        }
+    };
+
     const handleCopyUrl = () => {
         if (!selectedItem?.url) return;
         navigator.clipboard.writeText(selectedItem.url);
@@ -480,7 +553,7 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                             <input
                                 ref={fileInputRef}
                                 type="file"
-                                accept="image/jpeg,image/png,image/webp,image/jpg"
+                                accept="image/jpeg,image/png,image/webp,image/jpg,image/heif,image/heic,.heif,.heic"
                                 multiple
                                 onChange={(e) => {
                                     processFiles(e.target.files);
@@ -490,14 +563,33 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                             />
                             <button
                                 type="button"
-                                onClick={() => fileInputRef.current?.click()}
+                                onClick={() => setShowDropzone((prev) => !prev)}
                                 className="inline-flex items-center gap-2 rounded-full bg-brand-primary px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-brand-primary-hover active:scale-95"
                             >
-                                <Plus className="h-4 w-4" />
-                                Subir nueva imagen
+                                <Plus className={`h-4 w-4 transition-transform duration-200 ${showDropzone ? 'rotate-45' : ''}`} />
+                                <span>{showDropzone ? 'Cerrar zona de carga' : 'Subir nueva imagen'}</span>
                             </button>
                         </div>
                     </div>
+
+                    {/* Zona de Carga Líquida con Tensión Superficial */}
+                    <AnimatePresence>
+                        {showDropzone && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0, scale: 0.96 }}
+                                animate={{ opacity: 1, height: 'auto', scale: 1 }}
+                                exit={{ opacity: 0, height: 0, scale: 0.96 }}
+                                transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+                                className="overflow-hidden"
+                            >
+                                <LiquidDropzone
+                                    onFilesDrop={(files) => {
+                                        processFiles(files);
+                                    }}
+                                />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
                     {/* Barra de Filtros y Búsqueda */}
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-[28px] border border-slate-100/90 bg-white p-3.5 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24]">
@@ -597,24 +689,8 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                                 </div>
                             </div>
                         ) : mediaList.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-20 text-center">
-                                <div className="h-16 w-16 rounded-2xl bg-slate-100 dark:bg-[#12161f] flex items-center justify-center text-slate-400 mb-3">
-                                    <UploadCloud className="h-8 w-8 text-brand-primary" />
-                                </div>
-                                <h3 className="text-lg font-bold font-heading text-slate-900 dark:text-white">
-                                    Sin imágenes en la biblioteca
-                                </h3>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm">
-                                    Arrastra imágenes directamente desde tu computadora o haz clic en subir nueva imagen.
-                                </p>
-                                <button
-                                    type="button"
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-4 py-2 text-xs font-semibold text-brand-primary transition hover:bg-slate-200 dark:bg-[#12161f] dark:text-brand-primary dark:hover:bg-[#1c222e]"
-                                >
-                                    <Plus className="h-4 w-4" />
-                                    Seleccionar archivo
-                                </button>
+                            <div className="py-6">
+                                <LiquidDropzone onFilesDrop={processFiles} />
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
@@ -698,56 +774,21 @@ export default function Index({ media = {}, filters = {}, stats = {} }) {
                 </div>
             </div>
 
-            {/* ── BARRA FLOTANTE PARA SELECCIÓN MÚLTIPLE (PORTAL AL BODY CON FRAMER MOTION) ── */}
+            {/* ── BARRA FLOTANTE PARA SELECCIÓN MÚLTIPLE (ESTILO APPLE DYNAMIC ISLAND + LIQUID SVG) ── */}
             {isMounted && createPortal(
                 <AnimatePresence>
                     {selectedIds.size > 0 && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 40, scale: 0.94, x: '-50%' }}
-                            animate={{ opacity: 1, y: 0, scale: 1, x: '-50%' }}
-                            exit={{ opacity: 0, y: 30, scale: 0.94, x: '-50%' }}
-                            transition={{ type: 'spring', stiffness: 450, damping: 28 }}
-                            className="fixed bottom-6 left-1/2 z-[100] flex items-center gap-3.5 rounded-full border border-slate-200/80 bg-white/95 text-slate-900 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:border-slate-700/80 dark:bg-[#161b24]/95 dark:text-white dark:shadow-[0_20px_50px_rgba(0,0,0,0.45)] backdrop-blur-xl px-4 py-2.5 transition-colors duration-200"
-                        >
-                            <div className="flex items-center gap-2.5 pr-2.5 border-r border-slate-200 dark:border-slate-700">
-                                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-primary text-xs font-bold text-white shadow-sm">
-                                    {selectedIds.size}
-                                </span>
-                                <span className="text-xs font-semibold text-slate-900 dark:text-white whitespace-nowrap">
-                                    {selectedIds.size === 1 ? 'imagen seleccionada' : 'imágenes seleccionadas'}
-                                </span>
-                            </div>
-
-                            <button
-                                type="button"
-                                onClick={handleSelectAll}
-                                className="text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800 transition px-3 py-1.5 rounded-full whitespace-nowrap"
-                            >
-                                {selectedIds.size === mediaList.length ? 'Deseleccionar todo' : 'Seleccionar todo'}
-                            </button>
-
-                            <button
-                                type="button"
-                                onClick={handleClearSelection}
-                                className="text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800 transition px-3 py-1.5 rounded-full whitespace-nowrap"
-                            >
-                                Cancelar
-                            </button>
-
-                            <button
-                                type="button"
-                                onClick={handleBulkDelete}
-                                disabled={isBulkDeleting}
-                                className="inline-flex items-center gap-2 rounded-full bg-red-600 px-4 py-2 text-xs font-semibold text-white shadow-md transition hover:bg-red-700 active:scale-95 disabled:opacity-50 whitespace-nowrap"
-                            >
-                                {isBulkDeleting ? (
-                                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                ) : (
-                                    <Trash2 className="h-3.5 w-3.5" />
-                                )}
-                                <span>Eliminar seleccionadas</span>
-                            </button>
-                        </motion.div>
+                        <LiquidDynamicIslandBar
+                            selectedCount={selectedIds.size}
+                            totalCount={mediaList.length}
+                            isAllSelected={selectedIds.size === mediaList.length}
+                            onSelectAll={handleSelectAll}
+                            onClearSelection={handleClearSelection}
+                            onDelete={handleBulkDelete}
+                            onDownload={handleBulkDownload}
+                            isDeleting={isBulkDeleting}
+                            isDownloading={isBulkDownloading}
+                        />
                     )}
                 </AnimatePresence>,
                 document.body

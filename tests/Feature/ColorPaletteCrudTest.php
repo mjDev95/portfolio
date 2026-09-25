@@ -273,4 +273,82 @@ class ColorPaletteCrudTest extends TestCase
             ->where('preference.color_palette_id', $palette->id)
         );
     }
+
+    public function test_client_cannot_see_super_admin_color_palettes_in_preferences(): void
+    {
+        $adminPalette = ColorPalette::create([
+            'user_id' => $this->admin->id,
+            'name' => 'Super Admin Master Brand',
+            'primary_color' => '#CB2128',
+            'secondary_color' => '#DFB136',
+            'is_master' => true,
+        ]);
+
+        $response = $this->actingAs($this->client)->get(route('admin.preferences.edit'));
+
+        $response->assertOk();
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Admin/Preferences/Edit')
+            ->where('palettes', function ($palettes) use ($adminPalette) {
+                $collection = collect($palettes);
+
+                return ! $collection->contains('id', $adminPalette->id)
+                    && ! $collection->contains('is_master', true);
+            })
+        );
+    }
+
+    public function test_client_cannot_select_super_admin_color_palette_in_preferences(): void
+    {
+        $adminPalette = ColorPalette::create([
+            'user_id' => $this->admin->id,
+            'name' => 'Super Admin Carmine',
+            'primary_color' => '#CB2128',
+            'secondary_color' => '#DFB136',
+            'is_master' => true,
+        ]);
+
+        $response = $this->actingAs($this->client)->putJson(route('admin.preferences.update'), [
+            'color_palette_id' => $adminPalette->id,
+            'color_palette' => [
+                'id' => (string) $adminPalette->id,
+                'colors' => [
+                    'primary' => '#CB2128',
+                    'secondary' => '#DFB136',
+                ],
+            ],
+        ]);
+
+        $response->assertOk();
+
+        // The client's preferences must not contain the admin palette ID
+        $this->assertDatabaseMissing('user_preferences', [
+            'user_id' => $this->client->id,
+            'color_palette_id' => $adminPalette->id,
+        ]);
+
+        $pref = $this->client->fresh()->preference;
+        $this->assertNull($pref?->color_palette_id);
+    }
+
+    public function test_client_can_choose_and_save_custom_primary_and_secondary_colors(): void
+    {
+        $response = $this->actingAs($this->client)->putJson(route('admin.preferences.update'), [
+            'color_palette_id' => null,
+            'color_palette' => [
+                'id' => 'custom',
+                'colors' => [
+                    'primary' => '#10B981',
+                    'secondary' => '#334155',
+                ],
+            ],
+        ]);
+
+        $response->assertOk();
+
+        $pref = $this->client->fresh()->preference;
+        $this->assertNull($pref->color_palette_id);
+        $this->assertEquals('#10B981', $pref->color_palette['colors']['primary']);
+        $this->assertEquals('#334155', $pref->color_palette['colors']['secondary']);
+    }
 }

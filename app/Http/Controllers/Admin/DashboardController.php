@@ -58,7 +58,7 @@ class DashboardController extends Controller
             $recentContents = Content::where('user_id', $userId)
                 ->with([
                     'contentType:id,name,singular_name,slug,icon',
-                    'media' => fn ($q) => $q->where('collection', 'thumbnail'),
+                    'media' => fn ($q) => $q->where('content_media.collection', 'thumbnail'),
                 ])
                 ->latest()
                 ->take(6)
@@ -116,7 +116,7 @@ class DashboardController extends Controller
             $recentContents = Content::where('user_id', $userId)
                 ->with([
                     'contentType:id,name,singular_name,slug,icon',
-                    'media' => fn ($q) => $q->where('collection', 'thumbnail'),
+                    'media' => fn ($q) => $q->where('content_media.collection', 'thumbnail'),
                 ])
                 ->latest()
                 ->take(6)
@@ -246,7 +246,7 @@ class DashboardController extends Controller
         $topItem = Content::where('featured', true)
             ->with([
                 'contentType:id,name,slug',
-                'media' => fn ($q) => $q->where('collection', 'thumbnail'),
+                'media' => fn ($q) => $q->where('content_media.collection', 'thumbnail'),
             ])
             ->first();
 
