@@ -69,6 +69,7 @@ function initDesktopIsland() {
             trigger: servicesEl,
             start: 'top 30%',
             onEnter: () => {
+                if (isDesktopCompacted) return;
                 isDesktopCompacted = true;
                 if (!isDesktopHovered) {
                     transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, false);
@@ -91,6 +92,7 @@ function initDesktopIsland() {
         servicesTrigger = ScrollTrigger.create({
             start: 300,
             onEnter: () => {
+                if (isDesktopCompacted) return;
                 isDesktopCompacted = true;
                 if (!isDesktopHovered) {
                     transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, false);

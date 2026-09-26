@@ -115,7 +115,7 @@ export function initHeroCurtain(container) {
             gsap.set(navbar, { autoAlpha: 1, y: 0, scale: 1, pointerEvents: 'auto' });
         } else {
             navbar.classList.add('navbar-curtain-hidden');
-            gsap.set(navbar, { autoAlpha: 0, y: -20, scale: 0.85, pointerEvents: 'none' });
+            gsap.set(navbar, { autoAlpha: 0, y: 0, scale: 0.82, pointerEvents: 'none' });
         }
     }
 
@@ -138,17 +138,17 @@ export function initHeroCurtain(container) {
             anticipatePin: 1,
             invalidateOnRefresh: true,
             onLeave: () => {
-                // Al terminar la cortina y desanclar hacia el contenido posterior, revelamos el navbar flotante estilo Apple
+                // Al terminar la cortina, revelamos el navbar con expansión pura de menos a más (scale 0.82 -> 1, opacity 0 -> 1)
                 if (navbar) {
                     navbar.classList.remove('navbar-curtain-hidden');
                     gsap.fromTo(navbar,
-                        { autoAlpha: 0, y: -20, scale: 0.85 },
+                        { autoAlpha: 0, scale: 0.82, y: 0 },
                         {
                             autoAlpha: 1,
-                            y: 0,
                             scale: 1,
-                            duration: 0.52,
-                            ease: 'back.out(1.5)',
+                            y: 0,
+                            duration: 0.45,
+                            ease: 'back.out(1.35)',
                             pointerEvents: 'auto',
                             overwrite: 'auto',
                         }
@@ -156,13 +156,13 @@ export function initHeroCurtain(container) {
                 }
             },
             onEnterBack: () => {
-                // Al regresar haciendo scroll hacia arriba al hero curtain, ocultamos el navbar con contracción elástica
+                // Al regresar haciendo scroll hacia arriba al hero curtain, se oculta en sentido inverso (scale 1 -> 0.82, opacity 1 -> 0)
                 if (navbar) {
                     gsap.to(navbar, {
                         autoAlpha: 0,
-                        y: -20,
-                        scale: 0.85,
-                        duration: 0.35,
+                        scale: 0.82,
+                        y: 0,
+                        duration: 0.28,
                         ease: 'power2.in',
                         pointerEvents: 'none',
                         overwrite: 'auto',
