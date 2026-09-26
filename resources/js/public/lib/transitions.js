@@ -1,10 +1,11 @@
 import barba from '@barba/core';
 import gsap from 'gsap';
-import { ScrollTrigger, resetScroll } from './smooth-scroll';
+import { ScrollTrigger, resetScroll, stopScroll, startScroll, resizeScroll } from './smooth-scroll';
 import { updateCsrfTokenFrom } from './csrf';
 import { initPageAnimations } from '../animations/init-page';
 import { createFlipTransitions } from './flip-transitions';
 import { sendAnalyticsPing } from './tracker';
+import { cleanupDynamicIsland } from '../animations/dynamic-island';
 
 function syncPageMetadata(html) {
     if (!html) return;
@@ -51,21 +52,23 @@ function syncPageMetadata(html) {
 }
 
 /**
- * Barba.js v2 lifecycle wiring.
+ * Barba.js v2 lifecycle wiring with GSAP and Lenis.
  *
  * Order per navigation:
- *  1. beforeLeave  -> kill every ScrollTrigger bound to the outgoing DOM
- *                     (prevents duplicated/zombie triggers = memory leak).
- *  2. leave        -> curtain wipe slides up to fully cover the viewport.
+ *  1. beforeLeave  -> stop Lenis scroll, kill every ScrollTrigger bound to outgoing DOM.
+ *  2. leave        -> animate outgoing page transition.
  *  3. (barba swaps [data-barba="container"] under the hood)
- *  4. beforeEnter  -> sync CSRF meta + <title> + SEO/OG tags, reset Lenis scroll to 0.
- *  5. enter        -> curtain wipe slides off-screen, revealing new page.
- *  6. after        -> re-run reveal animations scoped to new container,
- *                     ScrollTrigger.refresh() to recompute trigger positions,
- *                     re-bind the magnetic cursor to the new DOM nodes.
+ *  4. beforeEnter  -> sync CSRF meta + <title> + SEO/OG tags, snap scroll to top (0, immediate).
+ *  5. enter        -> animate incoming page transition.
+ *  6. after        -> initialize animations scoped to data.next.container,
+ *                     resume Lenis (start), recalculate scroll limits (resize),
+ *                     recompute trigger positions (ScrollTrigger.refresh()),
+ *                     re-bind interactive listeners and send analytics.
  */
 export function initBarba({ onAfterEnter } = {}) {
     barba.hooks.beforeLeave(() => {
+        stopScroll();
+        cleanupDynamicIsland();
         ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     });
 
@@ -76,6 +79,9 @@ export function initBarba({ onAfterEnter } = {}) {
     });
 
     barba.hooks.after((data) => {
+        resetScroll();
+        startScroll();
+        resizeScroll();
         initPageAnimations(data.next.container);
         ScrollTrigger.refresh();
         sendAnalyticsPing(window.location.pathname);
@@ -93,28 +99,23 @@ export function initBarba({ onAfterEnter } = {}) {
             // namespace pair matches (see flip-transitions.js).
             ...createFlipTransitions(),
             {
-                name: 'wipe-transition',
-                leave() {
-                    return new Promise((resolve) => {
-                        gsap.to('#transition-wipe', {
-                            yPercent: 0,
-                            duration: 0.6,
-                            ease: 'power2.inOut',
-                            onComplete: resolve,
-                        });
+                name: 'smooth-editorial-transition',
+                async leave(data) {
+                    return gsap.to(data.current.container, {
+                        opacity: 0,
+                        y: -15,
+                        duration: 0.45,
+                        ease: 'power2.inOut',
                     });
                 },
-                enter() {
-                    return new Promise((resolve) => {
-                        gsap.to('#transition-wipe', {
-                            yPercent: -101,
-                            duration: 0.6,
-                            ease: 'power2.inOut',
-                            onComplete: () => {
-                                gsap.set('#transition-wipe', { yPercent: 101 });
-                                resolve();
-                            },
-                        });
+                async enter(data) {
+                    resetScroll();
+                    return gsap.from(data.next.container, {
+                        opacity: 0,
+                        y: 20,
+                        duration: 0.55,
+                        ease: 'power3.out',
+                        clearProps: 'all',
                     });
                 },
             },

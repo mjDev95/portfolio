@@ -33,10 +33,10 @@
             @endif
         </div>
 
-        <h1 class="h1 font-bold text-white">{{ $content->title }}</h1>
+        <h1 class="h1 font-bold text-primary" data-flip-text>{{ $content->title }}</h1>
 
         @if ($content->excerpt)
-            <p class="text-fluid-lg text-muted mt-md" style="max-width: 58ch;">
+            <p class="text-fluid-lg text-muted mt-md" style="max-width: 58ch;" data-flip-text>
                 {{ $content->excerpt }}
             </p>
         @endif
@@ -46,7 +46,7 @@
                 <div class="d-flex flex-wrap gap-1.5 align-items-center">
                     <span class="text-fluid-xs text-muted">Categorías:</span>
                     @foreach ($content->categories as $category)
-                        <span class="badge bg-secondary-subtle text-white font-normal" style="font-size: 0.75rem;">
+                        <span class="data-chip">
                             {{ $category->name }}
                         </span>
                     @endforeach
@@ -69,7 +69,7 @@
 
     @if ($heroImage)
         <div class="media-wrap overflow-hidden mb-2xl"
-             data-flip-id="content-media-{{ $content->slug }}"
+             data-flip-id="project-{{ $content->slug }}"
              style="max-height: 580px; border-radius: 1.5rem;" data-reveal>
             <img src="{{ $heroImage->url }}"
                  alt="{{ $heroImage->alt ?: ($heroImage->caption ?: $content->title) }}"
@@ -81,7 +81,7 @@
     <div class="row g-5">
         <div class="col-12 {{ (!empty($content->custom_values) && count($content->custom_values) > 0) ? 'col-lg-8' : 'col-lg-10 mx-auto' }}" data-reveal>
             @if ($content->body)
-                <div class="prose text-white leading-relaxed text-fluid-base">
+                <div class="prose text-primary leading-relaxed text-fluid-base">
                     {!! $content->body_html !!}
                 </div>
             @else
@@ -91,11 +91,11 @@
             {{-- Galería de imágenes secundarias si existen --}}
             @if ($content->gallery->isNotEmpty())
                 <div class="mt-2xl">
-                    <h3 class="h5 text-white mb-lg">Galería</h3>
+                    <h3 class="h5 text-primary mb-lg">Galería</h3>
                     <div class="row row-cols-1 row-cols-md-2 g-3">
                         @foreach ($content->gallery as $media)
                             <div class="col">
-                                <div class="overflow-hidden rounded-3" style="aspect-ratio: 4/3; background: rgba(255,255,255,0.03);">
+                                <div class="overflow-hidden rounded-3 border-subtle bg-surface-subtle" style="aspect-ratio: 4/3;">
                                     <img src="{{ $media->url }}"
                                          alt="{{ $media->alt ?: ($media->caption ?: ($media->title ?: $content->title)) }}"
                                          title="{{ $media->title ?: ($media->caption ?: $content->title) }}"
@@ -114,7 +114,7 @@
         {{-- Ficha Técnica con Campos Personalizados Dinámicos (EAV) --}}
         @if (!empty($content->custom_values) && count($content->custom_values) > 0)
             <div class="col-12 col-lg-4" data-reveal>
-                <div class="p-4 rounded-4 sticky-top" style="top: 100px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08);">
+                <div class="p-4 rounded-4 sticky-top bg-surface-subtle border-subtle" style="top: 100px;">
                     <h3 class="h6 text-muted text-uppercase tracking-wider mb-3">Información Específica</h3>
                     <dl class="mb-0">
                         @php
@@ -129,13 +129,13 @@
                                     $type = $fieldDef ? $fieldDef->type : 'text';
                                 @endphp
                                 <dt class="text-muted text-fluid-xs text-uppercase font-medium mb-1">{{ $label }}</dt>
-                                <dd class="text-white text-fluid-sm mb-3.5 font-semibold">
+                                <dd class="text-primary text-fluid-sm mb-3.5 font-semibold">
                                     @if ($type === 'boolean' || is_bool($val))
                                         <span class="badge {{ $val ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-muted' }}">
                                             {{ $val ? 'Sí / Activo' : 'No / Inactivo' }}
                                         </span>
                                     @elseif ($type === 'url' || filter_var($val, FILTER_VALIDATE_URL))
-                                        <a href="{{ $val }}" target="_blank" rel="noopener noreferrer" class="text-primary text-decoration-none d-inline-flex align-items-center gap-1">
+                                        <a href="{{ $val }}" target="_blank" rel="noopener noreferrer" class="text-accent text-decoration-none d-inline-flex align-items-center gap-1">
                                             <span>Abrir enlace</span> &rarr;
                                         </a>
                                     @elseif ($type === 'date')

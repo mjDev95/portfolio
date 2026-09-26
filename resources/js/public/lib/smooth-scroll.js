@@ -40,13 +40,39 @@ export function getLenis() {
     return lenis;
 }
 
+export function stopScroll() {
+    lenis?.stop();
+}
+
+export function startScroll() {
+    lenis?.start();
+}
+
+export function resizeScroll() {
+    lenis?.resize();
+}
+
 /**
- * Called on every Barba `beforeEnter` — snaps scroll back to the top of
- * the new page instantly (no animation) before the incoming container is
- * revealed.
+ * Called on Barba beforeEnter & after — snaps scroll back to the top of
+ * the new page instantly (no animation) even when Lenis is paused, and
+ * zeros internal offsets so ScrollTrigger recalculates from scroll = 0.
  */
 export function resetScroll() {
-    lenis?.scrollTo(0, { immediate: true });
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
+    if (lenis) {
+        lenis.scrollTo(0, { immediate: true, force: true });
+        lenis.scroll = 0;
+        lenis.targetScroll = 0;
+        lenis.animatedScroll = 0;
+        lenis.velocity = 0;
+        lenis.resize();
+    }
+
+    ScrollTrigger.update();
 }
 
 export { ScrollTrigger };
+

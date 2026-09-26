@@ -3,8 +3,8 @@ import { Flip } from 'gsap/Flip';
 
 gsap.registerPlugin(Flip);
 
-const LIST_NAMESPACES = ['projects-index', 'blog-index'];
-const DETAIL_NAMESPACES = ['project-show', 'blog-show'];
+const LIST_NAMESPACES = ['projects-index', 'blog-index', 'content-index', 'home', 'default'];
+const DETAIL_NAMESPACES = ['project-show', 'blog-show', 'content-show'];
 
 // Snapshot handed off from a transition's `leave()` to its `enter()`.
 let flipState = null;
@@ -23,9 +23,9 @@ function findOriginMedia(trigger, currentContainer) {
  * themselves) is required because CSS opacity on an ancestor would otherwise
  * visually fade `media` too, even if `media`'s own opacity is untouched.
  */
-function fadeAroundMedia(container, media, duration = 0.3) {
+function fadeAroundMedia(container, media, duration = 0.35) {
     if (!media) {
-        return gsap.to(container, { autoAlpha: 0, duration });
+        return gsap.to(container, { autoAlpha: 0, y: -20, duration, ease: 'power2.inOut' });
     }
 
     const siblings = [];
@@ -40,7 +40,7 @@ function fadeAroundMedia(container, media, duration = 0.3) {
         node = node.parentElement;
     }
 
-    return gsap.to(siblings, { autoAlpha: 0, duration });
+    return gsap.to(siblings, { autoAlpha: 0, y: -20, duration, ease: 'power2.inOut' });
 }
 
 /**

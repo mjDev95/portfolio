@@ -120,4 +120,3 @@ class MediaBulkDownloadTest extends TestCase
         $response->assertForbidden();
     }
 }
-

@@ -13,6 +13,8 @@ export function initMagneticCursor() {
         return { refreshMagneticTargets: () => {} };
     }
 
+    let targets = [];
+
     const quickX = gsap.quickTo(cursor, 'x', { duration: 0.35, ease: 'power3' });
     const quickY = gsap.quickTo(cursor, 'y', { duration: 0.35, ease: 'power3' });
 
@@ -21,22 +23,49 @@ export function initMagneticCursor() {
         quickY(event.clientY);
     });
 
-    let targets = [];
+    function handleMouseMove(event) {
+        const el = event.currentTarget;
+        const rect = el.getBoundingClientRect();
+        const strength = parseFloat(el.getAttribute('data-magnetic-strength')) || 0.35;
+        const deltaX = (event.clientX - rect.left - rect.width / 2) * strength;
+        const deltaY = (event.clientY - rect.top - rect.height / 2) * strength;
 
-    const onEnter = () => cursor.classList.add('is-active');
-    const onLeave = () => cursor.classList.remove('is-active');
+        gsap.to(el, {
+            x: deltaX,
+            y: deltaY,
+            duration: 0.3,
+            ease: 'power2.out',
+        });
+    }
+
+    function handleMouseLeave(event) {
+        const el = event.currentTarget;
+        cursor.classList.remove('is-active');
+        gsap.to(el, {
+            x: 0,
+            y: 0,
+            duration: 0.65,
+            ease: 'elastic.out(1, 0.4)',
+        });
+    }
+
+    function handleMouseEnter() {
+        cursor.classList.add('is-active');
+    }
 
     function refreshMagneticTargets() {
         targets.forEach((el) => {
-            el.removeEventListener('mouseenter', onEnter);
-            el.removeEventListener('mouseleave', onLeave);
+            el.removeEventListener('mouseenter', handleMouseEnter);
+            el.removeEventListener('mousemove', handleMouseMove);
+            el.removeEventListener('mouseleave', handleMouseLeave);
         });
 
         targets = Array.from(document.querySelectorAll('[data-magnetic]'));
 
         targets.forEach((el) => {
-            el.addEventListener('mouseenter', onEnter);
-            el.addEventListener('mouseleave', onLeave);
+            el.addEventListener('mouseenter', handleMouseEnter);
+            el.addEventListener('mousemove', handleMouseMove);
+            el.addEventListener('mouseleave', handleMouseLeave);
         });
     }
 

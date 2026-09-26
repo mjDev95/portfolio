@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\ColorPalette;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -95,5 +96,37 @@ class BrandIdentityTest extends TestCase
         $clientResponse->assertOk();
         $clientContent = $clientResponse->getContent();
         $this->assertStringContainsString('classList.remove(\'is-super-admin\')', $clientContent);
+    }
+
+    public function test_public_site_takes_color_palette_from_database_and_ignores_stale_client_custom_colors(): void
+    {
+        // Create master palette in database
+        $master = ColorPalette::create([
+            'name' => 'Cardinal & Aurum Carbon',
+            'slug' => 'cardinal-aurum',
+            'primary_color' => '#CB2128',
+            'secondary_color' => '#DFB136',
+            'accent_color' => '#F59E0B',
+            'is_master' => true,
+        ]);
+
+        // Client has a stale pink color in preferences
+        $this->client->preference()->create([
+            'color_palette' => [
+                'id' => 'custom',
+                'colors' => [
+                    'primary' => '#f529a0',
+                    'secondary' => '#6c757d',
+                ],
+            ],
+        ]);
+
+        // Guest visits public site
+        $response = $this->get(route('home'));
+        $response->assertOk();
+
+        // Must take the database palette (#CB2128) and NOT the client pink (#f529a0)
+        $response->assertSee('--accent: #CB2128;', false);
+        $response->assertDontSee('#f529a0');
     }
 }

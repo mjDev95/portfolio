@@ -32,12 +32,11 @@
             @endphp
             <div class="col" data-reveal>
                 <a href="{{ $detailUrl }}"
-                   class="d-block text-decoration-none text-white h-100 rounded-4 p-3 transition-all"
-                   style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);"
+                   class="d-block text-decoration-none text-primary h-100 rounded-xl p-3 border-subtle bg-surface-subtle transition-all"
                    data-flip-card data-magnetic>
                     @if ($itemThumb)
                         <div class="media-wrap overflow-hidden mb-3"
-                             data-flip-id="content-media-{{ $item->slug }}"
+                             data-flip-id="project-{{ $item->slug }}"
                              style="aspect-ratio: 16/10; border-radius: 1rem;">
                             <img src="{{ $itemThumb->url }}"
                                  alt="{{ $itemThumb->alt ?: ($itemThumb->caption ?: $item->title) }}"
@@ -45,31 +44,31 @@
                                  class="img-fluid object-fit-cover w-100 h-100">
                         </div>
                     @else
-                        <div class="media-wrap overflow-hidden mb-3 d-flex align-items-center justify-center text-muted"
-                             style="aspect-ratio: 16/10; border-radius: 1rem; background: rgba(255,255,255,0.04);">
-                            <span class="text-fluid-xs text-uppercase tracking-wider">{{ $cpt->singular_name ?? $cpt->name }}</span>
+                        <div class="media-wrap overflow-hidden mb-3 d-flex align-items-center justify-content-center text-muted"
+                             style="aspect-ratio: 16/10; border-radius: 1rem; background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle);">
+                            <span class="text-fluid-xs text-uppercase tracking-wider font-mono">{{ $cpt->singular_name ?? $cpt->name }}</span>
                         </div>
                     @endif
 
                     @if ($item->categories->isNotEmpty())
-                        <div class="d-flex flex-wrap gap-1.5 mb-2">
+                        <div class="d-flex flex-wrap gap-1 mb-2">
                             @foreach ($item->categories as $category)
-                                <span class="badge bg-secondary-subtle text-white font-normal" style="font-size: 0.75rem; border-radius: 6px;">
+                                <span class="data-chip">
                                     {{ $category->name }}
                                 </span>
                             @endforeach
                         </div>
                     @endif
 
-                    <h2 class="h5 font-semibold text-white mb-2 line-clamp-2">{{ $item->title }}</h2>
+                    <h2 class="h5 font-semibold text-primary mb-2 line-clamp-2">{{ $item->title }}</h2>
 
                     @if ($item->excerpt)
-                        <p class="text-fluid-sm text-muted mb-3 line-clamp-2">{{ $item->excerpt }}</p>
+                        <p class="text-fluid-sm text-secondary mb-3 line-clamp-2 fw-light">{{ $item->excerpt }}</p>
                     @endif
 
-                    <div class="d-flex align-items-center justify-between text-fluid-xs text-muted mt-auto pt-2" style="border-top: 1px solid rgba(255,255,255,0.06);">
+                    <div class="d-flex align-items-center justify-content-between text-fluid-xs text-muted mt-auto pt-2 border-top-subtle">
                         <span>{{ $item->published_at ? $item->published_at->format('d M Y') : $item->created_at->format('d M Y') }}</span>
-                        <span class="text-primary font-semibold">Ver detalle &rarr;</span>
+                        <span class="text-accent font-semibold">Ver detalle &rarr;</span>
                     </div>
                 </a>
             </div>

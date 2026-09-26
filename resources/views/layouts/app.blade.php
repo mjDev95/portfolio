@@ -14,13 +14,33 @@
     <meta property="og:type" content="@yield('og_type', 'website')">
 
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:300,400,500,600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=bricolage-grotesque:400,500,600,700,800|poppins:300,400,500,600,700|jetbrains-mono:400,500,600,700&display=swap" rel="stylesheet" />
+
+    <script>
+        (function() {
+            try {
+                const saved = localStorage.getItem('portfolio-theme');
+                if (saved === 'light') {
+                    document.documentElement.classList.add('light');
+                    document.documentElement.classList.remove('dark');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.classList.remove('light');
+                }
+            } catch (e) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
 
     @vite(['resources/css/fluid-system.css', 'resources/css/public.css', 'resources/js/public/main.js'])
     @include('partials.theme-styles')
     @stack('head')
 </head>
 <body data-barba="wrapper">
+
+    {{-- Textura de Fondo Puntillismo / Noise Editorial (GPU-Accelerated) --}}
+    <div class="bg-noise-overlay" aria-hidden="true"></div>
 
     {{-- Persistent elements: survive every Barba transition untouched --}}
     @auth

@@ -1,5 +1,7 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from '../lib/smooth-scroll';
+import { initHeroCurtain } from './hero-curtain';
+import { initVelixReveals } from './velix-reveal';
 
 /**
  * Runs on every Barba `enter` step. Scoped to the incoming container so
@@ -7,6 +9,9 @@ import { ScrollTrigger } from '../lib/smooth-scroll';
  * outside [data-barba="container"].
  */
 export function initPageAnimations(container) {
+    initHeroCurtain(container);
+    initVelixReveals(container);
+
     const reveals = container.querySelectorAll('[data-reveal]');
 
     reveals.forEach((el) => {
@@ -27,6 +32,44 @@ export function initPageAnimations(container) {
     });
 
     initVideoFacades(container);
+    initLiveClock();
+}
+
+let clockInterval = null;
+
+function initLiveClock() {
+    const clockElements = document.querySelectorAll('[data-live-clock]');
+    if (!clockElements.length) return;
+
+    const updateClocks = () => {
+        try {
+            const now = new Date();
+            const timeString = new Intl.DateTimeFormat('es-MX', {
+                timeZone: 'America/Mexico_City',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false,
+            }).format(now);
+
+            clockElements.forEach((el) => {
+                el.textContent = `${timeString} CST · CDMX`;
+            });
+        } catch (e) {
+            // Fallback
+            const now = new Date();
+            const timeString = now.toTimeString().split(' ')[0];
+            clockElements.forEach((el) => {
+                el.textContent = `${timeString} CST · CDMX`;
+            });
+        }
+    };
+
+    updateClocks();
+
+    if (!clockInterval) {
+        clockInterval = setInterval(updateClocks, 1000);
+    }
 }
 
 /**
