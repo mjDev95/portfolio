@@ -242,7 +242,7 @@ a {
     right: 0;
     width: 100%;
     z-index: 50;
-    padding: var(--fluid-s-sm) var(--fluid-s-md);
+    padding: var(--fluid-s-sm) 0;
     pointer-events: none;
     will-change: transform, opacity;
     display: flex;
@@ -254,7 +254,6 @@ a {
 .site-header-fixed.navbar-curtain-hidden {
     opacity: 0 !important;
     visibility: hidden !important;
-    transform: scale(0.82) !important;
     pointer-events: none !important;
 }
 
@@ -415,41 +414,43 @@ a {
     line-height: 1;
 }
 
-/* Indicador Verde Pulsante 🟢 */
-.island-pulse-dot {
-    position: relative;
+/* 3 Estrellas de 4 Picos (Color Principal / Acento) */
+.island-stars {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    width: 9px;
-    height: 9px;
+    gap: 3px;
+    color: var(--accent);
     flex-shrink: 0;
-    margin-left: -0.15rem;
-    margin-right: 0.15rem;
+    margin-left: 0.15rem;
 }
 
-.island-pulse-ring {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 9999px;
-    background-color: #22c55e;
-    opacity: 0.75;
-    animation: islandPing 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+.island-star {
+    display: block;
+    fill: currentColor;
+    transform-origin: center center;
 }
 
-.island-pulse-core {
-    position: relative;
-    width: 8px;
-    height: 8px;
-    border-radius: 9999px;
-    background-color: #22c55e;
+.island-star-sm {
+    width: 10px;
+    height: 10px;
+    opacity: 0.85;
 }
 
-@keyframes islandPing {
-    75%, 100% {
-        transform: scale(2.2);
-        opacity: 0;
+.island-star-md {
+    width: 15px;
+    height: 15px;
+    opacity: 1;
+    animation: starTwinkle 3.2s ease-in-out infinite;
+}
+
+@keyframes starTwinkle {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 0.9;
+    }
+    50% {
+        transform: scale(1.22) rotate(12deg);
+        opacity: 1;
     }
 }
 
@@ -773,7 +774,7 @@ html.light .island-theme-btn .icon-sun  { display: none; }
 
 @media (max-width: 1023.98px) {
     .site-header-fixed {
-        padding: var(--fluid-s-xs) var(--fluid-s-sm);
+        padding: var(--fluid-s-xs) 0;
     }
     .nav-desktop-island {
         display: none !important;

@@ -16,6 +16,10 @@ export function initHeroCurtain(container) {
         if (navbar) {
             navbar.classList.remove('navbar-curtain-hidden');
             gsap.set(navbar, { autoAlpha: 1, y: 0, scale: 1, pointerEvents: 'auto' });
+            const islands = navbar.querySelectorAll('.nav-desktop-island, .nav-mobile-island');
+            if (islands.length) {
+                gsap.set(islands, { scale: 1, opacity: 1, filter: 'none', y: 0 });
+            }
         }
         return;
     }
@@ -110,12 +114,19 @@ export function initHeroCurtain(container) {
     // Floating navbar: estrictamente oculto mientras el hero curtain esté activo
     if (navbar) {
         const isPastCurtain = window.scrollY >= 1550;
+        const islands = navbar.querySelectorAll('.nav-desktop-island, .nav-mobile-island');
         if (isPastCurtain) {
             navbar.classList.remove('navbar-curtain-hidden');
-            gsap.set(navbar, { autoAlpha: 1, y: 0, scale: 1, pointerEvents: 'auto' });
+            gsap.set(navbar, { autoAlpha: 1, pointerEvents: 'auto' });
+            if (islands.length) {
+                gsap.set(islands, { scale: 1, opacity: 1, filter: 'none', y: 0 });
+            }
         } else {
             navbar.classList.add('navbar-curtain-hidden');
-            gsap.set(navbar, { autoAlpha: 0, y: 0, scale: 0.82, pointerEvents: 'none' });
+            gsap.set(navbar, { autoAlpha: 0, pointerEvents: 'none' });
+            if (islands.length) {
+                gsap.set(islands, { scale: 0.35, opacity: 0, filter: 'blur(8px)', y: -12 });
+            }
         }
     }
 
@@ -138,38 +149,52 @@ export function initHeroCurtain(container) {
             anticipatePin: 1,
             invalidateOnRefresh: true,
             onLeave: () => {
-                // Al terminar la cortina, revelamos el navbar con expansión pura de menos a más (scale 0.82 -> 1, opacity 0 -> 1)
+                // Al terminar la cortina, revelamos la cápsula flotante tipo Apple Dynamic Island:
+                // emerge de un tamaño compacto (scale 0.35, blur 8px) a escala 1 con rebote elástico premium
                 if (navbar) {
                     navbar.classList.remove('navbar-curtain-hidden');
-                    gsap.fromTo(navbar,
-                        { autoAlpha: 0, scale: 0.82, y: 0 },
-                        {
-                            autoAlpha: 1,
-                            scale: 1,
-                            y: 0,
-                            duration: 0.45,
-                            ease: 'back.out(1.35)',
-                            pointerEvents: 'auto',
-                            overwrite: 'auto',
-                        }
-                    );
+                    gsap.set(navbar, { autoAlpha: 1, pointerEvents: 'auto' });
+                    const islands = navbar.querySelectorAll('.nav-desktop-island, .nav-mobile-island');
+                    if (islands.length) {
+                        gsap.fromTo(islands,
+                            { scale: 0.35, opacity: 0, filter: 'blur(8px)', y: -12 },
+                            {
+                                scale: 1,
+                                opacity: 1,
+                                filter: 'blur(0px)',
+                                y: 0,
+                                duration: 0.55,
+                                ease: 'back.out(1.6)',
+                                pointerEvents: 'auto',
+                                overwrite: 'auto',
+                                clearProps: 'filter',
+                            }
+                        );
+                    }
                 }
             },
             onEnterBack: () => {
-                // Al regresar haciendo scroll hacia arriba al hero curtain, se oculta en sentido inverso (scale 1 -> 0.82, opacity 1 -> 0)
+                // Al regresar haciendo scroll hacia arriba al hero curtain, se oculta en sentido inverso
+                // contrayéndose hacia su semilla (scale 1 -> 0.35 con blur y opacidad)
                 if (navbar) {
-                    gsap.to(navbar, {
-                        autoAlpha: 0,
-                        scale: 0.82,
-                        y: 0,
-                        duration: 0.28,
-                        ease: 'power2.in',
-                        pointerEvents: 'none',
-                        overwrite: 'auto',
-                        onComplete: () => {
-                            navbar.classList.add('navbar-curtain-hidden');
-                        },
-                    });
+                    const islands = navbar.querySelectorAll('.nav-desktop-island, .nav-mobile-island');
+                    if (islands.length) {
+                        gsap.to(islands, {
+                            scale: 0.35,
+                            opacity: 0,
+                            filter: 'blur(8px)',
+                            y: -12,
+                            duration: 0.32,
+                            ease: 'power3.in',
+                            overwrite: 'auto',
+                            onComplete: () => {
+                                navbar.classList.add('navbar-curtain-hidden');
+                                gsap.set(navbar, { autoAlpha: 0, pointerEvents: 'none' });
+                            },
+                        });
+                    } else {
+                        navbar.classList.add('navbar-curtain-hidden');
+                    }
                 }
             },
         },

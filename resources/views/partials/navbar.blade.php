@@ -75,9 +75,16 @@
                 </div>
             </a>
             <span class="island-status-text">Available for work</span>
-            <span class="island-pulse-dot" aria-label="Available for work" title="Disponible para proyectos">
-                <span class="island-pulse-ring"></span>
-                <span class="island-pulse-core"></span>
+            <span class="island-stars" aria-label="Available for work" title="Disponible para proyectos">
+                <svg class="island-star island-star-sm" viewBox="0 0 24 24">
+                    <path d="M12 0 C12 6.627 6.627 12 0 12 C6.627 12 12 17.373 12 24 C12 17.373 17.373 12 24 12 C17.373 12 12 6.627 12 0 Z"/>
+                </svg>
+                <svg class="island-star island-star-md" viewBox="0 0 24 24">
+                    <path d="M12 0 C12 6.627 6.627 12 0 12 C6.627 12 12 17.373 12 24 C12 17.373 17.373 12 24 12 C17.373 12 12 6.627 12 0 Z"/>
+                </svg>
+                <svg class="island-star island-star-sm" viewBox="0 0 24 24">
+                    <path d="M12 0 C12 6.627 6.627 12 0 12 C6.627 12 12 17.373 12 24 C12 17.373 17.373 12 24 12 C17.373 12 12 6.627 12 0 Z"/>
+                </svg>
             </span>
         </div>
     </div>
@@ -100,9 +107,16 @@
             </a>
             <div class="mobile-island-status">
                 <span class="island-status-text">Available for work</span>
-                <span class="island-pulse-dot" aria-label="Available for work" title="Disponible para proyectos">
-                    <span class="island-pulse-ring"></span>
-                    <span class="island-pulse-core"></span>
+                <span class="island-stars" aria-label="Available for work" title="Disponible para proyectos">
+                    <svg class="island-star island-star-sm" viewBox="0 0 24 24">
+                        <path d="M12 0 C12 6.627 6.627 12 0 12 C6.627 12 12 17.373 12 24 C12 17.373 17.373 12 24 12 C17.373 12 12 6.627 12 0 Z"/>
+                    </svg>
+                    <svg class="island-star island-star-md" viewBox="0 0 24 24">
+                        <path d="M12 0 C12 6.627 6.627 12 0 12 C6.627 12 12 17.373 12 24 C12 17.373 17.373 12 24 12 C17.373 12 12 6.627 12 0 Z"/>
+                    </svg>
+                    <svg class="island-star island-star-sm" viewBox="0 0 24 24">
+                        <path d="M12 0 C12 6.627 6.627 12 0 12 C6.627 12 12 17.373 12 24 C12 17.373 17.373 12 24 12 C17.373 12 12 6.627 12 0 Z"/>
+                    </svg>
                 </span>
             </div>
             <button type="button" 

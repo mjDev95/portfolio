@@ -145,13 +145,15 @@ function transitionDesktopToCompact(island, expandedBlock, compactBlock, immedia
     if (immediate) {
         island.classList.add('is-compacted');
         const targetWidth = getElementTargetWidth(compactBlock, island);
-        gsap.set(island, { width: targetWidth });
+        gsap.set(island, { width: targetWidth, scaleY: 1 });
         gsap.set(compactBlock, {
             position: 'relative',
             left: 'auto',
             top: 'auto',
             yPercent: 0,
             x: 0,
+            scale: 1,
+            filter: 'none',
             opacity: 1,
             visibility: 'visible',
             pointerEvents: 'auto',
@@ -162,6 +164,8 @@ function transitionDesktopToCompact(island, expandedBlock, compactBlock, immedia
             top: '50%',
             yPercent: -50,
             x: 0,
+            scale: 0.86,
+            filter: 'blur(5px)',
             opacity: 0,
             visibility: 'hidden',
             pointerEvents: 'none',
@@ -181,7 +185,9 @@ function transitionDesktopToCompact(island, expandedBlock, compactBlock, immedia
         top: '50%',
         yPercent: -50,
         opacity: 0,
-        x: 12,
+        scale: 0.86,
+        filter: 'blur(5px)',
+        x: 10,
         visibility: 'visible',
         pointerEvents: 'none',
     });
@@ -195,7 +201,9 @@ function transitionDesktopToCompact(island, expandedBlock, compactBlock, immedia
                 top: 'auto',
                 yPercent: 0,
                 x: 0,
+                scale: 1,
                 opacity: 1,
+                filter: 'none',
                 visibility: 'visible',
                 pointerEvents: 'auto',
             });
@@ -205,48 +213,68 @@ function transitionDesktopToCompact(island, expandedBlock, compactBlock, immedia
                 top: '50%',
                 yPercent: -50,
                 x: 0,
+                scale: 0.86,
                 opacity: 0,
+                filter: 'blur(5px)',
                 visibility: 'hidden',
                 pointerEvents: 'none',
             });
             island.style.width = targetWidth + 'px';
+            gsap.set(island, { scaleY: 1 });
         },
     });
 
-    // 1. Animación fluida continua del ancho exterior (Estilo Apple)
+    // 1. Morfología física Apple: contracción fluida del ancho + compresión de volumen
     tl.to(island, {
         width: targetWidth,
-        duration: 0.52,
+        duration: 0.48,
         ease: 'power4.out',
     }, 0);
 
-    // 2. Desvanecimiento y contracción sutil del menú expandido
+    tl.to(island, {
+        scaleY: 0.94,
+        duration: 0.2,
+        ease: 'power2.out',
+    }, 0);
+    tl.to(island, {
+        scaleY: 1,
+        duration: 0.28,
+        ease: 'power2.out',
+    }, 0.2);
+
+    // 2. El menú expandido se contrae suavemente, se desenfoca y desaparece
     tl.to(expandedBlock, {
         opacity: 0,
-        x: -14,
+        scale: 0.86,
+        filter: 'blur(5px)',
+        x: -10,
         duration: 0.22,
         ease: 'power2.in',
     }, 0);
 
-    // 3. Emerge con desplazamiento inercial el bloque "Available for work"
+    // 3. Emerge el bloque compacto ("Available for work" + estrellas) con rebote elástico Apple
     tl.to(compactBlock, {
         opacity: 1,
+        scale: 1,
+        filter: 'blur(0px)',
         x: 0,
-        duration: 0.35,
-        ease: 'power3.out',
-    }, 0.14);
+        duration: 0.36,
+        ease: 'back.out(1.5)',
+    }, 0.12);
 }
 
 function transitionDesktopToExpanded(island, expandedBlock, compactBlock, immediate = false) {
     if (immediate) {
         island.classList.remove('is-compacted');
-        gsap.set(island, { width: 'auto' });
+        gsap.set(island, { width: 'auto', scaleY: 1 });
         gsap.set(expandedBlock, {
             position: 'relative',
             left: 'auto',
             top: 'auto',
             yPercent: 0,
             x: 0,
+            scale: 1,
+            filter: 'none',
             opacity: 1,
             visibility: 'visible',
             pointerEvents: 'auto',
@@ -257,6 +285,8 @@ function transitionDesktopToExpanded(island, expandedBlock, compactBlock, immedi
             top: '50%',
             yPercent: -50,
             x: 0,
+            scale: 0.88,
+            filter: 'blur(4px)',
             opacity: 0,
             visibility: 'hidden',
             pointerEvents: 'none',
@@ -276,7 +306,9 @@ function transitionDesktopToExpanded(island, expandedBlock, compactBlock, immedi
         top: '50%',
         yPercent: -50,
         opacity: 0,
-        x: -12,
+        scale: 0.88,
+        filter: 'blur(5px)',
+        x: -10,
         visibility: 'visible',
         pointerEvents: 'none',
     });
@@ -290,7 +322,9 @@ function transitionDesktopToExpanded(island, expandedBlock, compactBlock, immedi
                 top: 'auto',
                 yPercent: 0,
                 x: 0,
+                scale: 1,
                 opacity: 1,
+                filter: 'none',
                 visibility: 'visible',
                 pointerEvents: 'auto',
             });
@@ -300,36 +334,54 @@ function transitionDesktopToExpanded(island, expandedBlock, compactBlock, immedi
                 top: '50%',
                 yPercent: -50,
                 x: 0,
+                scale: 0.88,
                 opacity: 0,
+                filter: 'blur(5px)',
                 visibility: 'hidden',
                 pointerEvents: 'none',
             });
             island.style.width = 'auto';
+            gsap.set(island, { scaleY: 1 });
         },
     });
 
-    // 1. Expansión elástica continua del ancho exterior
+    // 1. Morfología física Apple: estiramiento elástico orgánico del ancho exterior
     tl.to(island, {
         width: targetWidth,
-        duration: 0.55,
-        ease: 'expo.out',
+        duration: 0.52,
+        ease: 'back.out(1.15)',
     }, 0);
 
-    // 2. Desvanecimiento suave del bloque compacto
+    tl.to(island, {
+        scaleY: 0.95,
+        duration: 0.22,
+        ease: 'power2.out',
+    }, 0);
+    tl.to(island, {
+        scaleY: 1,
+        duration: 0.3,
+        ease: 'power2.out',
+    }, 0.22);
+
+    // 2. Desvanecimiento y contracción suave del bloque compacto
     tl.to(compactBlock, {
         opacity: 0,
-        x: 12,
+        scale: 0.88,
+        filter: 'blur(5px)',
+        x: 10,
         duration: 0.18,
         ease: 'power2.in',
     }, 0);
 
-    // 3. Emerge con desplazamiento inercial el menú expandido completo
+    // 3. Emerge con impulso elástico el menú expandido completo
     tl.to(expandedBlock, {
         opacity: 1,
+        scale: 1,
+        filter: 'blur(0px)',
         x: 0,
         duration: 0.38,
-        ease: 'power3.out',
-    }, 0.12);
+        ease: 'back.out(1.35)',
+    }, 0.1);
 }
 
 /**
