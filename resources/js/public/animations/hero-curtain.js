@@ -15,7 +15,7 @@ export function initHeroCurtain(container) {
         // En páginas sin hero curtain, aseguramos que el navbar esté completamente visible
         if (navbar) {
             navbar.classList.remove('navbar-curtain-hidden');
-            gsap.set(navbar, { autoAlpha: 1, y: 0, pointerEvents: 'auto' });
+            gsap.set(navbar, { autoAlpha: 1, y: 0, scale: 1, pointerEvents: 'auto' });
         }
         return;
     }
@@ -112,10 +112,10 @@ export function initHeroCurtain(container) {
         const isPastCurtain = window.scrollY >= 1550;
         if (isPastCurtain) {
             navbar.classList.remove('navbar-curtain-hidden');
-            gsap.set(navbar, { autoAlpha: 1, y: 0, pointerEvents: 'auto' });
+            gsap.set(navbar, { autoAlpha: 1, y: 0, scale: 1, pointerEvents: 'auto' });
         } else {
             navbar.classList.add('navbar-curtain-hidden');
-            gsap.set(navbar, { autoAlpha: 0, y: -20, pointerEvents: 'none' });
+            gsap.set(navbar, { autoAlpha: 0, y: -20, scale: 0.85, pointerEvents: 'none' });
         }
     }
 
@@ -138,26 +138,31 @@ export function initHeroCurtain(container) {
             anticipatePin: 1,
             invalidateOnRefresh: true,
             onLeave: () => {
-                // Al terminar la cortina y desanclar hacia el contenido posterior, revelamos el navbar flotante
+                // Al terminar la cortina y desanclar hacia el contenido posterior, revelamos el navbar flotante estilo Apple
                 if (navbar) {
                     navbar.classList.remove('navbar-curtain-hidden');
-                    gsap.to(navbar, {
-                        autoAlpha: 1,
-                        y: 0,
-                        duration: 0.4,
-                        ease: 'power3.out',
-                        pointerEvents: 'auto',
-                        overwrite: 'auto',
-                    });
+                    gsap.fromTo(navbar,
+                        { autoAlpha: 0, y: -20, scale: 0.85 },
+                        {
+                            autoAlpha: 1,
+                            y: 0,
+                            scale: 1,
+                            duration: 0.52,
+                            ease: 'back.out(1.5)',
+                            pointerEvents: 'auto',
+                            overwrite: 'auto',
+                        }
+                    );
                 }
             },
             onEnterBack: () => {
-                // Al regresar haciendo scroll hacia arriba al hero curtain, ocultamos el navbar
+                // Al regresar haciendo scroll hacia arriba al hero curtain, ocultamos el navbar con contracción elástica
                 if (navbar) {
                     gsap.to(navbar, {
                         autoAlpha: 0,
                         y: -20,
-                        duration: 0.3,
+                        scale: 0.85,
+                        duration: 0.35,
                         ease: 'power2.in',
                         pointerEvents: 'none',
                         overwrite: 'auto',

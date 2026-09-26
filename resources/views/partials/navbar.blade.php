@@ -1,34 +1,10 @@
 <header class="site-header-fixed {{ request()->routeIs('home') ? 'navbar-curtain-hidden' : '' }}" id="site-header" data-magnetic-zone>
-    {{-- Dynamic Island Cápsula Central (Centrada matemáticamente en el viewport) --}}
-    <div class="dynamic-island" id="dynamic-island" data-island-state="expanded">
-        {{-- 1. Bloque Compacto: Avatar + "Available for work" + Indicador Verde Pulsante 🟢 + Botón Hamburguesa --}}
-        <div class="island-compact" id="island-compact">
-            <a href="{{ route('home') }}" class="island-avatar-btn" data-magnetic title="Mario Joaquín Galicia">
-                <div class="island-avatar-wrap">
-                    <img src="{{ asset('images/avatar.png') }}" 
-                         alt="Mario J. Galicia" 
-                         class="island-avatar-img"
-                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <span class="island-avatar-fallback">MJ</span>
-                </div>
-            </a>
-            <span class="island-status-text">Available for work</span>
-            <span class="island-pulse-dot" aria-label="Available for work" title="Disponible para proyectos">
-                <span class="island-pulse-ring"></span>
-                <span class="island-pulse-core"></span>
-            </span>
-            <button type="button" 
-                    id="mobile-menu-toggle" 
-                    class="navbar-mobile-toggle" 
-                    aria-label="Abrir menú"
-                    aria-expanded="false">
-                <span class="mobile-toggle-bar"></span>
-                <span class="mobile-toggle-bar"></span>
-            </button>
-        </div>
-
-        {{-- 2. Bloque Expandido (Desktop): Avatar + Enlaces + Theme + Contact CTA --}}
-        <div class="island-expanded" id="island-expanded">
+    {{-- ══════════════════════════════════════════════════════════════════════════
+         1. ISLA DESKTOP (Exclusiva para Ordenador: min-width: 1024px)
+         ══════════════════════════════════════════════════════════════════════════ --}}
+    <div class="nav-desktop-island" id="desktop-island">
+        {{-- Bloque Expandido Inicial (Avatar + Enlaces + Theme + Contact) --}}
+        <div class="desktop-island-expanded" id="desktop-island-expanded">
             <a href="{{ route('home') }}" class="island-avatar-btn" data-magnetic title="Mario Joaquín Galicia — Volver al inicio">
                 <div class="island-avatar-wrap">
                     <img src="{{ asset('images/avatar.png') }}" 
@@ -39,7 +15,7 @@
                 </div>
             </a>
 
-            <nav class="island-nav-links" id="island-nav-links">
+            <nav class="island-nav-links" id="desktop-nav-links">
                 <a href="{{ route('home') }}#hero-editorial-2" class="island-nav-link" data-section="hero-editorial-2" data-magnetic>Home</a>
                 <a href="{{ route('about') }}" class="island-nav-link {{ request()->routeIs('about') ? 'active' : '' }}" data-section="about" data-magnetic>About</a>
                 <a href="{{ route('home') }}#services" class="island-nav-link" data-section="services" data-magnetic>Services</a>
@@ -50,14 +26,16 @@
                         : collect();
                 @endphp
                 @foreach ($navContentTypes as $cpt)
-                    @php
-                        $isActive = request()->is($cpt->public_route_slug) || request()->is($cpt->public_route_slug . '/*');
-                    @endphp
-                    <a href="{{ route('public.content.index', $cpt->public_route_slug) }}" 
-                       class="island-nav-link {{ $isActive ? 'active' : '' }}" 
-                       data-magnetic>
-                        {{ $cpt->name }}
-                    </a>
+                    @if (strtolower($cpt->public_route_slug) !== 'proyectos' && strtolower($cpt->name) !== 'proyectos' && strtolower($cpt->name) !== 'projects')
+                        @php
+                            $isActive = request()->is($cpt->public_route_slug) || request()->is($cpt->public_route_slug . '/*');
+                        @endphp
+                        <a href="{{ route('public.content.index', $cpt->public_route_slug) }}" 
+                           class="island-nav-link {{ $isActive ? 'active' : '' }}" 
+                           data-magnetic>
+                            {{ $cpt->name }}
+                        </a>
+                    @endif
                 @endforeach
             </nav>
 
@@ -84,49 +62,85 @@
                 </a>
             </div>
         </div>
+
+        {{-- Bloque Compacto Desktop (Avatar + Available for work 🟢) --}}
+        <div class="desktop-island-compact" id="desktop-island-compact">
+            <a href="{{ route('home') }}" class="island-avatar-btn" data-magnetic title="Mario Joaquín Galicia">
+                <div class="island-avatar-wrap">
+                    <img src="{{ asset('images/avatar.png') }}" 
+                         alt="Mario J. Galicia" 
+                         class="island-avatar-img"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <span class="island-avatar-fallback">MJ</span>
+                </div>
+            </a>
+            <span class="island-status-text">Available for work</span>
+            <span class="island-pulse-dot" aria-label="Available for work" title="Disponible para proyectos">
+                <span class="island-pulse-ring"></span>
+                <span class="island-pulse-core"></span>
+            </span>
+        </div>
     </div>
 
-    {{-- Modal Móvil Card Centrado (Estilo Exacto de la Referencia) --}}
-    <div class="navbar-mobile-drawer" id="navbar-mobile-drawer" aria-hidden="true">
-        <div class="mobile-drawer-header">
-            <div class="island-avatar-wrap">
-                <img src="{{ asset('images/avatar.png') }}" 
-                     alt="Mario J. Galicia" 
-                     class="island-avatar-img"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <span class="island-avatar-fallback">MJ</span>
+    {{-- ══════════════════════════════════════════════════════════════════════════
+         2. ISLA MÓVIL Y TABLET (Exclusiva para Móvil/Tablet: max-width: 1023px)
+         Cápsula única que se expande estrictamente sobre el Eje Y con Timeline GSAP
+         ══════════════════════════════════════════════════════════════════════════ --}}
+    <div class="nav-mobile-island" id="mobile-island">
+        {{-- Cabecera fija de la píldora: Avatar + Available + Dot + Toggle --}}
+        <div class="mobile-island-bar" id="mobile-island-bar">
+            <a href="{{ route('home') }}" class="island-avatar-btn" title="Mario Joaquín Galicia">
+                <div class="island-avatar-wrap">
+                    <img src="{{ asset('images/avatar.png') }}" 
+                         alt="Mario J. Galicia" 
+                         class="island-avatar-img"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <span class="island-avatar-fallback">MJ</span>
+                </div>
+            </a>
+            <div class="mobile-island-status">
+                <span class="island-status-text">Available for work</span>
+                <span class="island-pulse-dot" aria-label="Available for work" title="Disponible para proyectos">
+                    <span class="island-pulse-ring"></span>
+                    <span class="island-pulse-core"></span>
+                </span>
             </div>
             <button type="button" 
-                    id="mobile-drawer-close" 
-                    class="mobile-drawer-close-btn" 
-                    aria-label="Cerrar menú">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
+                    id="mobile-island-toggle" 
+                    class="mobile-island-toggle" 
+                    aria-label="Abrir menú"
+                    aria-expanded="false">
+                <span class="toggle-bar bar-top"></span>
+                <span class="toggle-bar bar-bot"></span>
             </button>
         </div>
 
-        <nav class="mobile-drawer-nav">
-            <a href="{{ route('home') }}#hero-editorial-2" class="mobile-nav-link">Home</a>
-            <a href="{{ route('about') }}" class="mobile-nav-link {{ request()->routeIs('about') ? 'active' : '' }}">About</a>
-            <a href="{{ route('home') }}#services" class="mobile-nav-link">Services</a>
-            <a href="{{ route('home') }}#proyectos" class="mobile-nav-link">Projects</a>
-            @foreach ($navContentTypes as $cpt)
-                <a href="{{ route('public.content.index', $cpt->public_route_slug) }}" class="mobile-nav-link">
-                    {{ $cpt->name }}
-                </a>
-            @endforeach
-        </nav>
+        {{-- Cuerpo expandible: Anima de height 0 a auto sobre el eje Y con timeline --}}
+        <div class="mobile-island-body" id="mobile-island-body">
+            <nav class="mobile-island-nav">
+                <a href="{{ route('home') }}#hero-editorial-2" class="mobile-island-link" data-section="hero-editorial-2">Home</a>
+                <a href="{{ route('about') }}" class="mobile-island-link {{ request()->routeIs('about') ? 'active' : '' }}" data-section="about">About</a>
+                <a href="{{ route('home') }}#services" class="mobile-island-link" data-section="services">Services</a>
+                <a href="{{ route('home') }}#proyectos" class="mobile-island-link" data-section="proyectos">Projects</a>
+                @foreach ($navContentTypes as $cpt)
+                    @if (strtolower($cpt->public_route_slug) !== 'proyectos' && strtolower($cpt->name) !== 'proyectos' && strtolower($cpt->name) !== 'projects')
+                        <a href="{{ route('public.content.index', $cpt->public_route_slug) }}" class="mobile-island-link">
+                            {{ $cpt->name }}
+                        </a>
+                    @endif
+                @endforeach
+            </nav>
 
-        <div class="mobile-drawer-footer">
-            <a href="{{ route('contact') }}" class="btn-drawer-contact">
-                <span>Contact</span>
-            </a>
-            <button type="button" class="mobile-theme-toggle-btn" id="mobile-theme-toggle" aria-label="Cambiar modo de color">
-                <span>Modo de color</span>
-                <span class="theme-icon-indicator">◐</span>
-            </button>
+            <div class="mobile-island-footer">
+                <a href="{{ route('contact') }}" class="btn-mobile-contact">
+                    <span>Contact</span>
+                </a>
+                <button type="button" class="mobile-island-theme-btn" id="mobile-island-theme-toggle" aria-label="Cambiar modo de color">
+                    <span>Modo de color</span>
+                    <span class="theme-icon-indicator">◐</span>
+                </button>
+            </div>
         </div>
     </div>
 </header>
+

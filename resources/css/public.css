@@ -247,20 +247,21 @@ a {
     will-change: transform, opacity;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    transform-origin: center top;
 }
 
 .site-header-fixed.navbar-curtain-hidden {
     opacity: 0 !important;
     visibility: hidden !important;
-    transform: translateY(-20px) !important;
+    transform: translateY(-20px) scale(0.85) !important;
     pointer-events: none !important;
 }
 
 /* ─────────────────────────────────────────────────────────────
-   DYNAMIC ISLAND FLOTANTE (Cero Sombras, Editorial Puro)
+   DYNAMIC ISLAND DESKTOP (Exclusivo Ordenador: min-width: 1024px)
    ───────────────────────────────────────────────────────────── */
-.dynamic-island {
+.nav-desktop-island {
     position: relative;
     display: inline-flex;
     align-items: center;
@@ -272,35 +273,54 @@ a {
     padding: 0.35rem 0.45rem;
     border-radius: 9999px;
     background-color: var(--nav-bg);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
     border: 1px solid var(--nav-border);
     box-shadow: none !important;
     pointer-events: auto;
     transition: border-color 0.25s ease;
     overflow: hidden;
+    transform-origin: center top;
 }
 
-.dynamic-island.is-compacted {
+.nav-desktop-island.is-compacted {
     box-shadow: none !important;
     cursor: pointer;
 }
 
-/* Reglas MUTUAMENTE EXCLUYENTES: Jamás se superponen los textos */
-.dynamic-island:not(.is-compacted) .island-compact {
+/* Reglas MUTUAMENTE EXCLUYENTES en Desktop */
+.nav-desktop-island:not(.is-compacted) .desktop-island-compact {
     display: none !important;
 }
 
-.dynamic-island:not(.is-compacted) .island-expanded {
+.nav-desktop-island:not(.is-compacted) .desktop-island-expanded {
     display: flex !important;
 }
 
-.dynamic-island.is-compacted .island-expanded {
+.nav-desktop-island.is-compacted .desktop-island-expanded {
     display: none !important;
 }
 
-.dynamic-island.is-compacted .island-compact {
+.nav-desktop-island.is-compacted .desktop-island-compact {
     display: flex !important;
+}
+
+.desktop-island-expanded {
+    display: flex;
+    align-items: center;
+    gap: var(--fluid-s-sm);
+    position: relative;
+    opacity: 1;
+    white-space: nowrap;
+}
+
+.desktop-island-compact {
+    display: flex;
+    align-items: center;
+    gap: var(--fluid-s-sm);
+    position: relative;
+    opacity: 1;
+    white-space: nowrap;
 }
 
 /* Avatar circular de autor */
@@ -538,111 +558,138 @@ html.light .island-theme-btn .icon-sun  { display: none; }
 }
 
 /* ─────────────────────────────────────────────────────────────
-   MODAL CARD MÓVIL CENTRADO (Inspiración Portavia Mobile Reference)
+   DYNAMIC ISLAND MÓVIL Y TABLET (Exclusivo < 1024px, Eje Y, Cero Sombras)
    ───────────────────────────────────────────────────────────── */
-.navbar-mobile-drawer {
-    position: fixed;
-    top: var(--fluid-s-sm);
-    left: 50%;
-    transform: translateX(-50%) translateY(-10px) scale(0.96);
+.nav-mobile-island {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     width: calc(100vw - 2.5rem);
     max-width: 360px;
+    margin-inline: auto;
+    padding: 0.35rem 0.5rem;
+    border-radius: 2rem;
     background-color: var(--nav-bg);
     backdrop-filter: blur(32px);
     -webkit-backdrop-filter: blur(32px);
     border: 1px solid var(--nav-border);
-    border-radius: 2rem;
-    padding: 1.5rem 1.65rem;
     box-shadow: none !important;
-    z-index: 60;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                visibility 0.3s;
-    display: flex;
-    flex-direction: column;
-}
-
-.navbar-mobile-drawer.is-open {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(0) scale(1);
     pointer-events: auto;
+    overflow: hidden;
+    box-sizing: border-box;
+    transform-origin: center top;
 }
 
-.mobile-drawer-header {
+.mobile-island-bar {
     display: flex;
+    width: 100%;
     align-items: center;
     justify-content: space-between;
-    width: 100%;
-    margin-bottom: var(--fluid-s-sm);
+    gap: var(--fluid-s-xs);
+    padding: 0.15rem 0.25rem;
+    box-sizing: border-box;
 }
 
-.mobile-drawer-close-btn {
+.mobile-island-status {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.nav-mobile-island .island-status-text {
+    font-size: var(--fluid-text-sm);
+    font-weight: 500;
+}
+
+.mobile-island-toggle {
     width: 38px;
     height: 38px;
     border-radius: 9999px;
     background-color: var(--accent);
-    color: #ffffff;
     border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-.mobile-drawer-close-btn:hover {
-    transform: scale(1.05);
-    opacity: 0.95;
-}
-
-.mobile-drawer-nav {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--fluid-s-xs);
-    padding: var(--fluid-s-xs) 0;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    position: relative;
+    transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-.mobile-nav-link {
+.mobile-island-toggle:hover {
+    transform: scale(1.05);
+}
+
+.toggle-bar {
+    width: 14px;
+    height: 2px;
+    background-color: #ffffff;
+    border-radius: 999px;
+    transform-origin: center center;
+    display: block;
+}
+
+.mobile-island-body {
+    width: 100%;
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.nav-mobile-island.is-open .mobile-island-body {
+    pointer-events: auto;
+}
+
+.mobile-island-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--fluid-s-2xs);
+    padding: var(--fluid-s-sm) 0 var(--fluid-s-xs) 0;
+    width: 100%;
+}
+
+.mobile-island-link {
     font-family: var(--font-sans);
-    font-size: var(--fluid-text-lg);
+    font-size: var(--fluid-text-md);
     font-weight: 500;
     color: var(--text-primary);
     text-decoration: none;
-    padding: 0.45rem 1.25rem;
+    padding: 0.5rem 1.25rem;
     border-radius: 9999px;
     transition: color 0.2s ease, background-color 0.2s ease;
     text-align: center;
     width: 100%;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
+    display: block;
+    box-sizing: border-box;
 }
 
-.mobile-nav-link:hover,
-.mobile-nav-link.active {
+.mobile-island-link:hover,
+.mobile-island-link.active {
     color: var(--accent);
     background-color: var(--pill-bg);
 }
 
-.mobile-drawer-footer {
+.mobile-island-footer {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--fluid-s-sm);
-    margin-top: var(--fluid-s-sm);
-    padding-top: var(--fluid-s-xs);
+    gap: var(--fluid-s-xs);
+    padding-bottom: var(--fluid-s-xs);
     width: 100%;
 }
 
-.btn-drawer-contact {
+.btn-mobile-contact {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.75rem 2.75rem;
+    padding: 0.65rem 2.5rem;
     border-radius: 9999px;
     background-color: var(--accent);
     color: #ffffff !important;
@@ -655,17 +702,17 @@ html.light .island-theme-btn .icon-sun  { display: none; }
     width: fit-content;
 }
 
-.btn-drawer-contact:hover {
+.btn-mobile-contact:hover {
     opacity: 0.92;
     transform: scale(0.98);
 }
 
-.mobile-theme-toggle-btn {
+.mobile-island-theme-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 0.4rem 1rem;
+    padding: 0.35rem 1rem;
     border-radius: 9999px;
     background-color: transparent;
     border: 1px solid var(--border-subtle);
@@ -676,27 +723,38 @@ html.light .island-theme-btn .icon-sun  { display: none; }
     transition: color 0.2s ease, border-color 0.2s ease;
 }
 
-.mobile-theme-toggle-btn:hover {
+.mobile-island-theme-btn:hover {
     color: var(--text-primary);
     border-color: var(--accent);
 }
 
-@media (max-width: 768px) {
-    .island-expanded {
+/* ═════════════════════════════════════════════════════════════════
+   ESTRICTA SEPARACIÓN: ORDENADOR (>=1024px) vs MÓVILES/TABLETS (<1024px)
+   ═════════════════════════════════════════════════════════════════ */
+@media (min-width: 1024px) {
+    .nav-desktop-island {
+        display: inline-flex !important;
+    }
+    .nav-mobile-island {
         display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
     }
-    .island-compact {
+}
+
+@media (max-width: 1023.98px) {
+    .site-header-fixed {
+        padding: var(--fluid-s-xs) var(--fluid-s-sm);
+    }
+    .nav-desktop-island {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+    .nav-mobile-island {
         display: flex !important;
-        position: relative !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        pointer-events: auto !important;
-    }
-    .navbar-mobile-toggle {
-        display: flex !important;
-    }
-    .dynamic-island {
-        padding: 0.35rem 0.45rem;
     }
 }
 

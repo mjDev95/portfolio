@@ -3,26 +3,24 @@
  * Persists user preference in localStorage and toggles 'dark' / 'light' class on <html>.
  */
 export function initThemeToggle() {
-    const toggleBtn = document.getElementById('theme-toggle');
-    if (!toggleBtn) return;
+    const toggleButtons = document.querySelectorAll('#theme-toggle, #mobile-island-theme-toggle, [data-theme-toggle]');
+    if (!toggleButtons.length) return;
 
-    // Remove any previously attached listeners on re-runs
-    toggleBtn.replaceWith(toggleBtn.cloneNode(true));
-    const newBtn = document.getElementById('theme-toggle');
-    if (!newBtn) return;
+    toggleButtons.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isDark = document.documentElement.classList.contains('dark');
+            const nextTheme = isDark ? 'light' : 'dark';
 
-    newBtn.addEventListener('click', () => {
-        const isDark = document.documentElement.classList.contains('dark');
-        const nextTheme = isDark ? 'light' : 'dark';
+            if (nextTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.documentElement.classList.remove('light');
+            } else {
+                document.documentElement.classList.add('light');
+                document.documentElement.classList.remove('dark');
+            }
 
-        if (nextTheme === 'dark') {
-            document.documentElement.classList.add('dark');
-            document.documentElement.classList.remove('light');
-        } else {
-            document.documentElement.classList.add('light');
-            document.documentElement.classList.remove('dark');
-        }
-
-        localStorage.setItem('portfolio-theme', nextTheme);
+            localStorage.setItem('portfolio-theme', nextTheme);
+        });
     });
 }
