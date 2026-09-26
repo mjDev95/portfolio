@@ -116,50 +116,218 @@ function initDesktopIsland() {
     });
 }
 
+function getElementTargetWidth(el, container) {
+    const clone = el.cloneNode(true);
+    clone.style.position = 'absolute';
+    clone.style.visibility = 'hidden';
+    clone.style.display = 'flex';
+    clone.style.pointerEvents = 'none';
+    clone.style.left = '-9999px';
+    clone.style.top = '-9999px';
+    clone.style.width = 'max-content';
+    clone.style.opacity = '0';
+    document.body.appendChild(clone);
+    const contentWidth = clone.offsetWidth;
+    document.body.removeChild(clone);
+
+    const comp = window.getComputedStyle(container);
+    const padLeft = parseFloat(comp.paddingLeft) || 8;
+    const padRight = parseFloat(comp.paddingRight) || 8;
+    const borderLeft = parseFloat(comp.borderLeftWidth) || 1;
+    const borderRight = parseFloat(comp.borderRightWidth) || 1;
+
+    return Math.ceil(contentWidth + padLeft + padRight + borderLeft + borderRight);
+}
+
 function transitionDesktopToCompact(island, expandedBlock, compactBlock, immediate = false) {
     if (immediate) {
         island.classList.add('is-compacted');
-        gsap.set(compactBlock, { opacity: 1, y: 0 });
+        const targetWidth = getElementTargetWidth(compactBlock, island);
+        gsap.set(island, { width: targetWidth });
+        gsap.set(compactBlock, {
+            position: 'relative',
+            left: 'auto',
+            top: 'auto',
+            yPercent: 0,
+            x: 0,
+            opacity: 1,
+            visibility: 'visible',
+            pointerEvents: 'auto',
+        });
+        gsap.set(expandedBlock, {
+            position: 'absolute',
+            left: '0.45rem',
+            top: '50%',
+            yPercent: -50,
+            x: 0,
+            opacity: 0,
+            visibility: 'hidden',
+            pointerEvents: 'none',
+        });
         return;
     }
 
-    gsap.killTweensOf([expandedBlock, compactBlock]);
-    gsap.to(expandedBlock, {
+    gsap.killTweensOf([island, expandedBlock, compactBlock]);
+
+    const targetWidth = getElementTargetWidth(compactBlock, island);
+    const currentWidth = island.offsetWidth;
+    island.style.width = currentWidth + 'px';
+
+    gsap.set(compactBlock, {
+        position: 'absolute',
+        left: '0.45rem',
+        top: '50%',
+        yPercent: -50,
         opacity: 0,
-        y: -4,
-        duration: 0.15,
-        ease: 'power2.in',
+        x: 12,
+        visibility: 'visible',
+        pointerEvents: 'none',
+    });
+
+    const tl = gsap.timeline({
         onComplete: () => {
             island.classList.add('is-compacted');
-            gsap.fromTo(compactBlock,
-                { opacity: 0, y: 4 },
-                { opacity: 1, y: 0, duration: 0.22, ease: 'power2.out' }
-            );
+            gsap.set(compactBlock, {
+                position: 'relative',
+                left: 'auto',
+                top: 'auto',
+                yPercent: 0,
+                x: 0,
+                opacity: 1,
+                visibility: 'visible',
+                pointerEvents: 'auto',
+            });
+            gsap.set(expandedBlock, {
+                position: 'absolute',
+                left: '0.45rem',
+                top: '50%',
+                yPercent: -50,
+                x: 0,
+                opacity: 0,
+                visibility: 'hidden',
+                pointerEvents: 'none',
+            });
+            island.style.width = targetWidth + 'px';
         },
     });
+
+    // 1. Animación fluida continua del ancho exterior (Estilo Apple)
+    tl.to(island, {
+        width: targetWidth,
+        duration: 0.52,
+        ease: 'power4.out',
+    }, 0);
+
+    // 2. Desvanecimiento y contracción sutil del menú expandido
+    tl.to(expandedBlock, {
+        opacity: 0,
+        x: -14,
+        duration: 0.22,
+        ease: 'power2.in',
+    }, 0);
+
+    // 3. Emerge con desplazamiento inercial el bloque "Available for work"
+    tl.to(compactBlock, {
+        opacity: 1,
+        x: 0,
+        duration: 0.35,
+        ease: 'power3.out',
+    }, 0.14);
 }
 
 function transitionDesktopToExpanded(island, expandedBlock, compactBlock, immediate = false) {
     if (immediate) {
         island.classList.remove('is-compacted');
-        gsap.set(expandedBlock, { opacity: 1, y: 0 });
+        gsap.set(island, { width: 'auto' });
+        gsap.set(expandedBlock, {
+            position: 'relative',
+            left: 'auto',
+            top: 'auto',
+            yPercent: 0,
+            x: 0,
+            opacity: 1,
+            visibility: 'visible',
+            pointerEvents: 'auto',
+        });
+        gsap.set(compactBlock, {
+            position: 'absolute',
+            left: '0.45rem',
+            top: '50%',
+            yPercent: -50,
+            x: 0,
+            opacity: 0,
+            visibility: 'hidden',
+            pointerEvents: 'none',
+        });
         return;
     }
 
-    gsap.killTweensOf([expandedBlock, compactBlock]);
-    gsap.to(compactBlock, {
+    gsap.killTweensOf([island, expandedBlock, compactBlock]);
+
+    const targetWidth = getElementTargetWidth(expandedBlock, island);
+    const currentWidth = island.offsetWidth;
+    island.style.width = currentWidth + 'px';
+
+    gsap.set(expandedBlock, {
+        position: 'absolute',
+        left: '0.45rem',
+        top: '50%',
+        yPercent: -50,
         opacity: 0,
-        y: 4,
-        duration: 0.12,
-        ease: 'power2.in',
+        x: -12,
+        visibility: 'visible',
+        pointerEvents: 'none',
+    });
+
+    const tl = gsap.timeline({
         onComplete: () => {
             island.classList.remove('is-compacted');
-            gsap.fromTo(expandedBlock,
-                { opacity: 0, y: -4 },
-                { opacity: 1, y: 0, duration: 0.25, ease: 'power2.out' }
-            );
+            gsap.set(expandedBlock, {
+                position: 'relative',
+                left: 'auto',
+                top: 'auto',
+                yPercent: 0,
+                x: 0,
+                opacity: 1,
+                visibility: 'visible',
+                pointerEvents: 'auto',
+            });
+            gsap.set(compactBlock, {
+                position: 'absolute',
+                left: '0.45rem',
+                top: '50%',
+                yPercent: -50,
+                x: 0,
+                opacity: 0,
+                visibility: 'hidden',
+                pointerEvents: 'none',
+            });
+            island.style.width = 'auto';
         },
     });
+
+    // 1. Expansión elástica continua del ancho exterior
+    tl.to(island, {
+        width: targetWidth,
+        duration: 0.55,
+        ease: 'expo.out',
+    }, 0);
+
+    // 2. Desvanecimiento suave del bloque compacto
+    tl.to(compactBlock, {
+        opacity: 0,
+        x: 12,
+        duration: 0.18,
+        ease: 'power2.in',
+    }, 0);
+
+    // 3. Emerge con desplazamiento inercial el menú expandido completo
+    tl.to(expandedBlock, {
+        opacity: 1,
+        x: 0,
+        duration: 0.38,
+        ease: 'power3.out',
+    }, 0.12);
 }
 
 /**

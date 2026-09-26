@@ -288,21 +288,39 @@ a {
     cursor: pointer;
 }
 
-/* Reglas MUTUAMENTE EXCLUYENTES en Desktop */
+/* Reglas MUTUAMENTE EXCLUYENTES en Desktop con soporte de Morphing Fluido */
 .nav-desktop-island:not(.is-compacted) .desktop-island-compact {
-    display: none !important;
+    position: absolute;
+    top: 50%;
+    left: 0.45rem;
+    transform: translateY(-50%);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 .nav-desktop-island:not(.is-compacted) .desktop-island-expanded {
-    display: flex !important;
+    display: flex;
+    position: relative;
+    opacity: 1;
+    visibility: visible;
 }
 
 .nav-desktop-island.is-compacted .desktop-island-expanded {
-    display: none !important;
+    position: absolute;
+    top: 50%;
+    left: 0.45rem;
+    transform: translateY(-50%);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 .nav-desktop-island.is-compacted .desktop-island-compact {
-    display: flex !important;
+    display: flex;
+    position: relative;
+    opacity: 1;
+    visibility: visible;
 }
 
 .desktop-island-expanded {
