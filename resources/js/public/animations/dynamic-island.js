@@ -23,6 +23,7 @@ import { getLenis, ScrollTrigger } from '../lib/smooth-scroll';
 let servicesTrigger = null;
 let isDesktopCompacted = false;
 let isDesktopHovered = false;
+let isNavigating = false;
 
 let mobileTl = null;
 let isMobileExpanded = false;
@@ -45,7 +46,7 @@ function bindDesktopIslandHover(desktopIsland, expandedBlock, compactBlock) {
     if (!desktopIsland.dataset.hoverBound) {
         desktopIsland.dataset.hoverBound = 'true';
         desktopIsland.addEventListener('mouseenter', () => {
-            if (window.innerWidth < 1024 || !isDesktopCompacted) return;
+            if (window.innerWidth < 1024 || !isDesktopCompacted || isNavigating) return;
             isDesktopHovered = true;
             transitionDesktopToExpanded(desktopIsland, expandedBlock, compactBlock, false);
         });
@@ -56,6 +57,27 @@ function bindDesktopIslandHover(desktopIsland, expandedBlock, compactBlock) {
             if (isDesktopCompacted) {
                 transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, false);
             }
+        });
+
+        // Microinteracción cinemática: al pulsar un enlace de navegación dentro
+        // de la píldora expandida, colapsar inmediatamente a modo compacto antes de salir
+        const navLinks = expandedBlock.querySelectorAll('a');
+        navLinks.forEach((link) => {
+            link.addEventListener('click', () => {
+                isNavigating = true;
+                isDesktopHovered = false;
+                isDesktopCompacted = true;
+                if (typeof window !== 'undefined') {
+                    window.__hasNavigatedInternal = true;
+                    window.__portfolioPillWasCompacted = true;
+                }
+                transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, false);
+
+                // Bloqueo temporal para que el puntero inmóvil no re-abra la píldora al llegar a la nueva vista
+                setTimeout(() => {
+                    isNavigating = false;
+                }, 1200);
+            });
         });
     }
 }
@@ -75,9 +97,12 @@ export function syncDesktopIslandState(forceCompacted = null) {
     const compactBlock = document.getElementById('desktop-island-compact');
     if (!expandedBlock || !compactBlock) return;
 
+    const isInternalNavigation = typeof window !== 'undefined' && Boolean(window.__hasNavigatedInternal);
+
     const shouldBeCompacted = forceCompacted !== null
         ? Boolean(forceCompacted)
-        : (isDesktopCompacted ||
+        : (isInternalNavigation ||
+           isDesktopCompacted ||
            desktopIsland.classList.contains('is-compacted') ||
            (typeof window !== 'undefined' && Boolean(window.__portfolioPillWasCompacted)));
 
@@ -99,6 +124,8 @@ export function syncDesktopIslandState(forceCompacted = null) {
 }
 
 function initDesktopIsland() {
+    isDesktopHovered = false;
+
     const desktopIsland = document.getElementById('desktop-island');
     if (!desktopIsland) return;
 
@@ -106,20 +133,40 @@ function initDesktopIsland() {
     const compactBlock = document.getElementById('desktop-island-compact');
     if (!expandedBlock || !compactBlock) return;
 
+    // REGLA FUNDAMENTAL DE NAVEGACIÓN:
+    // Si venimos de otra sección (navegación interna SPA / Barba), DEBE estar colapsada/compactada.
+    // Solo si es primera carga por URL directa entra expandida para dar a conocer el menú.
+    const isInternalNavigation = typeof window !== 'undefined' && Boolean(window.__hasNavigatedInternal);
+    const wasCompacted = isInternalNavigation ||
+                         isDesktopCompacted ||
+                         desktopIsland.classList.contains('is-compacted') ||
+                         (typeof window !== 'undefined' && Boolean(window.__portfolioPillWasCompacted));
+
     const servicesEl = document.getElementById('services');
 
-    if (servicesEl) {
-        // En la home: evaluar si ya pasamos físicamente la sección #services
+    if (wasCompacted) {
+        syncDesktopIslandState(true);
+    } else {
+        // Entrada directa por URL: evaluar si ya pasamos físicamente la sección #services o 300px
         const currentY = window.scrollY || document.documentElement.scrollTop || 0;
-        const servicesRect = servicesEl.getBoundingClientRect();
-        const isAlreadyAtServices = servicesRect.top <= window.innerHeight * 0.3 && currentY > 1600;
-
-        if (isAlreadyAtServices) {
-            syncDesktopIslandState(true);
+        if (servicesEl) {
+            const servicesRect = servicesEl.getBoundingClientRect();
+            const isAlreadyAtServices = servicesRect.top <= window.innerHeight * 0.3 && currentY > 1600;
+            if (isAlreadyAtServices) {
+                syncDesktopIslandState(true);
+            } else {
+                syncDesktopIslandState(false);
+            }
         } else {
-            syncDesktopIslandState(false);
+            if (currentY >= 300) {
+                syncDesktopIslandState(true);
+            } else {
+                syncDesktopIslandState(false);
+            }
         }
+    }
 
+    if (servicesEl) {
         servicesTrigger = ScrollTrigger.create({
             trigger: servicesEl,
             start: 'top 30%',
@@ -127,6 +174,7 @@ function initDesktopIsland() {
                 if (isDesktopCompacted) return;
                 isDesktopCompacted = true;
                 if (typeof window !== 'undefined') {
+                    window.__hasNavigatedInternal = true;
                     window.__portfolioPillWasCompacted = true;
                 }
                 if (!isDesktopHovered) {
@@ -137,29 +185,13 @@ function initDesktopIsland() {
             invalidateOnRefresh: true,
         });
     } else {
-        // En subpáginas sin #services (e.g. /proyectos, /proyectos/{slug}, /sobre-mi)
-        // REGLA ESTRICTA: Preservar el estado de la píldora. Si ya estaba compactada, mantenerla compactada sin refrescar ni expandir.
-        const wasCompacted = isDesktopCompacted ||
-                             desktopIsland.classList.contains('is-compacted') ||
-                             (typeof window !== 'undefined' && Boolean(window.__portfolioPillWasCompacted));
-
-        if (wasCompacted) {
-            syncDesktopIslandState(true);
-        } else {
-            const currentY = window.scrollY || document.documentElement.scrollTop || 0;
-            if (currentY >= 300) {
-                syncDesktopIslandState(true);
-            } else {
-                syncDesktopIslandState(false);
-            }
-        }
-
         servicesTrigger = ScrollTrigger.create({
             start: 300,
             onEnter: () => {
                 if (isDesktopCompacted) return;
                 isDesktopCompacted = true;
                 if (typeof window !== 'undefined') {
+                    window.__hasNavigatedInternal = true;
                     window.__portfolioPillWasCompacted = true;
                 }
                 if (!isDesktopHovered) {
@@ -660,5 +692,6 @@ export function cleanupDynamicIsland(preserveState = false) {
         isDesktopCompacted = false;
         isDesktopHovered = false;
         isMobileExpanded = false;
+        isNavigating = false;
     }
 }

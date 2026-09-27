@@ -22,7 +22,8 @@ if (typeof window !== 'undefined') {
                 // Capturar el estado actual de la píldora antes de cualquier manipulación de vista
                 const desktopIsland = document.getElementById('desktop-island');
                 if (desktopIsland) {
-                    window.__portfolioPillWasCompacted = desktopIsland.classList.contains('is-compacted') || isDesktopIslandCompacted();
+                    window.__hasNavigatedInternal = true;
+                    window.__portfolioPillWasCompacted = true;
                 }
 
                 // Desactivar temporalmente pointer-events y matar tweens residuales de imán
@@ -85,7 +86,8 @@ export function createFlipTransitions() {
                     // 1. Preservar estado de la píldora exactamente igual
                     const desktopIsland = document.getElementById('desktop-island');
                     if (desktopIsland) {
-                        window.__portfolioPillWasCompacted = desktopIsland.classList.contains('is-compacted') || isDesktopIslandCompacted();
+                        window.__hasNavigatedInternal = true;
+                        window.__portfolioPillWasCompacted = true;
                     }
 
                     // 2. Identificar tarjeta y wrapper de origen
