@@ -42,6 +42,26 @@ export function initDynamicIsland(preserveState = true) {
  * 1. DESKTOP ISLAND (>= 1024px)
  * ─────────────────────────────────────────────────────────────
  */
+export function hasNavigated() {
+    if (typeof window === 'undefined') return false;
+    try {
+        if (sessionStorage.getItem('portfolio_navigated') === 'true') {
+            return true;
+        }
+    } catch (e) {}
+    return Boolean(window.__hasNavigatedInternal);
+}
+
+export function markNavigated() {
+    if (typeof window === 'undefined') return;
+    try {
+        sessionStorage.setItem('portfolio_navigated', 'true');
+    } catch (e) {}
+    window.__hasNavigatedInternal = true;
+    window.__portfolioPillWasCompacted = true;
+    isDesktopCompacted = true;
+}
+
 function bindDesktopIslandHover(desktopIsland, expandedBlock, compactBlock) {
     if (!desktopIsland.dataset.hoverBound) {
         desktopIsland.dataset.hoverBound = 'true';
@@ -67,10 +87,7 @@ function bindDesktopIslandHover(desktopIsland, expandedBlock, compactBlock) {
                 isNavigating = true;
                 isDesktopHovered = false;
                 isDesktopCompacted = true;
-                if (typeof window !== 'undefined') {
-                    window.__hasNavigatedInternal = true;
-                    window.__portfolioPillWasCompacted = true;
-                }
+                markNavigated();
                 transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, false);
 
                 // Bloqueo temporal para que el puntero inmóvil no re-abra la píldora al llegar a la nueva vista
@@ -84,7 +101,7 @@ function bindDesktopIslandHover(desktopIsland, expandedBlock, compactBlock) {
 
 export function isDesktopIslandCompacted() {
     const desktopIsland = typeof document !== 'undefined' ? document.getElementById('desktop-island') : null;
-    return isDesktopCompacted || Boolean(desktopIsland?.classList.contains('is-compacted')) || (typeof window !== 'undefined' && Boolean(window.__portfolioPillWasCompacted));
+    return isDesktopCompacted || hasNavigated() || Boolean(desktopIsland?.classList.contains('is-compacted'));
 }
 
 export function syncDesktopIslandState(forceCompacted = null) {
@@ -97,26 +114,20 @@ export function syncDesktopIslandState(forceCompacted = null) {
     const compactBlock = document.getElementById('desktop-island-compact');
     if (!expandedBlock || !compactBlock) return;
 
-    const isInternalNavigation = typeof window !== 'undefined' && Boolean(window.__hasNavigatedInternal);
+    const userHasNavigated = hasNavigated();
 
     const shouldBeCompacted = forceCompacted !== null
         ? Boolean(forceCompacted)
-        : (isInternalNavigation ||
+        : (userHasNavigated ||
            isDesktopCompacted ||
-           desktopIsland.classList.contains('is-compacted') ||
-           (typeof window !== 'undefined' && Boolean(window.__portfolioPillWasCompacted)));
+           desktopIsland.classList.contains('is-compacted'));
 
     if (shouldBeCompacted) {
         isDesktopCompacted = true;
-        if (typeof window !== 'undefined') {
-            window.__portfolioPillWasCompacted = true;
-        }
+        markNavigated();
         transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, true);
     } else {
         isDesktopCompacted = false;
-        if (typeof window !== 'undefined') {
-            window.__portfolioPillWasCompacted = false;
-        }
         transitionDesktopToExpanded(desktopIsland, expandedBlock, compactBlock, true);
     }
 
@@ -134,13 +145,13 @@ function initDesktopIsland() {
     if (!expandedBlock || !compactBlock) return;
 
     // REGLA FUNDAMENTAL DE NAVEGACIÓN:
-    // Si venimos de otra sección (navegación interna SPA / Barba), DEBE estar colapsada/compactada.
+    // Si venimos de otra sección (navegación interna SPA o cualquier página previa en la sesión),
+    // DEBE llegar y mantenerse colapsada/compactada.
     // Solo si es primera carga por URL directa entra expandida para dar a conocer el menú.
-    const isInternalNavigation = typeof window !== 'undefined' && Boolean(window.__hasNavigatedInternal);
-    const wasCompacted = isInternalNavigation ||
+    const userHasNavigated = hasNavigated();
+    const wasCompacted = userHasNavigated ||
                          isDesktopCompacted ||
-                         desktopIsland.classList.contains('is-compacted') ||
-                         (typeof window !== 'undefined' && Boolean(window.__portfolioPillWasCompacted));
+                         desktopIsland.classList.contains('is-compacted');
 
     const servicesEl = document.getElementById('services');
 
@@ -173,10 +184,7 @@ function initDesktopIsland() {
             onEnter: () => {
                 if (isDesktopCompacted) return;
                 isDesktopCompacted = true;
-                if (typeof window !== 'undefined') {
-                    window.__hasNavigatedInternal = true;
-                    window.__portfolioPillWasCompacted = true;
-                }
+                markNavigated();
                 if (!isDesktopHovered) {
                     transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, false);
                 }
@@ -190,10 +198,7 @@ function initDesktopIsland() {
             onEnter: () => {
                 if (isDesktopCompacted) return;
                 isDesktopCompacted = true;
-                if (typeof window !== 'undefined') {
-                    window.__hasNavigatedInternal = true;
-                    window.__portfolioPillWasCompacted = true;
-                }
+                markNavigated();
                 if (!isDesktopHovered) {
                     transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, false);
                 }
@@ -231,6 +236,7 @@ function getElementTargetWidth(el, container) {
 function transitionDesktopToCompact(island, expandedBlock, compactBlock, immediate = false) {
     if (immediate) {
         island.classList.add('is-compacted');
+        island.classList.remove('is-expanded');
         const targetWidth = getElementTargetWidth(compactBlock, island);
         gsap.set(island, { width: targetWidth, scaleY: 1 });
         gsap.set(compactBlock, {
@@ -282,6 +288,7 @@ function transitionDesktopToCompact(island, expandedBlock, compactBlock, immedia
     const tl = gsap.timeline({
         onComplete: () => {
             island.classList.add('is-compacted');
+            island.classList.remove('is-expanded');
             gsap.set(compactBlock, {
                 position: 'relative',
                 left: 'auto',
@@ -353,6 +360,7 @@ function transitionDesktopToCompact(island, expandedBlock, compactBlock, immedia
 function transitionDesktopToExpanded(island, expandedBlock, compactBlock, immediate = false) {
     if (immediate) {
         island.classList.remove('is-compacted');
+        island.classList.add('is-expanded');
         gsap.set(island, { width: 'auto', scaleY: 1 });
         gsap.set(expandedBlock, {
             position: 'relative',
@@ -403,6 +411,7 @@ function transitionDesktopToExpanded(island, expandedBlock, compactBlock, immedi
     const tl = gsap.timeline({
         onComplete: () => {
             island.classList.remove('is-compacted');
+            island.classList.add('is-expanded');
             gsap.set(expandedBlock, {
                 position: 'relative',
                 left: 'auto',
@@ -689,7 +698,9 @@ export function cleanupDynamicIsland(preserveState = false) {
     }
 
     if (!preserveState) {
-        isDesktopCompacted = false;
+        if (!hasNavigated()) {
+            isDesktopCompacted = false;
+        }
         isDesktopHovered = false;
         isMobileExpanded = false;
         isNavigating = false;

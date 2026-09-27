@@ -5,7 +5,7 @@ import { updateCsrfTokenFrom } from './csrf';
 import { initPageAnimations } from '../animations/init-page';
 import { createFlipTransitions } from './flip-transitions';
 import { sendAnalyticsPing } from './tracker';
-import { cleanupDynamicIsland, syncDesktopIslandState } from '../animations/dynamic-island';
+import { cleanupDynamicIsland, syncDesktopIslandState, markNavigated } from '../animations/dynamic-island';
 
 function syncPageMetadata(html) {
     if (!html) return;
@@ -94,13 +94,13 @@ export function initBarba({ onAfterEnter } = {}) {
         history.scrollRestoration = 'manual';
     }
 
+    barba.hooks.before(() => {
+        markNavigated();
+    });
+
     barba.hooks.beforeLeave(() => {
         stopScroll();
-        if (typeof window !== 'undefined') {
-            window.__hasNavigatedInternal = true;
-            window.__portfolioPillWasCompacted = true;
-        }
-        syncDesktopIslandState(true);
+        markNavigated();
         cleanupDynamicIsland(true);
         ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     });
@@ -109,9 +109,8 @@ export function initBarba({ onAfterEnter } = {}) {
         updateCsrfTokenFrom(data.next.html);
         resetScroll();
         syncPageMetadata(data.next.html);
-        if (typeof window !== 'undefined' && window.__hasNavigatedInternal) {
-            syncDesktopIslandState(true);
-        }
+        markNavigated();
+        syncDesktopIslandState(true);
     });
 
     barba.hooks.after((data) => {

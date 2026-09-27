@@ -1,6 +1,6 @@
 import gsap from 'gsap';
 import { startScroll, resizeScroll, stopScroll, resetScroll, ScrollTrigger } from './smooth-scroll';
-import { syncDesktopIslandState, isDesktopIslandCompacted } from '../animations/dynamic-island';
+import { syncDesktopIslandState, isDesktopIslandCompacted, markNavigated } from '../animations/dynamic-island';
 
 const DETAIL_NAMESPACES = ['project-show', 'content-show'];
 
@@ -18,16 +18,9 @@ if (typeof window !== 'undefined') {
             const isHomePage = window.location.pathname === '/' || document.querySelector('[data-barba="container"]')?.getAttribute('data-barba-namespace') === 'home';
             if (card && !isHomePage) {
                 window.__lastClickedFlipCard = card;
+                markNavigated();
 
-                // Capturar el estado actual de la píldora antes de cualquier manipulación de vista
-                const desktopIsland = document.getElementById('desktop-island');
-                if (desktopIsland) {
-                    window.__hasNavigatedInternal = true;
-                    window.__portfolioPillWasCompacted = true;
-                }
-
-                // Desactivar temporalmente pointer-events y matar tweens residuales de imán
-                card.style.pointerEvents = 'none';
+                // Matar tweens residuales de imán sin bloquear el despacho de eventos de Barba
                 card.removeAttribute('data-magnetic');
                 gsap.killTweensOf(card);
                 const img = card.querySelector('[data-flip-element="image"]') || card.querySelector('img');
@@ -83,12 +76,8 @@ export function createFlipTransitions() {
                 return new Promise((resolve) => {
                     stopScroll();
 
-                    // 1. Preservar estado de la píldora exactamente igual
-                    const desktopIsland = document.getElementById('desktop-island');
-                    if (desktopIsland) {
-                        window.__hasNavigatedInternal = true;
-                        window.__portfolioPillWasCompacted = true;
-                    }
+                    // 1. Registrar navegación en la memoria de sesión
+                    markNavigated();
 
                     // 2. Identificar tarjeta y wrapper de origen
                     const candidateTrigger = data.trigger instanceof Element ? data.trigger : null;
@@ -314,10 +303,9 @@ export function createFlipTransitions() {
                     gsap.set(targetHero, { opacity: 0, visibility: 'hidden' });
                 }
 
-                // Preservar la píldora exactamente en su estado físico (ancho y opacidades GSAP)
-                if (typeof window !== 'undefined' && window.__portfolioPillWasCompacted !== undefined) {
-                    syncDesktopIslandState(window.__portfolioPillWasCompacted);
-                }
+                // Al llegar a la nueva vista de detalle, la píldora se fija compactada de forma inmediata
+                markNavigated();
+                syncDesktopIslandState(true);
             },
             async enter(data) {
                 const flight = window.__activeFlight;
@@ -404,10 +392,8 @@ export function createFlipTransitions() {
                     });
                 }
 
-                // Confirmar que la píldora mantenga su estado físico exacto tras la animación
-                if (typeof window !== 'undefined' && window.__portfolioPillWasCompacted !== undefined) {
-                    syncDesktopIslandState(window.__portfolioPillWasCompacted);
-                }
+                // Confirmar que la píldora se mantenga compacta tras la animación
+                syncDesktopIslandState(true);
 
                 startScroll();
                 resizeScroll();

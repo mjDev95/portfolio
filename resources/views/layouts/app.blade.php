@@ -27,6 +27,9 @@
                     document.documentElement.classList.add('dark');
                     document.documentElement.classList.remove('light');
                 }
+                if (sessionStorage.getItem('portfolio_navigated') === 'true') {
+                    document.documentElement.classList.add('pill-starts-compact');
+                }
             } catch (e) {
                 document.documentElement.classList.add('dark');
             }
