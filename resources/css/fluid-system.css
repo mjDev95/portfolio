@@ -27,7 +27,8 @@
     --fluid-s-lg:  clamp(1.5rem, 4vw, 3.5rem);      /* ~24–56px  */
     --fluid-s-xl:  clamp(2rem, 6vw, 5rem);          /* ~32–80px  */
     --fluid-s-2xl: clamp(3rem, 8vw, 7.5rem);        /* ~48–120px */
-    --fluid-s-3xl: clamp(4rem, 12vw, 11rem);        /* ~64–176px */
+    --fluid-s-3xl: clamp(5rem, 12vw, 11rem);        /* ~80–176px */
+    --fluid-s-4xl: clamp(6rem, 16vw, 15rem);        /* ~96–240px */
 
     /* Escala tipográfica fluida (independiente de .h1-.h6, para uso en prosa) */
     --fluid-text-xs:   clamp(0.75rem, 0.6vw + 0.65rem, 0.85rem);
@@ -103,16 +104,24 @@
    ───────────────────────────────────────── */
 .row {
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: var(--fluid-col-gap);
     row-gap: var(--fluid-row-gap);
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
+}
+
+@media (max-width: 767.98px) {
+    .row {
+        --fluid-col-gap: clamp(0.5rem, 2vw, 1rem);
+    }
 }
 
 .row > * {
     box-sizing: border-box;
     grid-column: span 12; /* Ocupan toda la fila en móvil por defecto */
+    min-width: 0; /* Previene el desbordamiento horizontal por contenido rígido */
 }
 
 .col      { grid-column: span 1; }
@@ -122,6 +131,7 @@
 .col-6    { grid-column: span 6; }
 .col-8    { grid-column: span 8; }
 .col-9    { grid-column: span 9; }
+.col-10   { grid-column: span 10; }
 .col-12   { grid-column: span 12; }
 
 @media (min-width: 768px) {
@@ -130,6 +140,7 @@
     .col-md-6  { grid-column: span 6; }
     .col-md-8  { grid-column: span 8; }
     .col-md-9  { grid-column: span 9; }
+    .col-md-10 { grid-column: span 10; }
     .col-md-12 { grid-column: span 12; }
 }
 
@@ -139,6 +150,7 @@
     .col-lg-6  { grid-column: span 6; }
     .col-lg-8  { grid-column: span 8; }
     .col-lg-9  { grid-column: span 9; }
+    .col-lg-10 { grid-column: span 10; }
     .col-lg-12 { grid-column: span 12; }
 }
 
@@ -151,6 +163,12 @@
 .g-3  { --fluid-col-gap: var(--fluid-s-md); --fluid-row-gap: var(--fluid-s-md); }
 .g-4  { --fluid-col-gap: var(--fluid-s-lg); --fluid-row-gap: var(--fluid-s-lg); }
 .g-5  { --fluid-col-gap: var(--fluid-s-xl); --fluid-row-gap: var(--fluid-s-xl); }
+
+@media (min-width: 992px) {
+    .g-lg-3 { --fluid-col-gap: var(--fluid-s-md); --fluid-row-gap: var(--fluid-s-md); }
+    .g-lg-4 { --fluid-col-gap: var(--fluid-s-lg); --fluid-row-gap: var(--fluid-s-lg); }
+    .g-lg-5 { --fluid-col-gap: var(--fluid-s-xl); --fluid-row-gap: var(--fluid-s-xl); }
+}
 
 .gap-0 { gap: 0 !important; }
 .gap-1 { gap: var(--fluid-s-xs) !important; }
@@ -183,18 +201,26 @@
 .py-lg { padding-block: var(--fluid-s-lg) !important; }
 .py-xl { padding-block: var(--fluid-s-xl) !important; }
 .py-2xl { padding-block: var(--fluid-s-2xl) !important; }
+.py-3xl { padding-block: var(--fluid-s-3xl) !important; }
+.py-4xl { padding-block: var(--fluid-s-4xl) !important; }
 
 .pt-0 { padding-top: 0 !important; }
 .pt-sm { padding-top: var(--fluid-s-sm) !important; }
 .pt-md { padding-top: var(--fluid-s-md) !important; }
 .pt-lg { padding-top: var(--fluid-s-lg) !important; }
 .pt-xl { padding-top: var(--fluid-s-xl) !important; }
+.pt-2xl { padding-top: var(--fluid-s-2xl) !important; }
+.pt-3xl { padding-top: var(--fluid-s-3xl) !important; }
+.pt-4xl { padding-top: var(--fluid-s-4xl) !important; }
 
 .pb-0 { padding-bottom: 0 !important; }
 .pb-sm { padding-bottom: var(--fluid-s-sm) !important; }
 .pb-md { padding-bottom: var(--fluid-s-md) !important; }
 .pb-lg { padding-bottom: var(--fluid-s-lg) !important; }
 .pb-xl { padding-bottom: var(--fluid-s-xl) !important; }
+.pb-2xl { padding-bottom: var(--fluid-s-2xl) !important; }
+.pb-3xl { padding-bottom: var(--fluid-s-3xl) !important; }
+.pb-4xl { padding-bottom: var(--fluid-s-4xl) !important; }
 
 .m-0 { margin: 0 !important; }
 .my-0 { margin-block: 0 !important; }
@@ -215,6 +241,7 @@
 .mb-lg { margin-bottom: var(--fluid-s-lg) !important; }
 .mb-xl { margin-bottom: var(--fluid-s-xl) !important; }
 .mb-auto { margin-bottom: auto !important; }
+.mx-auto { margin-inline: auto !important; }
 
 /* ─────────────────────────────────────────
    6. TEXT UTILITIES
@@ -256,12 +283,12 @@
 .font-sans    { font-family: var(--font-sans) !important; }
 .font-mono    { font-family: var(--font-mono) !important; }
 
-.h1, h1 { font-size: var(--fluid-h1) !important; font-weight: 300; line-height: 1.05; letter-spacing: -0.02em; }
-.h2, h2 { font-size: var(--fluid-h2) !important; font-weight: 300; line-height: 1.1; letter-spacing: -0.01em; }
-.h3, h3 { font-size: var(--fluid-h3) !important; font-weight: 400; line-height: 1.2; }
-.h4, h4 { font-size: var(--fluid-h4) !important; font-weight: 400; line-height: 1.25; }
-.h5, h5 { font-size: var(--fluid-h5) !important; font-weight: 500; line-height: 1.3; }
-.h6, h6 { font-size: var(--fluid-h6) !important; font-weight: 600; line-height: 1.4; letter-spacing: 0.1em; }
+.h1, h1 { font-size: var(--fluid-h1) !important; font-weight: 300; line-height: 1.05; letter-spacing: -0.02em; overflow-wrap: break-word; }
+.h2, h2 { font-size: var(--fluid-h2) !important; font-weight: 300; line-height: 1.1; letter-spacing: -0.01em; overflow-wrap: break-word; }
+.h3, h3 { font-size: var(--fluid-h3) !important; font-weight: 400; line-height: 1.2; overflow-wrap: break-word; }
+.h4, h4 { font-size: var(--fluid-h4) !important; font-weight: 400; line-height: 1.25; overflow-wrap: break-word; }
+.h5, h5 { font-size: var(--fluid-h5) !important; font-weight: 500; line-height: 1.3; overflow-wrap: break-word; }
+.h6, h6 { font-size: var(--fluid-h6) !important; font-weight: 600; line-height: 1.4; letter-spacing: 0.1em; overflow-wrap: break-word; }
 
 .font-fluid-hero-statement {
     font-family: var(--font-heading);
@@ -442,4 +469,22 @@ html.lenis-smooth {
 [data-barba="container"] {
     position: relative;
     width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+}
+
+.prose {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.prose p {
+    margin-bottom: var(--fluid-s-md);
+}
+
+.prose img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--fluid-s-sm);
 }

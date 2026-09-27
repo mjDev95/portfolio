@@ -160,9 +160,7 @@ a {
 .text-primary-color     { color: var(--text-primary) !important; }
 .text-secondary,
 .text-secondary-color   { color: var(--text-secondary) !important; }
-.text-muted,
 .text-muted-color       { color: var(--text-muted) !important; }
-.text-white             { color: #ffffff !important; }
 
 .bg-primary             { background-color: var(--bg-primary) !important; }
 .bg-secondary           { background-color: var(--bg-secondary) !important; }

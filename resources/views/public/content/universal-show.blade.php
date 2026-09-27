@@ -9,7 +9,7 @@
 @section('edit_label', 'Editar ' . ($cpt->singular_name ?? $cpt->name))
 
 @section('content')
-<article class="container py-2xl" style="min-height: 100vh;">
+<article class="container py-3xl" style="min-height: 100vh;">
     <div class="mb-lg d-flex flex-wrap align-items-center justify-content-between gap-3" data-detail-breadcrumbs>
         <x-breadcrumbs :items="[
             ['label' => 'Inicio', 'url' => route('home')],
@@ -32,10 +32,10 @@
         </div>
     @endif
     <header class="mb-xl" data-reveal data-detail-header>
-        <h1 class="h1 font-bold text-primary" data-flip-text>{{ $content->title }}</h1>
+        <h1 class="h1 font-bold text-primary text-break" data-flip-text>{{ $content->title }}</h1>
 
         @if ($content->excerpt)
-            <p class="text-fluid-lg text-muted mt-md" style="max-width: 58ch;" data-flip-text>
+            <p class="text-fluid-lg text-muted mt-md text-break" style="max-width: 58ch;" data-flip-text>
                 {{ $content->excerpt }}
             </p>
         @endif
@@ -62,10 +62,10 @@
         </div>
     </header>
 
-    <div class="row g-5" data-detail-body>
+    <div class="row g-4 g-lg-5" data-detail-body>
         <div class="col-12 {{ (!empty($content->custom_values) && count($content->custom_values) > 0) ? 'col-lg-8' : 'col-lg-10 mx-auto' }}" data-reveal>
             @if ($content->body)
-                <div class="prose text-primary leading-relaxed text-fluid-base">
+                <div class="prose text-primary leading-relaxed text-fluid-base text-break">
                     {!! $content->body_html !!}
                 </div>
             @else
@@ -76,9 +76,9 @@
             @if ($content->gallery->isNotEmpty())
                 <div class="mt-2xl">
                     <h3 class="h5 text-primary mb-lg">Galería</h3>
-                    <div class="row row-cols-1 row-cols-md-2 g-3">
+                    <div class="row g-3">
                         @foreach ($content->gallery as $media)
-                            <div class="col">
+                            <div class="col-12 col-md-6">
                                 <div class="overflow-hidden rounded-3 border-subtle bg-surface-subtle" style="aspect-ratio: 4/3;">
                                     <img src="{{ $media->url }}"
                                          alt="{{ $media->alt ?: ($media->caption ?: ($media->title ?: $content->title)) }}"

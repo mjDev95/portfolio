@@ -5,8 +5,8 @@
 @section('namespace', 'about')
 
 @section('content')
-<div class="position-relative overflow-hidden pt-2xl pb-2xl">
-    <div class="container">
+<div class="position-relative overflow-hidden">
+    <div class="container py-3xl">
         
         {{-- Breadcrumbs --}}
         <div class="mb-lg text-fluid-xs font-mono text-muted">

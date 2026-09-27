@@ -378,6 +378,8 @@ export function createFlipTransitions() {
                 } else if (targetHero) {
                     gsap.set(targetHero, { opacity: 1, visibility: 'visible', clearProps: 'opacity,visibility' });
                     if (proxy) proxy.remove();
+                } else if (proxy) {
+                    proxy.remove();
                 }
 
                 // Revelar textos del detalle alrededor del hero

@@ -4,7 +4,7 @@
 --}}
 <section class="methodology-section position-relative w-100" id="metodologia">
     <div class="methodology-content">
-        <div class="row align-items-start g-5">
+        <div class="row align-items-start g-4 g-lg-5">
             {{-- Columna Izquierda: Encabezado, Resumen y Garantía --}}
             <div class="col-12 col-lg-5" data-reveal>
                 <span class="font-mono text-fluid-xs text-muted text-uppercase tracking-widest d-block mb-xs">

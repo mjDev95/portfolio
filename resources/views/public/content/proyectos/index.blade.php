@@ -5,9 +5,9 @@
 @section('namespace', 'projects-index')
 
 @section('content')
-<section class="container py-2xl" style="min-height: 100vh;">
+<section class="container py-3xl" style="min-height: 100vh;">
     {{-- Breadcrumbs & Header --}}
-    <div class="mb-xl pt-md">
+    <div class="mb-xl">
         <div class="mb-sm">
             <x-breadcrumbs :items="[
                 ['label' => 'Inicio', 'url' => route('home')],

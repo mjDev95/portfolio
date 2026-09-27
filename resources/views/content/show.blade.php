@@ -7,7 +7,7 @@
 @section('edit_label', 'Editar ' . $contentType->name)
 
 @section('content')
-<article class="container py-2xl" style="min-height: 100vh;">
+<article class="container py-3xl" style="min-height: 100vh;">
     <div class="mb-lg">
         <a href="{{ route('public.content.index', $contentType->public_route_slug) }}"
            class="text-muted text-decoration-none text-fluid-sm" data-magnetic>

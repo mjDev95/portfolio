@@ -78,7 +78,7 @@
                             <span itemprop="name">{{ $crumb['label'] }}</span>
                         </a>
                     @else
-                        <span class="text-white font-medium" aria-current="page" itemprop="name">
+                        <span class="text-white" aria-current="page" itemprop="name">
                             {{ $crumb['label'] }}
                         </span>
                     @endif

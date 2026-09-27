@@ -4,7 +4,7 @@
 @section('namespace', 'content-index')
 
 @section('content')
-<section class="container py-2xl" style="min-height: 100vh;">
+<section class="container py-3xl" style="min-height: 100vh;">
     <h1 class="h2 mb-lg" data-reveal>{{ $contentType->name }}</h1>
 
     @if ($contentType->description)
