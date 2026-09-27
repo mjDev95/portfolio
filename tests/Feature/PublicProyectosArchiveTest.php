@@ -61,8 +61,9 @@ class PublicProyectosArchiveTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('data-layout="airy"', false);
         $response->assertSee('data-project-card', false);
-        $response->assertSee('Auto Key Access');
-        $response->assertSee('Clearbox Communications');
+        $response->assertSee('Plataforma E-Commerce Headless');
+        $response->assertDontSee('Auto Key Access');
+        $response->assertDontSee('Clearbox Communications');
         $response->assertSee('View Project');
     }
 }

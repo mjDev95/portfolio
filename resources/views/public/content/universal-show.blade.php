@@ -11,28 +11,27 @@
 @section('content')
 <article class="container py-2xl" style="min-height: 100vh;">
     <div class="mb-lg d-flex flex-wrap align-items-center justify-content-between gap-3">
-        <a href="{{ route('public.content.index', $cpt->public_route_slug) }}"
-           class="text-muted text-decoration-none text-fluid-sm d-inline-flex align-items-center gap-1.5" data-magnetic>
-            <span>&larr;</span> Volver a {{ $cpt->name }}
-        </a>
         <x-breadcrumbs :items="[
             ['label' => 'Inicio', 'url' => route('home')],
             ['label' => $cpt->name, 'url' => route('public.content.index', $cpt->public_route_slug)],
             ['label' => $content->title, 'url' => null]
         ]" />
     </div>
+    @php
+        $heroImage = $content->hero_image ?: $content->thumbnail;
+    @endphp
 
-    <header class="mb-xl" data-reveal>
-        <div class="d-flex align-items-center gap-2 mb-sm text-fluid-xs text-muted text-uppercase tracking-wider">
-            <span class="badge bg-primary-subtle text-primary">{{ $cpt->singular_name ?? $cpt->name }}</span>
-            @if ($content->published_at)
-                <span>&bull;</span>
-                <time datetime="{{ $content->published_at->toIso8601String() }}">
-                    {{ $content->published_at->format('d M Y') }}
-                </time>
-            @endif
+    @if ($heroImage)
+        <div class="media-wrap overflow-hidden mb-2xl"
+             data-flip-id="project-{{ $content->slug }}"
+             style="max-height: 580px; border-radius: 1.5rem;" data-reveal>
+            <img src="{{ $heroImage->url }}"
+                 alt="{{ $heroImage->alt ?: ($heroImage->caption ?: $content->title) }}"
+                 title="{{ $heroImage->title ?: $content->title }}"
+                 class="img-fluid object-fit-cover w-100 h-100">
         </div>
-
+    @endif
+    <header class="mb-xl" data-reveal>
         <h1 class="h1 font-bold text-primary" data-flip-text>{{ $content->title }}</h1>
 
         @if ($content->excerpt)
@@ -62,21 +61,6 @@
             @endif
         </div>
     </header>
-
-    @php
-        $heroImage = $content->hero_image ?: $content->thumbnail;
-    @endphp
-
-    @if ($heroImage)
-        <div class="media-wrap overflow-hidden mb-2xl"
-             data-flip-id="project-{{ $content->slug }}"
-             style="max-height: 580px; border-radius: 1.5rem;" data-reveal>
-            <img src="{{ $heroImage->url }}"
-                 alt="{{ $heroImage->alt ?: ($heroImage->caption ?: $content->title) }}"
-                 title="{{ $heroImage->title ?: $content->title }}"
-                 class="img-fluid object-fit-cover w-100 h-100">
-        </div>
-    @endif
 
     <div class="row g-5">
         <div class="col-12 {{ (!empty($content->custom_values) && count($content->custom_values) > 0) ? 'col-lg-8' : 'col-lg-10 mx-auto' }}" data-reveal>

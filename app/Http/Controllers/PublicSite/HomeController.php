@@ -29,6 +29,7 @@ class HomeController extends Controller
                 ->with([
                     'media' => fn ($q) => $q->where('content_media.collection', 'thumbnail'),
                     'contentType',
+                    'categories',
                 ])
                 ->orderBy('sort_order')
                 ->get()
