@@ -53,6 +53,19 @@ export function initMagneticCursor() {
         cursor.classList.add('is-active');
     }
 
+    // Delegated project card hover detection for high performance and Barba transition persistence
+    document.addEventListener('mouseover', (event) => {
+        if (event.target && event.target.closest && event.target.closest('[data-project-card]')) {
+            cursor.classList.add('is-project-hover');
+        } else {
+            cursor.classList.remove('is-project-hover');
+        }
+    });
+
+    document.addEventListener('mouseleave', () => {
+        cursor.classList.remove('is-active', 'is-project-hover');
+    });
+
     function refreshMagneticTargets() {
         targets.forEach((el) => {
             el.removeEventListener('mouseenter', handleMouseEnter);
