@@ -121,21 +121,80 @@ export function createFlipTransitions() {
                     const imgSrc = originImage?.currentSrc || originImage?.src || '';
                     const imgAlt = originImage?.alt || '';
 
-                    // 4. Calcular coordenadas de destino del Hero (16:9 en cabecera)
-                    const containerEl = data.current.container.querySelector('.container') || data.current.container;
-                    const containerRect = containerEl.getBoundingClientRect();
-                    const containerStyle = window.getComputedStyle(containerEl);
-                    const padLeft = parseFloat(containerStyle.paddingLeft) || 16;
-                    const padRight = parseFloat(containerStyle.paddingRight) || 16;
-                    const paddingTop = parseFloat(containerStyle.paddingTop) || 64;
+                    // 4. Medir coordenadas EXACTAS de destino del Hero en la nueva vista (scroll = 0)
+                    let targetTop = null;
+                    let targetLeft = null;
+                    let targetWidth = null;
+                    let targetHeight = null;
+                    let targetRadius = 'clamp(22px, 2.5vw, 32px)';
 
-                    const targetWidth = containerRect.width - padLeft - padRight;
-                    const targetHeight = Math.round(targetWidth * (9 / 16));
-                    const targetLeft = containerRect.left + padLeft;
+                    if (data.next?.html) {
+                        try {
+                            const parser = new DOMParser();
+                            const nextDoc = parser.parseFromString(data.next.html, 'text/html');
+                            const nextContainer = nextDoc.querySelector('[data-barba="container"]');
+                            if (nextContainer) {
+                                const bodyPaddingTop = parseFloat(window.getComputedStyle(document.body).paddingTop) || 0;
+                                Object.assign(nextContainer.style, {
+                                    position: 'fixed',
+                                    top: `${bodyPaddingTop}px`,
+                                    left: '0px',
+                                    width: '100%',
+                                    visibility: 'hidden',
+                                    pointerEvents: 'none',
+                                    zIndex: '-9999',
+                                });
+                                document.body.appendChild(nextContainer);
 
-                    // Posición Y de la cabecera en scroll = 0: padding-top del contenedor + altura de breadcrumbs (~26px) + margin-bottom (~24px)
-                    const mbLg = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--fluid-s-lg')) || 24;
-                    const targetTop = paddingTop + 26 + mbLg;
+                                const nextHero = nextContainer.querySelector('.hero-media-wrapper') ||
+                                                 nextContainer.querySelector('[data-flip-id]') ||
+                                                 nextContainer.querySelector('[data-flip-element="image"]');
+
+                                if (nextHero) {
+                                    const rect = nextHero.getBoundingClientRect();
+                                    if (rect.width > 0 && rect.height > 0) {
+                                        targetTop = rect.top;
+                                        targetLeft = rect.left;
+                                        targetWidth = rect.width;
+                                        targetHeight = rect.height;
+                                        targetRadius = window.getComputedStyle(nextHero).borderRadius || targetRadius;
+                                    }
+                                }
+
+                                nextContainer.remove();
+                            }
+                        } catch (e) {
+                            console.warn('[Flip] Error midiendo pre-render del contenedor entrante:', e);
+                        }
+                    }
+
+                    // Fallback de alta precisión si la medición directa no estuviera disponible
+                    if (targetTop === null || targetWidth === null) {
+                        const containerEl = data.current.container.querySelector('.container') || data.current.container;
+                        const containerRect = containerEl.getBoundingClientRect();
+                        const containerStyle = window.getComputedStyle(containerEl);
+                        const padLeft = parseFloat(containerStyle.paddingLeft) || 16;
+                        const padRight = parseFloat(containerStyle.paddingRight) || 16;
+                        const paddingTop = parseFloat(containerStyle.paddingTop) || 64;
+                        const bodyPaddingTop = parseFloat(window.getComputedStyle(document.body).paddingTop) || 0;
+
+                        targetWidth = containerRect.width - padLeft - padRight;
+                        targetHeight = Math.round(targetWidth * (9 / 16));
+                        targetLeft = containerRect.left + padLeft;
+
+                        const breadcrumbsEl = data.current.container.querySelector('[data-detail-breadcrumbs], .public-breadcrumbs, .breadcrumbs, .mb-sm');
+                        const breadcrumbsHeight = breadcrumbsEl ? breadcrumbsEl.getBoundingClientRect().height : 36;
+
+                        const dummyMbLg = document.createElement('div');
+                        dummyMbLg.className = 'mb-lg';
+                        dummyMbLg.style.visibility = 'hidden';
+                        dummyMbLg.style.position = 'absolute';
+                        document.body.appendChild(dummyMbLg);
+                        const mbLgVal = parseFloat(window.getComputedStyle(dummyMbLg).marginBottom) || 56;
+                        dummyMbLg.remove();
+
+                        targetTop = bodyPaddingTop + paddingTop + breadcrumbsHeight + mbLgVal;
+                    }
 
                     // 5. Crear el proxy de vuelo fijado en el viewport
                     const proxy = document.createElement('div');
@@ -214,7 +273,7 @@ export function createFlipTransitions() {
                         left: targetLeft,
                         width: targetWidth,
                         height: targetHeight,
-                        borderRadius: originRadius,
+                        borderRadius: targetRadius,
                         duration: 0.9,
                         ease: 'expo.out',
                     }, 0);
