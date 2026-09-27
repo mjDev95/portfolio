@@ -1,5 +1,6 @@
 import gsap from 'gsap';
 import { startScroll, resizeScroll, stopScroll, resetScroll, ScrollTrigger } from './smooth-scroll';
+import { syncDesktopIslandState, isDesktopIslandCompacted } from '../animations/dynamic-island';
 
 const DETAIL_NAMESPACES = ['project-show', 'content-show'];
 
@@ -21,7 +22,7 @@ if (typeof window !== 'undefined') {
                 // Capturar el estado actual de la píldora antes de cualquier manipulación de vista
                 const desktopIsland = document.getElementById('desktop-island');
                 if (desktopIsland) {
-                    window.__portfolioPillWasCompacted = desktopIsland.classList.contains('is-compacted');
+                    window.__portfolioPillWasCompacted = desktopIsland.classList.contains('is-compacted') || isDesktopIslandCompacted();
                 }
 
                 // Desactivar temporalmente pointer-events y matar tweens residuales de imán
@@ -84,7 +85,7 @@ export function createFlipTransitions() {
                     // 1. Preservar estado de la píldora exactamente igual
                     const desktopIsland = document.getElementById('desktop-island');
                     if (desktopIsland) {
-                        window.__portfolioPillWasCompacted = desktopIsland.classList.contains('is-compacted');
+                        window.__portfolioPillWasCompacted = desktopIsland.classList.contains('is-compacted') || isDesktopIslandCompacted();
                     }
 
                     // 2. Identificar tarjeta y wrapper de origen
@@ -311,10 +312,9 @@ export function createFlipTransitions() {
                     gsap.set(targetHero, { opacity: 0, visibility: 'hidden' });
                 }
 
-                // Preservar la píldora exactamente igual
-                const desktopIsland = document.getElementById('desktop-island');
-                if (desktopIsland && typeof window !== 'undefined' && window.__portfolioPillWasCompacted) {
-                    desktopIsland.classList.add('is-compacted');
+                // Preservar la píldora exactamente en su estado físico (ancho y opacidades GSAP)
+                if (typeof window !== 'undefined' && window.__portfolioPillWasCompacted !== undefined) {
+                    syncDesktopIslandState(window.__portfolioPillWasCompacted);
                 }
             },
             async enter(data) {
@@ -400,6 +400,11 @@ export function createFlipTransitions() {
                         ease: 'power2.out',
                         clearProps: 'opacity,y',
                     });
+                }
+
+                // Confirmar que la píldora mantenga su estado físico exacto tras la animación
+                if (typeof window !== 'undefined' && window.__portfolioPillWasCompacted !== undefined) {
+                    syncDesktopIslandState(window.__portfolioPillWasCompacted);
                 }
 
                 startScroll();

@@ -60,7 +60,14 @@ function bindDesktopIslandHover(desktopIsland, expandedBlock, compactBlock) {
     }
 }
 
-function initDesktopIsland() {
+export function isDesktopIslandCompacted() {
+    const desktopIsland = typeof document !== 'undefined' ? document.getElementById('desktop-island') : null;
+    return isDesktopCompacted || Boolean(desktopIsland?.classList.contains('is-compacted')) || (typeof window !== 'undefined' && Boolean(window.__portfolioPillWasCompacted));
+}
+
+export function syncDesktopIslandState(forceCompacted = null) {
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) return;
+
     const desktopIsland = document.getElementById('desktop-island');
     if (!desktopIsland) return;
 
@@ -68,13 +75,36 @@ function initDesktopIsland() {
     const compactBlock = document.getElementById('desktop-island-compact');
     if (!expandedBlock || !compactBlock) return;
 
-    // Preservación estricta de la píldora: si ya estaba compactada, mantenerla sin tocar el DOM
-    if (desktopIsland.classList.contains('is-compacted') || (typeof window !== 'undefined' && window.__portfolioPillWasCompacted)) {
+    const shouldBeCompacted = forceCompacted !== null
+        ? Boolean(forceCompacted)
+        : (isDesktopCompacted ||
+           desktopIsland.classList.contains('is-compacted') ||
+           (typeof window !== 'undefined' && Boolean(window.__portfolioPillWasCompacted)));
+
+    if (shouldBeCompacted) {
         isDesktopCompacted = true;
-        desktopIsland.classList.add('is-compacted');
-        bindDesktopIslandHover(desktopIsland, expandedBlock, compactBlock);
-        return;
+        if (typeof window !== 'undefined') {
+            window.__portfolioPillWasCompacted = true;
+        }
+        transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, true);
+    } else {
+        isDesktopCompacted = false;
+        if (typeof window !== 'undefined') {
+            window.__portfolioPillWasCompacted = false;
+        }
+        transitionDesktopToExpanded(desktopIsland, expandedBlock, compactBlock, true);
     }
+
+    bindDesktopIslandHover(desktopIsland, expandedBlock, compactBlock);
+}
+
+function initDesktopIsland() {
+    const desktopIsland = document.getElementById('desktop-island');
+    if (!desktopIsland) return;
+
+    const expandedBlock = document.getElementById('desktop-island-expanded');
+    const compactBlock = document.getElementById('desktop-island-compact');
+    if (!expandedBlock || !compactBlock) return;
 
     const servicesEl = document.getElementById('services');
 
@@ -85,11 +115,9 @@ function initDesktopIsland() {
         const isAlreadyAtServices = servicesRect.top <= window.innerHeight * 0.3 && currentY > 1600;
 
         if (isAlreadyAtServices) {
-            isDesktopCompacted = true;
-            transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, true);
+            syncDesktopIslandState(true);
         } else {
-            isDesktopCompacted = false;
-            transitionDesktopToExpanded(desktopIsland, expandedBlock, compactBlock, true);
+            syncDesktopIslandState(false);
         }
 
         servicesTrigger = ScrollTrigger.create({
@@ -98,6 +126,9 @@ function initDesktopIsland() {
             onEnter: () => {
                 if (isDesktopCompacted) return;
                 isDesktopCompacted = true;
+                if (typeof window !== 'undefined') {
+                    window.__portfolioPillWasCompacted = true;
+                }
                 if (!isDesktopHovered) {
                     transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, false);
                 }
@@ -113,16 +144,13 @@ function initDesktopIsland() {
                              (typeof window !== 'undefined' && Boolean(window.__portfolioPillWasCompacted));
 
         if (wasCompacted) {
-            isDesktopCompacted = true;
-            desktopIsland.classList.add('is-compacted');
-            if (typeof window !== 'undefined') {
-                window.__portfolioPillWasCompacted = true;
-            }
+            syncDesktopIslandState(true);
         } else {
             const currentY = window.scrollY || document.documentElement.scrollTop || 0;
             if (currentY >= 300) {
-                isDesktopCompacted = true;
-                transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, true);
+                syncDesktopIslandState(true);
+            } else {
+                syncDesktopIslandState(false);
             }
         }
 
@@ -131,6 +159,9 @@ function initDesktopIsland() {
             onEnter: () => {
                 if (isDesktopCompacted) return;
                 isDesktopCompacted = true;
+                if (typeof window !== 'undefined') {
+                    window.__portfolioPillWasCompacted = true;
+                }
                 if (!isDesktopHovered) {
                     transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, false);
                 }
@@ -608,28 +639,7 @@ function initAnchorScroll() {
  * without abrupt resets or flickering.
  */
 export function accommodateDynamicIsland() {
-    const desktopIsland = document.getElementById('desktop-island');
-    if (!desktopIsland) return;
-
-    const expandedBlock = document.getElementById('desktop-island-expanded');
-    const compactBlock = document.getElementById('desktop-island-compact');
-    if (!expandedBlock || !compactBlock) return;
-
-    if (window.innerWidth >= 1024) {
-        if (typeof window !== 'undefined' && window.__portfolioPillWasCompacted !== undefined && window.__portfolioPillWasCompacted !== null) {
-            if (window.__portfolioPillWasCompacted) {
-                isDesktopCompacted = true;
-                if (!desktopIsland.classList.contains('is-compacted')) {
-                    transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, false);
-                }
-            } else {
-                isDesktopCompacted = false;
-                if (desktopIsland.classList.contains('is-compacted')) {
-                    transitionDesktopToExpanded(desktopIsland, expandedBlock, compactBlock, false);
-                }
-            }
-        }
-    }
+    syncDesktopIslandState();
 }
 
 export function cleanupDynamicIsland(preserveState = false) {
