@@ -51,6 +51,10 @@ export function splitTextIntoFramerChars(element) {
 
             return [frag];
         } else if (node.nodeType === Node.ELEMENT_NODE) {
+            if (node.hasAttribute('data-no-split') || node.tagName.toLowerCase() === 'svg') {
+                return [node];
+            }
+
             const children = Array.from(node.childNodes);
             node.innerHTML = '';
             children.forEach((child) => {

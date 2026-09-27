@@ -75,12 +75,28 @@ export function initHeroCurtain(container) {
 
     // Trigger synchronized entrance animation for both titles upon entering screen
     if (lightChars.length || darkChars.length) {
+        const handBadges = section.querySelectorAll('.hero-hand-badge');
+
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
             finalizeChars([...lightChars, ...darkChars]);
+            if (handBadges.length) {
+                gsap.set(handBadges, { opacity: 1, scale: 1, rotate: 0 });
+            }
         } else {
             const velixTl = gsap.timeline({
                 delay: 0.15,
             });
+
+            if (handBadges.length) {
+                gsap.set(handBadges, { opacity: 0, scale: 0.3, rotate: -20, transformOrigin: '42% 92%' });
+                velixTl.to(handBadges, {
+                    opacity: 1,
+                    scale: 1,
+                    rotate: 0,
+                    duration: 0.75,
+                    ease: 'back.out(2)',
+                }, 0.28);
+            }
 
             if (lightChars.length) {
                 velixTl.to(lightChars, {
