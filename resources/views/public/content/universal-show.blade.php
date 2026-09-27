@@ -10,7 +10,7 @@
 
 @section('content')
 <article class="container py-2xl" style="min-height: 100vh;">
-    <div class="mb-lg d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div class="mb-lg d-flex flex-wrap align-items-center justify-content-between gap-3" data-detail-breadcrumbs>
         <x-breadcrumbs :items="[
             ['label' => 'Inicio', 'url' => route('home')],
             ['label' => $cpt->name, 'url' => route('public.content.index', $cpt->public_route_slug)],
@@ -22,17 +22,16 @@
     @endphp
 
     @if ($heroImage)
-        <div class="media-wrap overflow-hidden mb-2xl"
+        <div class="media-wrap hero-media-wrapper overflow-hidden mb-2xl"
              data-flip-id="project-{{ $content->slug }}"
-             style="max-height: 580px; border-radius: 1.5rem;" data-reveal>
+             data-flip-element="image">
             <img src="{{ $heroImage->url }}"
                  alt="{{ $heroImage->alt ?: ($heroImage->caption ?: $content->title) }}"
                  title="{{ $heroImage->title ?: $content->title }}"
-                 class="img-fluid object-fit-cover w-100 h-100"
-                 data-flip-element="image">
+                 class="img-fluid object-fit-cover w-100 h-100 d-block">
         </div>
     @endif
-    <header class="mb-xl" data-reveal>
+    <header class="mb-xl" data-reveal data-detail-header>
         <h1 class="h1 font-bold text-primary" data-flip-text>{{ $content->title }}</h1>
 
         @if ($content->excerpt)
@@ -63,7 +62,7 @@
         </div>
     </header>
 
-    <div class="row g-5">
+    <div class="row g-5" data-detail-body>
         <div class="col-12 {{ (!empty($content->custom_values) && count($content->custom_values) > 0) ? 'col-lg-8' : 'col-lg-10 mx-auto' }}" data-reveal>
             @if ($content->body)
                 <div class="prose text-primary leading-relaxed text-fluid-base">

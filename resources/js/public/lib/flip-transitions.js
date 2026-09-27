@@ -1,335 +1,352 @@
 import gsap from 'gsap';
-import { Flip } from 'gsap/Flip';
-import { startScroll, resizeScroll, stopScroll } from './smooth-scroll';
+import { startScroll, resizeScroll, stopScroll, resetScroll, ScrollTrigger } from './smooth-scroll';
 
-gsap.registerPlugin(Flip);
+const DETAIL_NAMESPACES = ['project-show', 'content-show'];
 
-const LIST_NAMESPACES = ['projects-index', 'blog-index', 'content-index', 'home', 'default'];
-const DETAIL_NAMESPACES = ['project-show', 'blog-show', 'content-show'];
+// Snapshot handed off from transition's `leave()` to `enter()`.
+window.__activeFlight = null;
+window.__lastClickedFlipCard = null;
 
-// Snapshot handed off from a transition's `leave()` to its `enter()`.
-let flipState = null;
-let activeFlipId = null;
+// Global capture-phase click listener: cleans hover/magnetic interference immediately on click
+if (typeof window !== 'undefined') {
+    document.addEventListener(
+        'click',
+        (e) => {
+            // Only capture on project archive cards, ignore home
+            const card = e.target.closest?.('[data-flip-card]');
+            const isHomePage = window.location.pathname === '/' || document.querySelector('[data-barba="container"]')?.getAttribute('data-barba-namespace') === 'home';
+            if (card && !isHomePage) {
+                window.__lastClickedFlipCard = card;
 
-/**
- * Resolves the shared flip element (image or media container) and its identifier
- * from the clicked trigger or the outgoing container.
- */
-function findOriginFlipElement(trigger, currentContainer) {
-    if (trigger) {
-        const card = trigger.closest?.('[data-flip-card]');
-        if (card) {
-            const imageEl = card.querySelector('[data-flip-element="image"]');
-            const mediaWrap = card.querySelector('[data-flip-id]');
-            const el = imageEl || mediaWrap || card;
-            const id = card.getAttribute('data-flip-id') || mediaWrap?.getAttribute('data-flip-id');
-            return { el, id, card };
-        }
-    }
+                // Capturar el estado actual de la píldora antes de cualquier manipulación de vista
+                const desktopIsland = document.getElementById('desktop-island');
+                if (desktopIsland) {
+                    window.__portfolioPillWasCompacted = desktopIsland.classList.contains('is-compacted');
+                }
 
-    const fallbackEl = currentContainer?.querySelector?.('[data-flip-element="image"]') ||
-                       currentContainer?.querySelector?.('[data-flip-id]');
+                // Desactivar temporalmente pointer-events y matar tweens residuales de imán
+                card.style.pointerEvents = 'none';
+                card.removeAttribute('data-magnetic');
+                gsap.killTweensOf(card);
+                const img = card.querySelector('[data-flip-element="image"]') || card.querySelector('img');
+                if (img) {
+                    img.style.transition = 'none';
+                    gsap.killTweensOf(img);
+                }
 
-    return {
-        el: fallbackEl ?? null,
-        id: fallbackEl?.closest?.('[data-flip-id]')?.getAttribute('data-flip-id') ??
-            fallbackEl?.getAttribute('data-flip-id') ?? null,
-        card: fallbackEl?.closest?.('[data-flip-card]') ?? null,
-    };
+                // Desvanecer INMEDIATAMENTE el texto de la tarjeta seleccionada para que solo quede la imagen
+                const cardBody = card.querySelector('.project-showcase-body');
+                if (cardBody) {
+                    gsap.to(cardBody, {
+                        opacity: 0,
+                        y: -8,
+                        duration: 0.18,
+                        ease: 'power2.out',
+                    });
+                }
+            }
+        },
+        true // capture phase
+    );
 }
 
 /**
- * Collects detail content blocks (breadcrumbs, header, prose, specs, gallery)
- * excluding the hero shared element to choreograph their staggered entrance.
- */
-function getDetailContentElements(container, targetHero) {
-    if (!container) return [];
-
-    const article = container.querySelector('article') || container;
-    const directChildren = Array.from(article.children).filter(
-        (el) => el !== targetHero && !targetHero?.contains(el) && !el.contains(targetHero)
-    );
-
-    if (directChildren.length > 0) {
-        return directChildren;
-    }
-
-    const elements = container.querySelectorAll(
-        '.mb-lg, header, .row.g-5, [data-flip-text], .prose, .data-chip'
-    );
-
-    return Array.from(elements).filter((el) => el !== targetHero && !targetHero?.contains(el));
-}
-
-/**
- * Real Shared Element Transitions between list and detail pages:
- *  - leave(): captures geometry snapshot (Flip.getState), freezes scroll,
- *             and holds active card frozen in place while fading out the rest of the list (0.18s pause).
- *  - enter(): new container mounts at top (window.scrollTo(0,0)), hides text (opacity: 0),
- *             applies Flip.from() (1.15s, expo.out, scale: true, absolute: true),
- *             and reveals detail text only after 60% of flight has elapsed.
+ * Shared Element Transition:
+ * - Transforms the card from 4:3 into 16:9 during leave(), flying to the hero header position.
+ * - Zero double image: the origin is hidden instantly upon take-off.
+ * - Pill state is completely preserved without any reset or flicker.
+ * - Entering page receives the pre-positioned hero with a seamless 0-shift hand-off.
  */
 export function createFlipTransitions() {
     return [
         {
             name: 'flip-to-detail',
-            from: { namespace: LIST_NAMESPACES },
-            to: { namespace: DETAIL_NAMESPACES },
-            leave(data) {
-                // 1. Congelar el scroll de Lenis al instante
-                stopScroll();
-
-                // 2. Guardar el estado geométrico de la tarjeta seleccionada sin mover la imagen
-                const { el, id, card } = findOriginFlipElement(data.trigger, data.current.container);
-                activeFlipId = id;
-
-                if (el) {
-                    try {
-                        flipState = Flip.getState(el, { props: 'borderRadius,objectFit' });
-                    } catch (e) {
-                        console.warn('[Flip] Error capturando estado del origen:', e);
-                        flipState = null;
-                        activeFlipId = null;
-                    }
-                } else {
-                    flipState = null;
-                    activeFlipId = null;
+            custom({ current, next, trigger }) {
+                // Excluir estrictamente navegación desde Home
+                if (current.namespace === 'home' || current.url?.path === '/') {
+                    return false;
                 }
 
-                // 3. Pausa de captura deliberada:
-                // Desvanecer el resto del listado manteniendo la tarjeta congelada en su lugar exacto
-                // para que el ojo del usuario enfoque la pieza antes del despegue (micropausa 0.18s).
-                const tl = gsap.timeline();
+                const isFromProjects = current.namespace === 'projects-index' ||
+                                       (current.url?.path && /^\/proyectos\/?$/.test(current.url.path));
+                const isToDetail = DETAIL_NAMESPACES.includes(next.namespace) ||
+                                  (next.url?.path && /^\/proyectos\/[^/]+/.test(next.url.path));
 
-                if (card) {
-                    const otherCards = Array.from(data.current.container.querySelectorAll('[data-flip-card]')).filter(
-                        (c) => c !== card && !card.contains(c)
+                const candidate = (trigger instanceof Element ? trigger : null) || window.__lastClickedFlipCard;
+                const hasCard = Boolean(candidate?.closest?.('[data-flip-card]') || window.__lastClickedFlipCard);
+
+                return Boolean(isFromProjects && isToDetail && hasCard);
+            },
+            async leave(data) {
+                return new Promise((resolve) => {
+                    stopScroll();
+
+                    // 1. Preservar estado de la píldora exactamente igual
+                    const desktopIsland = document.getElementById('desktop-island');
+                    if (desktopIsland) {
+                        window.__portfolioPillWasCompacted = desktopIsland.classList.contains('is-compacted');
+                    }
+
+                    // 2. Identificar tarjeta y wrapper de origen
+                    const candidateTrigger = data.trigger instanceof Element ? data.trigger : null;
+                    const originCard = candidateTrigger?.closest?.('[data-flip-card]') ||
+                                       candidateTrigger ||
+                                       window.__lastClickedFlipCard ||
+                                       data.current.container.querySelector('[data-flip-card]');
+                    const originWrapper = originCard?.querySelector?.('[data-flip-element="image"]') ||
+                                          originCard?.querySelector?.('.card-media-wrapper') ||
+                                          originCard?.querySelector?.('.project-showcase-media') ||
+                                          originCard;
+                    const originImage = originWrapper?.querySelector?.('img') || (originWrapper instanceof HTMLImageElement ? originWrapper : null);
+
+                    if (!originCard || !originWrapper) {
+                        gsap.to(data.current.container, {
+                            opacity: 0,
+                            duration: 0.3,
+                            onComplete: resolve,
+                        });
+                        return;
+                    }
+
+                    originCard.style.pointerEvents = 'none';
+                    document.body.style.pointerEvents = 'none';
+                    originCard.removeAttribute('data-magnetic');
+                    gsap.killTweensOf([originCard, originWrapper, originImage].filter(Boolean));
+                    gsap.set([originCard, originWrapper, originImage].filter(Boolean), { clearProps: 'transform' });
+
+                    // 3. Medir coordenadas iniciales de la tarjeta (4:3)
+                    const originRect = originWrapper.getBoundingClientRect();
+                    const originStyle = window.getComputedStyle(originWrapper);
+                    const originRadius = originStyle.borderRadius || '24px';
+                    const imgSrc = originImage?.currentSrc || originImage?.src || '';
+                    const imgAlt = originImage?.alt || '';
+
+                    // 4. Calcular coordenadas de destino del Hero (16:9 en cabecera)
+                    const containerEl = data.current.container.querySelector('.container') || data.current.container;
+                    const containerRect = containerEl.getBoundingClientRect();
+                    const containerStyle = window.getComputedStyle(containerEl);
+                    const padLeft = parseFloat(containerStyle.paddingLeft) || 16;
+                    const padRight = parseFloat(containerStyle.paddingRight) || 16;
+                    const paddingTop = parseFloat(containerStyle.paddingTop) || 64;
+
+                    const targetWidth = containerRect.width - padLeft - padRight;
+                    const targetHeight = Math.round(targetWidth * (9 / 16));
+                    const targetLeft = containerRect.left + padLeft;
+
+                    // Posición Y de la cabecera en scroll = 0: padding-top del contenedor + altura de breadcrumbs (~26px) + margin-bottom (~24px)
+                    const mbLg = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--fluid-s-lg')) || 24;
+                    const targetTop = paddingTop + 26 + mbLg;
+
+                    // 5. Crear el proxy de vuelo fijado en el viewport
+                    const proxy = document.createElement('div');
+                    proxy.id = 'active-flight-proxy';
+                    Object.assign(proxy.style, {
+                        position: 'fixed',
+                        top: `${originRect.top}px`,
+                        left: `${originRect.left}px`,
+                        width: `${originRect.width}px`,
+                        height: `${originRect.height}px`,
+                        borderRadius: originRadius,
+                        overflow: 'hidden',
+                        zIndex: '99999',
+                        pointerEvents: 'none',
+                        boxSizing: 'border-box',
+                        border: '1px solid var(--border-subtle, rgba(255,255,255,0.08))',
+                        backgroundColor: 'var(--bg-surface, #14171c)',
+                        willChange: 'top, left, width, height, border-radius',
+                    });
+
+                    const proxyImg = document.createElement('img');
+                    proxyImg.src = imgSrc;
+                    proxyImg.alt = imgAlt;
+                    Object.assign(proxyImg.style, {
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block',
+                    });
+                    proxy.appendChild(proxyImg);
+                    document.body.appendChild(proxy);
+
+                    // Ocultar inmediatamente el wrapper de la tarjeta original para CERO duplicidad (el proxy toma su lugar)
+                    originWrapper.style.visibility = 'hidden';
+
+                    // Desvanecer cualquier texto de la tarjeta seleccionada para que SOLO quede la imagen
+                    const originCardTexts = originCard.querySelectorAll(
+                        '.project-showcase-body, .project-category-subtitle, .project-title-heading, .project-view-link'
                     );
-                    const surroundingElements = Array.from(
+                    if (originCardTexts.length > 0) {
+                        gsap.to(originCardTexts, { opacity: 0, y: -8, duration: 0.15, ease: 'power2.out' });
+                    }
+
+                    // 6. Timeline de salida: el entorno del listado se desvanece mientras la tarjeta viaja hacia la cabecera
+                    const elementsToFade = Array.from(
                         data.current.container.querySelectorAll(
-                            'h1, h2, h3, p, .mb-xl, .services-header-row, header, footer, .d-flex.justify-content-center, .editorial-cta-wrap, [data-reveal]'
+                            'h1, h2, h3, .breadcrumbs, [data-breadcrumbs], x-breadcrumbs, [data-flip-card], header, .page-header, .services-header-row, .mb-xl, .mb-sm, p, nav, .pagination, footer, [data-reveal]'
                         )
-                    ).filter((node) => !card.contains(node) && node !== card);
+                    ).filter((el) => el !== originCard && !originCard.contains(el) && !el.contains(originCard));
 
-                    tl.to([otherCards, surroundingElements], {
-                        opacity: 0,
-                        duration: 0.2,
-                        ease: 'power2.in',
+                    const tl = gsap.timeline({
+                        onComplete: () => {
+                            window.__activeFlight = {
+                                proxy,
+                                targetTop,
+                                targetLeft,
+                                targetWidth,
+                                targetHeight,
+                            };
+                            data.current.container.style.display = 'none';
+                            resolve();
+                        },
                     });
 
-                    // Micropausa deliberada para enfocar la pieza
-                    tl.to({}, { duration: 0.18 });
-                } else {
-                    tl.to(data.current.container, {
+                    // Desvanecer el resto de la página vieja
+                    tl.to(elementsToFade, {
                         opacity: 0,
-                        duration: 0.2,
-                        ease: 'power2.in',
-                    });
-                    tl.to({}, { duration: 0.15 });
-                }
+                        y: -15,
+                        duration: 0.3,
+                        ease: 'power2.inOut',
+                    }, 0);
 
-                return tl;
+                    // Vuelo y transformación física de 4:3 a 16:9 en la cabecera
+                    tl.to(proxy, {
+                        top: targetTop,
+                        left: targetLeft,
+                        width: targetWidth,
+                        height: targetHeight,
+                        borderRadius: originRadius,
+                        duration: 0.9,
+                        ease: 'expo.out',
+                    }, 0);
+                });
             },
-            enter(data) {
-                // 1. El nuevo contenedor entra de inmediato arriba
+            beforeEnter(data) {
+                // Resetear scroll a 0 de forma inmediata
+                resetScroll();
                 window.scrollTo(0, 0);
                 document.documentElement.scrollTop = 0;
                 document.body.scrollTop = 0;
 
-                const stateToUse = flipState;
-                const flipId = activeFlipId;
-                flipState = null;
-                activeFlipId = null;
-
-                // Buscar la imagen hero del detalle
-                const heroWrap = flipId
-                    ? data.next.container.querySelector(`[data-flip-id="${flipId}"]`)
-                    : data.next.container.querySelector('[data-flip-id]');
-
-                const target = heroWrap?.querySelector('[data-flip-element="image"]') ||
-                               heroWrap ||
-                               data.next.container.querySelector('[data-flip-element="image"]');
-
-                // Fallback limpio si no existe elemento compartido
-                if (!stateToUse || !target) {
-                    startScroll();
-                    resizeScroll();
-                    return gsap.fromTo(
-                        data.next.container,
-                        { opacity: 0 },
-                        { opacity: 1, duration: 0.35, ease: 'power2.out', clearProps: 'all' }
-                    );
+                // Estado Inicial Preventivo del detalle:
+                // 1. Breadcrumbs preparadas arriba con opacidad 0
+                const breadcrumbs = data.next.container.querySelector('[data-detail-breadcrumbs], .public-breadcrumbs');
+                if (breadcrumbs) {
+                    gsap.set(breadcrumbs, { opacity: 0, y: -16 });
                 }
 
-                // 2. Ocultar todo el contenido textual/bloques del detalle (opacity: 0, y: 30)
-                const detailElements = getDetailContentElements(data.next.container, heroWrap || target);
-                gsap.set(detailElements, { opacity: 0, y: 30 });
+                // 2. Encabezado y cuerpo del detalle preparados abajo con opacidad 0
+                const header = data.next.container.querySelector('[data-detail-header], header');
+                const meta = Array.from(
+                    data.next.container.querySelectorAll('[data-detail-body], .row.g-5, [data-flip-text], .prose')
+                ).filter((el) => el !== breadcrumbs && !breadcrumbs?.contains(el));
+                const detailTargets = [header, ...meta].filter(Boolean);
+                if (detailTargets.length > 0) {
+                    gsap.set(detailTargets, { opacity: 0, y: 25 });
+                }
 
-                try {
-                    // 3. Aplica Flip.from(state) sobre la imagen hero con duración 1.15s, curva expo.out y scale: true
-                    const flipTween = Flip.from(stateToUse, {
-                        targets: target,
-                        duration: 1.15,
-                        ease: 'expo.out',
-                        absolute: true,
-                        scale: true,
-                        props: 'borderRadius',
-                        onComplete: () => {
-                            startScroll();
-                            resizeScroll();
-                        },
-                    });
+                // Ocultar preventivamente el hero real hasta hacer el intercambio
+                const targetHero = data.next.container.querySelector('.hero-media-wrapper') ||
+                                   data.next.container.querySelector('[data-flip-id]') ||
+                                   data.next.container.querySelector('[data-flip-element="image"]');
+                if (targetHero) {
+                    gsap.set(targetHero, { opacity: 0, visibility: 'hidden' });
+                }
 
-                    const tl = gsap.timeline();
-                    tl.add(flipTween, 0);
-
-                    // 4. Retardo en el texto del detalle:
-                    // Aparece solo cuando la imagen ya lleve el 60% de su recorrido completado (1.15 * 0.6 = ~0.69s)
-                    tl.to(
-                        detailElements,
-                        {
-                            opacity: 1,
-                            y: 0,
-                            duration: 0.6,
-                            stagger: 0.06,
-                            ease: 'power2.out',
-                            clearProps: 'opacity,y',
-                        },
-                        0.69
-                    );
-
-                    return tl;
-                } catch (e) {
-                    console.warn('[Flip] Error ejecutando Flip.from:', e);
-                    startScroll();
-                    resizeScroll();
-                    return gsap.fromTo(
-                        data.next.container,
-                        { opacity: 0 },
-                        { opacity: 1, duration: 0.35, clearProps: 'all' }
-                    );
+                // Preservar la píldora exactamente igual
+                const desktopIsland = document.getElementById('desktop-island');
+                if (desktopIsland && typeof window !== 'undefined' && window.__portfolioPillWasCompacted) {
+                    desktopIsland.classList.add('is-compacted');
                 }
             },
-        },
-        {
-            name: 'flip-to-list',
-            from: { namespace: DETAIL_NAMESPACES },
-            to: { namespace: LIST_NAMESPACES },
-            leave(data) {
-                stopScroll();
+            async enter(data) {
+                const flight = window.__activeFlight;
+                window.__activeFlight = null;
+                window.__lastClickedFlipCard = null;
 
-                const { el, id } = findOriginFlipElement(data.trigger, data.current.container);
-                activeFlipId = id;
+                const proxy = flight?.proxy || document.getElementById('active-flight-proxy');
 
-                if (el) {
+                const targetHero = data.next.container.querySelector('.hero-media-wrapper') ||
+                                   data.next.container.querySelector('[data-flip-id]') ||
+                                   data.next.container.querySelector('[data-flip-element="image"]');
+
+                const targetImage = targetHero?.querySelector?.('img') || (targetHero instanceof HTMLImageElement ? targetHero : null);
+
+                // Esperar decodificación de la imagen hero si es necesario
+                if (targetImage instanceof HTMLImageElement && !targetImage.complete) {
                     try {
-                        flipState = Flip.getState(el, { props: 'borderRadius,objectFit' });
+                        await targetImage.decode();
                     } catch (e) {
-                        console.warn('[Flip] Error capturando estado del detalle:', e);
-                        flipState = null;
-                        activeFlipId = null;
+                        await new Promise((res) => {
+                            targetImage.onload = res;
+                            targetImage.onerror = res;
+                        });
                     }
-                } else {
-                    flipState = null;
-                    activeFlipId = null;
                 }
 
-                const heroWrap = el?.closest?.('[data-flip-id]') || el;
-                const detailElements = getDetailContentElements(data.current.container, heroWrap);
-                const tl = gsap.timeline();
+                // Mostrar nuevo contenedor en flujo natural
+                data.next.container.style.visibility = 'visible';
+                data.next.container.style.opacity = '1';
+                data.next.container.style.position = 'relative';
 
-                if (detailElements.length > 0) {
-                    tl.to(detailElements, {
-                        opacity: 0,
-                        duration: 0.2,
-                        ease: 'power2.in',
+                resetScroll();
+
+                const breadcrumbs = data.next.container.querySelector('[data-detail-breadcrumbs], .public-breadcrumbs');
+                const header = data.next.container.querySelector('[data-detail-header], header');
+                const meta = Array.from(
+                    data.next.container.querySelectorAll('[data-detail-body], .row.g-5, [data-flip-text], .prose')
+                ).filter((el) => el !== targetHero && !targetHero?.contains(el) && el !== breadcrumbs && !breadcrumbs?.contains(el));
+                const detailTargets = [header, ...meta].filter(Boolean);
+
+                // Animar la entrada de las breadcrumbs con un elegante descenso desde arriba
+                if (breadcrumbs) {
+                    gsap.to(breadcrumbs, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.65,
+                        ease: 'power2.out',
+                        delay: 0.05,
+                        clearProps: 'opacity,y',
                     });
-                    tl.to({}, { duration: 0.18 });
-                } else {
-                    tl.to(data.current.container, {
-                        opacity: 0,
-                        duration: 0.2,
-                        ease: 'power2.in',
-                    });
-                    tl.to({}, { duration: 0.15 });
                 }
 
-                return tl;
-            },
-            enter(data) {
-                window.scrollTo(0, 0);
-                document.documentElement.scrollTop = 0;
-                document.body.scrollTop = 0;
+                if (proxy && targetHero) {
+                    // Medir las coordenadas reales del hero en la nueva vista montada en scroll = 0
+                    const realRect = targetHero.getBoundingClientRect();
 
-                const stateToUse = flipState;
-                const flipId = activeFlipId;
-                flipState = null;
-                activeFlipId = null;
-
-                const cardWrap = flipId
-                    ? data.next.container.querySelector(`[data-flip-id="${flipId}"]`)
-                    : null;
-
-                const target = cardWrap?.querySelector('[data-flip-element="image"]') ||
-                               cardWrap ||
-                               (flipId ? data.next.container.querySelector(`[data-flip-id="${flipId}"]`) : null);
-
-                if (!stateToUse || !target) {
-                    startScroll();
-                    resizeScroll();
-                    return gsap.fromTo(
-                        data.next.container,
-                        { opacity: 0 },
-                        { opacity: 1, duration: 0.35, ease: 'power2.out', clearProps: 'all' }
-                    );
-                }
-
-                const otherCards = Array.from(data.next.container.querySelectorAll('[data-flip-card]')).filter(
-                    (c) => c !== cardWrap && !cardWrap?.contains(c)
-                );
-                gsap.set(otherCards, { opacity: 0, y: 15 });
-
-                try {
-                    const flipTween = Flip.from(stateToUse, {
-                        targets: target,
-                        duration: 1.15,
-                        ease: 'expo.out',
-                        absolute: true,
-                        scale: true,
-                        props: 'borderRadius',
-                        onComplete: () => {
-                            startScroll();
-                            resizeScroll();
-                        },
+                    // Micro-alineación suave si hay cualquier diferencia subpixel
+                    await gsap.to(proxy, {
+                        top: realRect.top,
+                        left: realRect.left,
+                        width: realRect.width,
+                        height: realRect.height,
+                        duration: 0.15,
+                        ease: 'power2.out',
                     });
 
-                    const tl = gsap.timeline();
-                    tl.add(flipTween, 0);
-
-                    tl.to(
-                        otherCards,
-                        {
-                            opacity: 1,
-                            y: 0,
-                            duration: 0.5,
-                            stagger: 0.04,
-                            ease: 'power2.out',
-                            clearProps: 'opacity,y',
-                        },
-                        0.69
-                    );
-
-                    return tl;
-                } catch (e) {
-                    console.warn('[Flip] Error ejecutando Flip.from inverso:', e);
-                    startScroll();
-                    resizeScroll();
-                    return gsap.fromTo(
-                        data.next.container,
-                        { opacity: 0 },
-                        { opacity: 1, duration: 0.35, clearProps: 'all' }
-                    );
+                    // Intercambio sin salto
+                    gsap.set(targetHero, { opacity: 1, visibility: 'visible', clearProps: 'opacity,visibility' });
+                    proxy.remove();
+                } else if (targetHero) {
+                    gsap.set(targetHero, { opacity: 1, visibility: 'visible', clearProps: 'opacity,visibility' });
+                    if (proxy) proxy.remove();
                 }
+
+                // Revelar textos del detalle alrededor del hero
+                if (detailTargets.length > 0) {
+                    await gsap.to(detailTargets, {
+                        opacity: 1,
+                        y: 0,
+                        stagger: 0.08,
+                        duration: 0.6,
+                        ease: 'power2.out',
+                        clearProps: 'opacity,y',
+                    });
+                }
+
+                startScroll();
+                resizeScroll();
+                ScrollTrigger.refresh();
+                document.body.style.pointerEvents = 'all';
             },
         },
     ];

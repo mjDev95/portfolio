@@ -411,6 +411,10 @@
    ambos contenedores (saliente/entrante) deben poder coexistir apilados
    durante la transición.
    ───────────────────────────────────────── */
+html {
+    scrollbar-gutter: stable;
+}
+
 html.lenis,
 html.lenis body {
     height: auto;
@@ -425,7 +429,8 @@ html.lenis-smooth {
 }
 
 .lenis.lenis-stopped {
-    overflow: hidden;
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
 }
 
 [data-barba="wrapper"] {

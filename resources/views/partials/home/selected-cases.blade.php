@@ -50,8 +50,6 @@
                 @endphp
                 <a href="{{ $url }}" 
                    class="project-editorial-row" 
-                   data-flip-card
-                   data-flip-id="project-{{ $item->slug }}"
                    data-magnetic data-magnetic-strength="0.15">
                     <div class="row align-items-center g-3">
                         <div class="col-12 col-md-1 font-mono text-fluid-sm text-muted">
@@ -61,12 +59,10 @@
                             <div class="d-flex align-items-center gap-3">
                                 @if ($itemThumb)
                                     <div class="project-editorial-thumb rounded overflow-hidden flex-shrink-0"
-                                         data-flip-id="project-{{ $item->slug }}"
                                          style="width: 48px; height: 36px;">
                                         <img src="{{ $itemThumb->url }}" 
                                              alt="{{ $item->title }}" 
                                              class="w-100 h-100 object-fit-cover"
-                                             data-flip-element="image"
                                              loading="lazy">
                                     </div>
                                 @endif

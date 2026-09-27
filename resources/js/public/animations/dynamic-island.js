@@ -28,8 +28,8 @@ let mobileTl = null;
 let isMobileExpanded = false;
 let outsideClickHandler = null;
 
-export function initDynamicIsland() {
-    cleanupDynamicIsland();
+export function initDynamicIsland(preserveState = true) {
+    cleanupDynamicIsland(preserveState);
 
     initDesktopIsland();
     initMobileIsland();
@@ -41,6 +41,25 @@ export function initDynamicIsland() {
  * 1. DESKTOP ISLAND (>= 1024px)
  * ─────────────────────────────────────────────────────────────
  */
+function bindDesktopIslandHover(desktopIsland, expandedBlock, compactBlock) {
+    if (!desktopIsland.dataset.hoverBound) {
+        desktopIsland.dataset.hoverBound = 'true';
+        desktopIsland.addEventListener('mouseenter', () => {
+            if (window.innerWidth < 1024 || !isDesktopCompacted) return;
+            isDesktopHovered = true;
+            transitionDesktopToExpanded(desktopIsland, expandedBlock, compactBlock, false);
+        });
+
+        desktopIsland.addEventListener('mouseleave', () => {
+            if (window.innerWidth < 1024) return;
+            isDesktopHovered = false;
+            if (isDesktopCompacted) {
+                transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, false);
+            }
+        });
+    }
+}
+
 function initDesktopIsland() {
     const desktopIsland = document.getElementById('desktop-island');
     if (!desktopIsland) return;
@@ -48,6 +67,14 @@ function initDesktopIsland() {
     const expandedBlock = document.getElementById('desktop-island-expanded');
     const compactBlock = document.getElementById('desktop-island-compact');
     if (!expandedBlock || !compactBlock) return;
+
+    // Preservación estricta de la píldora: si ya estaba compactada, mantenerla sin tocar el DOM
+    if (desktopIsland.classList.contains('is-compacted') || (typeof window !== 'undefined' && window.__portfolioPillWasCompacted)) {
+        isDesktopCompacted = true;
+        desktopIsland.classList.add('is-compacted');
+        bindDesktopIslandHover(desktopIsland, expandedBlock, compactBlock);
+        return;
+    }
 
     const servicesEl = document.getElementById('services');
 
@@ -79,14 +106,24 @@ function initDesktopIsland() {
             invalidateOnRefresh: true,
         });
     } else {
-        // En subpáginas sin #services (e.g. /about, /contact, /projects)
-        const currentY = window.scrollY || document.documentElement.scrollTop || 0;
-        if (currentY >= 300) {
+        // En subpáginas sin #services (e.g. /proyectos, /proyectos/{slug}, /sobre-mi)
+        // REGLA ESTRICTA: Preservar el estado de la píldora. Si ya estaba compactada, mantenerla compactada sin refrescar ni expandir.
+        const wasCompacted = isDesktopCompacted ||
+                             desktopIsland.classList.contains('is-compacted') ||
+                             (typeof window !== 'undefined' && Boolean(window.__portfolioPillWasCompacted));
+
+        if (wasCompacted) {
             isDesktopCompacted = true;
-            transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, true);
+            desktopIsland.classList.add('is-compacted');
+            if (typeof window !== 'undefined') {
+                window.__portfolioPillWasCompacted = true;
+            }
         } else {
-            isDesktopCompacted = false;
-            transitionDesktopToExpanded(desktopIsland, expandedBlock, compactBlock, true);
+            const currentY = window.scrollY || document.documentElement.scrollTop || 0;
+            if (currentY >= 300) {
+                isDesktopCompacted = true;
+                transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, true);
+            }
         }
 
         servicesTrigger = ScrollTrigger.create({
@@ -102,23 +139,7 @@ function initDesktopIsland() {
         });
     }
 
-    // Hover interactions en Desktop cuando está compactada (idempotente)
-    if (!desktopIsland.dataset.hoverBound) {
-        desktopIsland.dataset.hoverBound = 'true';
-        desktopIsland.addEventListener('mouseenter', () => {
-            if (window.innerWidth < 1024 || !isDesktopCompacted) return;
-            isDesktopHovered = true;
-            transitionDesktopToExpanded(desktopIsland, expandedBlock, compactBlock, false);
-        });
-
-        desktopIsland.addEventListener('mouseleave', () => {
-            if (window.innerWidth < 1024) return;
-            isDesktopHovered = false;
-            if (isDesktopCompacted) {
-                transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, false);
-            }
-        });
-    }
+    bindDesktopIslandHover(desktopIsland, expandedBlock, compactBlock);
 }
 
 function getElementTargetWidth(el, container) {
@@ -578,10 +599,40 @@ function initAnchorScroll() {
 
 /**
  * ─────────────────────────────────────────────────────────────
- * 4. BARBA TRANSITION CLEANUP
+ * 4. BARBA TRANSITION COORDINATION & CLEANUP
  * ─────────────────────────────────────────────────────────────
  */
-export function cleanupDynamicIsland() {
+
+/**
+ * Gently accommodates the desktop island to its definitive state on the new page
+ * without abrupt resets or flickering.
+ */
+export function accommodateDynamicIsland() {
+    const desktopIsland = document.getElementById('desktop-island');
+    if (!desktopIsland) return;
+
+    const expandedBlock = document.getElementById('desktop-island-expanded');
+    const compactBlock = document.getElementById('desktop-island-compact');
+    if (!expandedBlock || !compactBlock) return;
+
+    if (window.innerWidth >= 1024) {
+        if (typeof window !== 'undefined' && window.__portfolioPillWasCompacted !== undefined && window.__portfolioPillWasCompacted !== null) {
+            if (window.__portfolioPillWasCompacted) {
+                isDesktopCompacted = true;
+                if (!desktopIsland.classList.contains('is-compacted')) {
+                    transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, false);
+                }
+            } else {
+                isDesktopCompacted = false;
+                if (desktopIsland.classList.contains('is-compacted')) {
+                    transitionDesktopToExpanded(desktopIsland, expandedBlock, compactBlock, false);
+                }
+            }
+        }
+    }
+}
+
+export function cleanupDynamicIsland(preserveState = false) {
     if (servicesTrigger) {
         servicesTrigger.kill();
         servicesTrigger = null;
@@ -595,7 +646,9 @@ export function cleanupDynamicIsland() {
         outsideClickHandler = null;
     }
 
-    isDesktopCompacted = false;
-    isDesktopHovered = false;
-    isMobileExpanded = false;
+    if (!preserveState) {
+        isDesktopCompacted = false;
+        isDesktopHovered = false;
+        isMobileExpanded = false;
+    }
 }

@@ -35,14 +35,14 @@
                    data-flip-card
                    data-flip-id="project-{{ $item->slug }}"
                    data-magnetic data-magnetic-strength="0.04">
-                    <div class="project-showcase-media position-relative overflow-hidden"
-                         data-flip-id="project-{{ $item->slug }}">
+                    <div class="project-showcase-media card-media-wrapper position-relative overflow-hidden"
+                         data-flip-id="project-{{ $item->slug }}"
+                         data-flip-element="image">
                         @if ($itemThumb)
                             <img src="{{ $itemThumb->url }}" 
                                  alt="{{ $item->title }}" 
-                                 class="project-showcase-img w-100 h-100 object-fit-cover"
-                                 loading="lazy"
-                                 data-flip-element="image">
+                                 class="project-showcase-img w-100 h-100 object-fit-cover d-block"
+                                 loading="lazy">
                         @else
                             <div class="project-placeholder-media w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4">
                                 <span class="font-mono text-fluid-xs text-muted text-uppercase tracking-wider text-center">

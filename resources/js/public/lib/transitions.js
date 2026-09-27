@@ -90,9 +90,13 @@ function watchImagesForScrollResize(container) {
  * Barba.js v2 lifecycle wiring with GSAP and Lenis.
  */
 export function initBarba({ onAfterEnter } = {}) {
+    if (typeof history !== 'undefined' && 'scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+
     barba.hooks.beforeLeave(() => {
         stopScroll();
-        cleanupDynamicIsland();
+        cleanupDynamicIsland(true);
         ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     });
 
@@ -122,16 +126,33 @@ export function initBarba({ onAfterEnter } = {}) {
         onAfterEnter?.();
     });
 
-    // Hook de contingencia obligatorio: bajo cualquier excepción el scroll jamás queda bloqueado
-    barba.hooks.error((data, error) => {
-        console.error('[Barba] Error durante la transición de página:', error);
-        startScroll();
-        resizeScroll();
-        ScrollTrigger.refresh();
-    });
+    // Hook de contingencia: bajo cualquier reseteo o excepción el scroll jamás queda bloqueado
+    if (typeof barba.hooks.reset === 'function') {
+        barba.hooks.reset(() => {
+            startScroll();
+            resizeScroll();
+            ScrollTrigger.refresh();
+        });
+    }
+
+    if (typeof barba.hooks.error === 'function') {
+        barba.hooks.error((data, error) => {
+            console.error('[Barba] Error durante la transición de página:', error);
+            startScroll();
+            resizeScroll();
+            ScrollTrigger.refresh();
+        });
+    }
 
     barba.init({
         preventRunning: true,
+        requestError: (trigger, action, url, response) => {
+            console.error('[Barba] Error en petición:', url, response);
+            startScroll();
+            resizeScroll();
+            ScrollTrigger.refresh();
+            return false;
+        },
         prevent: ({ el, href }) => {
             if (!href) return false;
             try {
