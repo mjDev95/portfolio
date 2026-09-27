@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\ContentType;
 use Closure;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 
 class PortfolioCacheService
@@ -27,6 +29,8 @@ class PortfolioCacheService
      */
     public const PREFIX_HOME_IDS = 'portfolio:home:featured_ids';
 
+    public const PREFIX_PUBLIC_CPTS = 'portfolio:public:content_types:v2';
+
     public const PREFIX_CPT_ID = 'portfolio:cpt:id:';
 
     public const PREFIX_CONTENT_ID = 'portfolio:content:id:';
@@ -36,6 +40,18 @@ class PortfolioCacheService
     public const PREFIX_DASHBOARD = 'portfolio:admin:dashboard:';
 
     public const PREFIX_TRACKED_KEYS = 'portfolio:tracked_keys';
+
+    /**
+     * Remember all publicly visible content types ordered by `order`.
+     *
+     * @return Collection<int, ContentType>
+     */
+    public static function rememberPublicContentTypes(Closure $callback)
+    {
+        self::trackKey(self::PREFIX_PUBLIC_CPTS);
+
+        return Cache::remember(self::PREFIX_PUBLIC_CPTS, self::TTL_DAY, $callback);
+    }
 
     /**
      * Remember public home featured content IDs.
@@ -126,6 +142,7 @@ class PortfolioCacheService
     public static function clearPublicCache(): void
     {
         Cache::forget(self::PREFIX_HOME_IDS);
+        Cache::forget(self::PREFIX_PUBLIC_CPTS);
 
         $keys = Cache::get(self::PREFIX_TRACKED_KEYS, []);
         $remainingKeys = [];
@@ -133,6 +150,7 @@ class PortfolioCacheService
         foreach ($keys as $key) {
             if (
                 str_starts_with($key, self::PREFIX_HOME_IDS) ||
+                str_starts_with($key, self::PREFIX_PUBLIC_CPTS) ||
                 str_starts_with($key, self::PREFIX_CPT_ID) ||
                 str_starts_with($key, self::PREFIX_CONTENT_ID)
             ) {
@@ -179,6 +197,7 @@ class PortfolioCacheService
 
         Cache::forget(self::PREFIX_TRACKED_KEYS);
         Cache::forget(self::PREFIX_HOME_IDS);
+        Cache::forget(self::PREFIX_PUBLIC_CPTS);
     }
 
     /**

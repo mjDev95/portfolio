@@ -93,6 +93,16 @@ export function initBarba({ onAfterEnter } = {}) {
 
     barba.init({
         preventRunning: true,
+        prevent: ({ el, href }) => {
+            if (!href) return false;
+            try {
+                const url = new URL(href, window.location.origin);
+                if (url.origin !== window.location.origin) return true;
+                return /^\/(admin|login|logout|api|storage)/.test(url.pathname);
+            } catch (e) {
+                return false;
+            }
+        },
         transitions: [
             // Shared-element (Flip) transitions between list <-> detail pages;
             // Barba picks these over the generic wipe below when the from/to

@@ -73,9 +73,9 @@
     }
 </style>
 
-<aside class="admin-bar-top" id="public-admin-bar" aria-label="Barra de herramientas de administración">
+<aside class="admin-bar-top" id="public-admin-bar" aria-label="Barra de herramientas de administración" data-barba-prevent="self">
     <div style="display: flex; align-items: center; gap: 8px;">
-        <a href="{{ route('admin.dashboard') }}" class="admin-bar-brand">
+        <a href="{{ route('admin.dashboard') }}" class="admin-bar-brand" data-barba-prevent="self">
             <span class="admin-bar-badge"></span>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <rect width="7" height="9" x="3" y="3" rx="1"/>
@@ -86,7 +86,7 @@
             <span>Panel Admin</span>
         </a>
 
-        <a href="{{ route('admin.content-types.index') }}" title="Tipos de Contenido">
+        <a href="{{ route('admin.content-types.index') }}" title="Tipos de Contenido" data-barba-prevent="self">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                 <rect width="7" height="9" x="3" y="3" rx="1"/>
                 <rect width="7" height="5" x="14" y="3" rx="1"/>
@@ -103,7 +103,7 @@
                 ->get();
         @endphp
         @foreach($adminBarContentTypes as $cpt)
-            <a href="{{ route('admin.content.create', $cpt->slug) }}" title="Crear {{ $cpt->name }}">
+            <a href="{{ route('admin.content.create', $cpt->slug) }}" title="Crear {{ $cpt->name }}" data-barba-prevent="self">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
                     <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -116,7 +116,7 @@
         <div id="admin-bar-edit-slot" style="display: inline-flex; align-items: center;">
             {{-- Initial SSR injection if viewing a content directly --}}
             @if(isset($content) && !empty($content->id) && isset($contentType))
-                <a href="{{ route('admin.content.edit', [$contentType->slug, $content->id]) }}" class="admin-bar-edit-btn">
+                <a href="{{ route('admin.content.edit', [$contentType->slug, $content->id]) }}" class="admin-bar-edit-btn" data-barba-prevent="self">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 20h9"></path>
                         <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
@@ -132,7 +132,7 @@
             {{ auth()->user()->name }}
         </span>
 
-        <form method="POST" action="{{ route('admin.logout') }}" style="margin: 0; display: inline;">
+        <form method="POST" action="{{ route('admin.logout') }}" data-barba-prevent="self" style="margin: 0; display: inline;">
             @csrf
             <button type="submit" title="Cerrar sesión del administrador" style="color: #f87171;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -162,7 +162,7 @@
         var editLabel = el.getAttribute('data-edit-label') || 'Editar Contenido';
 
         if (editUrl) {
-            slot.innerHTML = '<a href="' + editUrl + '" class="admin-bar-edit-btn">' +
+            slot.innerHTML = '<a href="' + editUrl + '" class="admin-bar-edit-btn" data-barba-prevent="self">' +
                 '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
                 '<path d="M12 20h9"></path>' +
                 '<path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>' +

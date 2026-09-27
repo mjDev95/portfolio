@@ -48,6 +48,19 @@
                 <ul class="list-unstyled d-flex flex-column gap-2 text-fluid-xs">
                     <li><a href="{{ route('home') }}" class="text-secondary hover-text-accent no-underline transition-colors" data-magnetic>Inicio</a></li>
                     <li><a href="{{ route('about') }}" class="text-secondary hover-text-accent no-underline transition-colors" data-magnetic>Sobre mí</a></li>
+                    @foreach ($navContentTypes ?? [] as $cpt)
+                        @php
+                            $cptSlug = is_object($cpt) ? ($cpt->public_route_slug ?? $cpt->slug ?? '') : (is_array($cpt) ? ($cpt['public_route_slug'] ?? $cpt['slug'] ?? '') : (string) $cpt);
+                            $cptName = is_object($cpt) ? ($cpt->name ?? ucfirst($cptSlug)) : (is_array($cpt) ? ($cpt['name'] ?? ucfirst($cptSlug)) : ucfirst($cptSlug));
+                        @endphp
+                        @if (! empty($cptSlug) && ! str_contains((string) $cptSlug, '\\'))
+                            <li>
+                                <a href="{{ route('public.content.index', $cptSlug) }}" class="text-secondary hover-text-accent no-underline transition-colors" data-magnetic>
+                                    {{ $cptName }}
+                                </a>
+                            </li>
+                        @endif
+                    @endforeach
                     <li><a href="{{ route('contact') }}" class="text-secondary hover-text-accent no-underline transition-colors" data-magnetic>Contacto</a></li>
                 </ul>
             </div>
@@ -67,6 +80,7 @@
                 </button>
                 <a href="#top" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" 
                    class="text-fluid-xs font-mono text-muted hover-text-accent no-underline" 
+                   data-barba-prevent="self"
                    data-magnetic>
                     Volver arriba &uarr;
                 </a>

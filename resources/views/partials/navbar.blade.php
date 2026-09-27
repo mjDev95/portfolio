@@ -16,24 +16,20 @@
             </a>
 
             <nav class="island-nav-links" id="desktop-nav-links">
-                <a href="{{ route('home') }}#hero-editorial-2" class="island-nav-link" data-section="hero-editorial-2" data-magnetic>Home</a>
                 <a href="{{ route('about') }}" class="island-nav-link {{ request()->routeIs('about') ? 'active' : '' }}" data-section="about" data-magnetic>About</a>
                 <a href="{{ route('home') }}#services" class="island-nav-link" data-section="services" data-magnetic>Services</a>
-                <a href="{{ route('home') }}#proyectos" class="island-nav-link" data-section="proyectos" data-magnetic>Projects</a>
-                @php
-                    $navContentTypes = \Illuminate\Support\Facades\Schema::hasTable('content_types')
-                        ? \App\Models\ContentType::where('is_public', true)->orderBy('order')->get()
-                        : collect();
-                @endphp
-                @foreach ($navContentTypes as $cpt)
-                    @if (strtolower($cpt->public_route_slug) !== 'proyectos' && strtolower($cpt->name) !== 'proyectos' && strtolower($cpt->name) !== 'projects')
-                        @php
-                            $isActive = request()->is($cpt->public_route_slug) || request()->is($cpt->public_route_slug . '/*');
-                        @endphp
-                        <a href="{{ route('public.content.index', $cpt->public_route_slug) }}" 
+                @foreach ($navContentTypes ?? [] as $cpt)
+                    @php
+                        $cptSlug = is_object($cpt) ? ($cpt->public_route_slug ?? $cpt->slug ?? '') : (is_array($cpt) ? ($cpt['public_route_slug'] ?? $cpt['slug'] ?? '') : (string) $cpt);
+                        $cptName = is_object($cpt) ? ($cpt->name ?? ucfirst($cptSlug)) : (is_array($cpt) ? ($cpt['name'] ?? ucfirst($cptSlug)) : ucfirst($cptSlug));
+                        $isActive = request()->routeIs('public.content.*') && (request()->route('typeSlug') === $cptSlug);
+                    @endphp
+                    @if (! empty($cptSlug) && ! str_contains((string) $cptSlug, '\\'))
+                        <a href="{{ route('public.content.index', $cptSlug) }}" 
                            class="island-nav-link {{ $isActive ? 'active' : '' }}" 
+                           data-section="{{ $cptSlug }}"
                            data-magnetic>
-                            {{ $cpt->name }}
+                            {{ $cptName }}
                         </a>
                     @endif
                 @endforeach
@@ -135,11 +131,17 @@
                 <a href="{{ route('home') }}#hero-editorial-2" class="mobile-island-link" data-section="hero-editorial-2">Home</a>
                 <a href="{{ route('about') }}" class="mobile-island-link {{ request()->routeIs('about') ? 'active' : '' }}" data-section="about">About</a>
                 <a href="{{ route('home') }}#services" class="mobile-island-link" data-section="services">Services</a>
-                <a href="{{ route('home') }}#proyectos" class="mobile-island-link" data-section="proyectos">Projects</a>
-                @foreach ($navContentTypes as $cpt)
-                    @if (strtolower($cpt->public_route_slug) !== 'proyectos' && strtolower($cpt->name) !== 'proyectos' && strtolower($cpt->name) !== 'projects')
-                        <a href="{{ route('public.content.index', $cpt->public_route_slug) }}" class="mobile-island-link">
-                            {{ $cpt->name }}
+                @foreach ($navContentTypes ?? [] as $cpt)
+                    @php
+                        $cptSlug = is_object($cpt) ? ($cpt->public_route_slug ?? $cpt->slug ?? '') : (is_array($cpt) ? ($cpt['public_route_slug'] ?? $cpt['slug'] ?? '') : (string) $cpt);
+                        $cptName = is_object($cpt) ? ($cpt->name ?? ucfirst($cptSlug)) : (is_array($cpt) ? ($cpt['name'] ?? ucfirst($cptSlug)) : ucfirst($cptSlug));
+                        $isActive = request()->routeIs('public.content.*') && (request()->route('typeSlug') === $cptSlug);
+                    @endphp
+                    @if (! empty($cptSlug) && ! str_contains((string) $cptSlug, '\\'))
+                        <a href="{{ route('public.content.index', $cptSlug) }}" 
+                           class="mobile-island-link {{ $isActive ? 'active' : '' }}"
+                           data-section="{{ $cptSlug }}">
+                            {{ $cptName }}
                         </a>
                     @endif
                 @endforeach

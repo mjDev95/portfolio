@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Http\View\Composers\NavigationComposer;
 use App\Models\Content;
 use App\Models\ContentType;
 use App\Observers\ContentObserver;
@@ -9,6 +10,7 @@ use App\Observers\ContentTypeObserver;
 use App\Policies\ContentPolicy;
 use App\Policies\ContentTypePolicy;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -34,5 +36,7 @@ class AppServiceProvider extends ServiceProvider
 
         Content::observe(ContentObserver::class);
         ContentType::observe(ContentTypeObserver::class);
+
+        View::composer(['partials.navbar', 'partials.footer', 'layouts.app'], NavigationComposer::class);
     }
 }
