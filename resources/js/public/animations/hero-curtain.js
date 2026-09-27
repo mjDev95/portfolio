@@ -1,13 +1,27 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from '../lib/smooth-scroll';
-import { splitTextIntoFramerChars } from './velix-reveal';
+import { splitTextIntoFramerChars } from './shared/text-reveal';
+
+let curtainCtx = null;
+
+/**
+ * Reverts the hero curtain GSAP context, terminating tweens and ScrollTriggers.
+ */
+export function cleanupHeroCurtain() {
+    if (curtainCtx) {
+        curtainCtx.revert();
+        curtainCtx = null;
+    }
+}
 
 /**
  * Initializes the Split-Screen Inverted Curtain Hero on the homepage.
  * Pinned via GSAP ScrollTrigger with scrubbed horizontal reveal,
- * synchronized title translation, portrait entrance, markers, and floating navbar coordination.
+ * synchronized title translation, portrait entrance, and floating navbar coordination.
  */
 export function initHeroCurtain(container) {
+    cleanupHeroCurtain();
+
     const section = container.querySelector('[data-hero-curtain]');
     const navbar = document.querySelector('.site-header-fixed');
 
@@ -23,6 +37,8 @@ export function initHeroCurtain(container) {
         }
         return;
     }
+
+    curtainCtx = gsap.context(() => {
 
     const pinElement = section.querySelector('.hero-curtain-pin') || section;
     const darkLayer = section.querySelector('.hero-curtain-dark');
@@ -145,7 +161,6 @@ export function initHeroCurtain(container) {
             start: 'top top',
             end: '+=1600',
             scrub: 0.5,
-            markers: true, // Markers solicitados explícitamente para depuración visual
             anticipatePin: 1,
             invalidateOnRefresh: true,
             onLeave: () => {
@@ -246,4 +261,6 @@ export function initHeroCurtain(container) {
 
     // Garantizamos que la línea de tiempo inicie exactamente en progreso 0 (cortina cerrada) al montarse
     tl.progress(0);
+
+    }, section);
 }

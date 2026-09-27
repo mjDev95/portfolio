@@ -543,7 +543,7 @@ a {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: color 0.2s ease, border-color 0.2s ease;
 }
 
 .island-theme-btn:hover {
@@ -570,14 +570,13 @@ html.light .island-theme-btn .icon-sun  { display: none; }
     font-weight: 600;
     text-decoration: none;
     box-shadow: none !important;
-    transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
     white-space: nowrap;
     cursor: pointer;
 }
 
 .btn-island-cta:hover {
     opacity: 0.92;
-    transform: scale(0.98);
 }
 
 .btn-island-arrow {
@@ -802,7 +801,7 @@ html.light .island-theme-btn .icon-sun  { display: none; }
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    transition: border-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+    transition: border-color 0.3s ease, color 0.3s ease;
     cursor: pointer;
     position: relative;
 }
@@ -1038,14 +1037,13 @@ html.light .hero-orbit-svg {
     font-size: var(--fluid-text-sm);
     font-weight: 500;
     text-decoration: none;
-    transition: border-color 0.25s ease, background-color 0.25s ease, transform 0.25s ease;
+    transition: border-color 0.25s ease, background-color 0.25s ease;
     cursor: pointer;
 }
 
 .btn-pill-action:hover {
     border-color: var(--accent);
     background-color: var(--bg-surface-subtle);
-    transform: translateY(-2px);
     color: var(--text-primary);
 }
 
@@ -1383,13 +1381,12 @@ html.light .hero-orbit-svg {
     grid-template-columns: auto 1.3fr 1.1fr 1.6fr;
     align-items: center;
     gap: var(--fluid-s-lg);
-    transition: transform 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
     box-sizing: border-box;
     width: 100%;
 }
 
 .service-card:hover {
-    transform: translateY(-2px);
     border-color: var(--border-hover);
 }
 

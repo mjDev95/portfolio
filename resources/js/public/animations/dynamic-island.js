@@ -102,20 +102,23 @@ function initDesktopIsland() {
         });
     }
 
-    // Hover interactions en Desktop cuando está compactada
-    desktopIsland.addEventListener('mouseenter', () => {
-        if (window.innerWidth < 1024 || !isDesktopCompacted) return;
-        isDesktopHovered = true;
-        transitionDesktopToExpanded(desktopIsland, expandedBlock, compactBlock, false);
-    });
+    // Hover interactions en Desktop cuando está compactada (idempotente)
+    if (!desktopIsland.dataset.hoverBound) {
+        desktopIsland.dataset.hoverBound = 'true';
+        desktopIsland.addEventListener('mouseenter', () => {
+            if (window.innerWidth < 1024 || !isDesktopCompacted) return;
+            isDesktopHovered = true;
+            transitionDesktopToExpanded(desktopIsland, expandedBlock, compactBlock, false);
+        });
 
-    desktopIsland.addEventListener('mouseleave', () => {
-        if (window.innerWidth < 1024) return;
-        isDesktopHovered = false;
-        if (isDesktopCompacted) {
-            transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, false);
-        }
-    });
+        desktopIsland.addEventListener('mouseleave', () => {
+            if (window.innerWidth < 1024) return;
+            isDesktopHovered = false;
+            if (isDesktopCompacted) {
+                transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, false);
+            }
+        });
+    }
 }
 
 function getElementTargetWidth(el, container) {
@@ -512,34 +515,38 @@ function initMobileIsland() {
         }
     }
 
-    toggleBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleMobile();
-    });
+    if (!mobileIsland.dataset.bound) {
+        mobileIsland.dataset.bound = 'true';
 
-    // Cerrar al hacer click fuera de la cápsula
-    outsideClickHandler = (e) => {
-        if (isMobileExpanded && !mobileIsland.contains(e.target)) {
-            closeMobile();
-        }
-    };
-    document.addEventListener('click', outsideClickHandler);
-
-    // Cerrar al hacer click en cualquier enlace o botón interno (excepto theme toggle)
-    const interactiveLinks = mobileBody.querySelectorAll('a, button:not(#mobile-island-theme-toggle)');
-    interactiveLinks.forEach((link) => {
-        link.addEventListener('click', () => {
-            closeMobile();
+        toggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMobile();
         });
-    });
 
-    // Reconstruir timeline al redimensionar la ventana (giro de pantalla móvil)
-    window.addEventListener('resize', () => {
-        if (window.innerWidth < 1024 && isMobileExpanded && mobileTl) {
-            buildTimeline();
-            mobileTl.progress(1);
-        }
-    });
+        // Cerrar al hacer click fuera de la cápsula
+        outsideClickHandler = (e) => {
+            if (isMobileExpanded && !mobileIsland.contains(e.target)) {
+                closeMobile();
+            }
+        };
+        document.addEventListener('click', outsideClickHandler);
+
+        // Cerrar al hacer click en cualquier enlace o botón interno (excepto theme toggle)
+        const interactiveLinks = mobileBody.querySelectorAll('a, button:not(#mobile-island-theme-toggle)');
+        interactiveLinks.forEach((link) => {
+            link.addEventListener('click', () => {
+                closeMobile();
+            });
+        });
+
+        // Reconstruir timeline al redimensionar la ventana (giro de pantalla móvil)
+        window.addEventListener('resize', () => {
+            if (window.innerWidth < 1024 && isMobileExpanded && mobileTl) {
+                buildTimeline();
+                mobileTl.progress(1);
+            }
+        });
+    }
 }
 
 /**
@@ -550,6 +557,9 @@ function initMobileIsland() {
 function initAnchorScroll() {
     const links = document.querySelectorAll('.island-nav-link, .mobile-island-link');
     links.forEach((link) => {
+        if (link.dataset.anchorBound === 'true') return;
+        link.dataset.anchorBound = 'true';
+
         link.addEventListener('click', (e) => {
             const href = link.getAttribute('href');
             if (href && href.includes('#')) {

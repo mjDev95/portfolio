@@ -7,6 +7,9 @@ export function initThemeToggle() {
     if (!toggleButtons.length) return;
 
     toggleButtons.forEach((btn) => {
+        if (btn.dataset.themeBound === 'true') return;
+        btn.dataset.themeBound = 'true';
+
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
             const isDark = document.documentElement.classList.contains('dark');
