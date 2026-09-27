@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     initSmoothScroll();
+    window.addEventListener('load', () => ScrollTrigger.refresh());
 
     const { refreshMagneticTargets } = initMagneticCursor();
 

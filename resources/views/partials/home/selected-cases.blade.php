@@ -12,7 +12,7 @@
         $dbProjects = \App\Models\Content::query()
             ->whereHas('contentType', fn($q) => $q->where('slug', 'proyectos')->where('is_public', true))
             ->published()
-            ->with(['contentType', 'categories'])
+            ->with(['contentType', 'categories', 'media'])
             ->orderBy('sort_order')
             ->orderByDesc('created_at')
             ->take(2)
@@ -46,23 +46,41 @@
                     $cptSlug = $item->contentType?->public_route_slug ?? 'proyectos';
                     $url = route('public.content.show', [$cptSlug, $item->slug]);
                     $num = str_pad($index + 1, 2, '0', STR_PAD_LEFT);
+                    $itemThumb = $item->thumbnail;
                 @endphp
                 <a href="{{ $url }}" 
                    class="project-editorial-row" 
+                   data-flip-card
+                   data-flip-id="project-{{ $item->slug }}"
                    data-magnetic data-magnetic-strength="0.15">
                     <div class="row align-items-center g-3">
                         <div class="col-12 col-md-1 font-mono text-fluid-sm text-muted">
                             {{ $num }}
                         </div>
                         <div class="col-12 col-md-6">
-                            <h3 class="font-heading text-fluid-h3 text-primary row-title-accent mb-xs">
-                                {{ $item->title }}
-                            </h3>
-                            @if ($item->excerpt)
-                                <span class="text-fluid-sm text-secondary fw-light">
-                                    {{ $item->excerpt }}
-                                </span>
-                            @endif
+                            <div class="d-flex align-items-center gap-3">
+                                @if ($itemThumb)
+                                    <div class="project-editorial-thumb rounded overflow-hidden flex-shrink-0"
+                                         data-flip-id="project-{{ $item->slug }}"
+                                         style="width: 48px; height: 36px;">
+                                        <img src="{{ $itemThumb->url }}" 
+                                             alt="{{ $item->title }}" 
+                                             class="w-100 h-100 object-fit-cover"
+                                             data-flip-element="image"
+                                             loading="lazy">
+                                    </div>
+                                @endif
+                                <div>
+                                    <h3 class="font-heading text-fluid-h3 text-primary row-title-accent mb-xs">
+                                        {{ $item->title }}
+                                    </h3>
+                                    @if ($item->excerpt)
+                                        <span class="text-fluid-sm text-secondary fw-light">
+                                            {{ $item->excerpt }}
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
                         <div class="col-12 col-md-4 d-flex flex-wrap gap-2">
                             @foreach ($item->categories as $category)

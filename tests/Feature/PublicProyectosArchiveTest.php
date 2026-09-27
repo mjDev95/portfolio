@@ -61,9 +61,41 @@ class PublicProyectosArchiveTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('data-layout="airy"', false);
         $response->assertSee('data-project-card', false);
+        $response->assertSee('data-flip-card', false);
+        $response->assertSee('data-flip-id="project-plataforma-ecommerce-headless"', false);
         $response->assertSee('Plataforma E-Commerce Headless');
         $response->assertDontSee('Auto Key Access');
         $response->assertDontSee('Clearbox Communications');
         $response->assertSee('View Project');
+    }
+
+    public function test_project_single_renders_matching_flip_attributes(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $cpt = ContentType::create([
+            'user_id' => $admin->id,
+            'name' => 'Proyectos',
+            'singular_name' => 'Proyecto',
+            'slug' => 'proyectos',
+            'public_slug' => 'proyectos',
+            'is_public' => true,
+        ]);
+
+        $content = Content::create([
+            'content_type_id' => $cpt->id,
+            'user_id' => $admin->id,
+            'title' => 'Plataforma E-Commerce Headless',
+            'slug' => 'plataforma-ecommerce-headless',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $response = $this->get('/proyectos/plataforma-ecommerce-headless');
+
+        $response->assertStatus(200);
+        $response->assertSee('content-show');
+        $response->assertSee('data-flip-text', false);
+        $response->assertSee('Plataforma E-Commerce Headless');
     }
 }

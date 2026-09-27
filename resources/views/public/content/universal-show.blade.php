@@ -28,7 +28,8 @@
             <img src="{{ $heroImage->url }}"
                  alt="{{ $heroImage->alt ?: ($heroImage->caption ?: $content->title) }}"
                  title="{{ $heroImage->title ?: $content->title }}"
-                 class="img-fluid object-fit-cover w-100 h-100">
+                 class="img-fluid object-fit-cover w-100 h-100"
+                 data-flip-element="image">
         </div>
     @endif
     <header class="mb-xl" data-reveal>

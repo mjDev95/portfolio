@@ -1,5 +1,6 @@
 import gsap from 'gsap';
 import { Flip } from 'gsap/Flip';
+import { startScroll, resizeScroll, stopScroll } from './smooth-scroll';
 
 gsap.registerPlugin(Flip);
 
@@ -8,70 +9,65 @@ const DETAIL_NAMESPACES = ['project-show', 'blog-show', 'content-show'];
 
 // Snapshot handed off from a transition's `leave()` to its `enter()`.
 let flipState = null;
-
-function findOriginMedia(trigger, currentContainer) {
-    const card = trigger?.closest?.('a[data-flip-card]');
-
-    return card?.querySelector('[data-flip-id]') ?? currentContainer.querySelector('[data-flip-id]');
-}
+let activeFlipId = null;
 
 /**
- * Fades out everything in `container` EXCEPT `media` and its ancestor chain,
- * so the shared-element image never itself fades/disappears — only the rest
- * of the page (other cards, headings, captions) dims around it. Walking up
- * from `media` and fading each level's siblings (never the ancestors
- * themselves) is required because CSS opacity on an ancestor would otherwise
- * visually fade `media` too, even if `media`'s own opacity is untouched.
+ * Resolves the shared flip element (image or media container) and its identifier
+ * from the clicked trigger or the outgoing container.
  */
-function fadeAroundMedia(container, media, duration = 0.35) {
-    if (!media) {
-        return gsap.to(container, { autoAlpha: 0, y: -20, duration, ease: 'power2.inOut' });
-    }
-
-    const siblings = [];
-    let node = media;
-
-    while (node && node !== container && node.parentElement) {
-        for (const sibling of node.parentElement.children) {
-            if (sibling !== node) {
-                siblings.push(sibling);
-            }
+function findOriginFlipElement(trigger, currentContainer) {
+    if (trigger) {
+        const card = trigger.closest?.('[data-flip-card]');
+        if (card) {
+            const imageEl = card.querySelector('[data-flip-element="image"]');
+            const mediaWrap = card.querySelector('[data-flip-id]');
+            const el = imageEl || mediaWrap || card;
+            const id = card.getAttribute('data-flip-id') || mediaWrap?.getAttribute('data-flip-id');
+            return { el, id, card };
         }
-        node = node.parentElement;
     }
 
-    return gsap.to(siblings, { autoAlpha: 0, y: -20, duration, ease: 'power2.inOut' });
+    const fallbackEl = currentContainer?.querySelector?.('[data-flip-element="image"]') ||
+                       currentContainer?.querySelector?.('[data-flip-id]');
+
+    return {
+        el: fallbackEl ?? null,
+        id: fallbackEl?.closest?.('[data-flip-id]')?.getAttribute('data-flip-id') ??
+            fallbackEl?.getAttribute('data-flip-id') ?? null,
+        card: fallbackEl?.closest?.('[data-flip-card]') ?? null,
+    };
 }
 
 /**
- * Fades/scales the detail page's text in, overlapping the tail end of the
- * given Flip timeline so it only becomes visible once the image is
- * essentially settled into its final position — not after a separate delay.
+ * Collects detail content blocks (breadcrumbs, header, prose, specs, gallery)
+ * excluding the hero shared element to choreograph their staggered entrance.
  */
-function revealFlipTextAfter(flipTimeline, container) {
-    const texts = container.querySelectorAll('[data-flip-text]');
+function getDetailContentElements(container, targetHero) {
+    if (!container) return [];
 
-    gsap.set(texts, { autoAlpha: 0, y: 16, scale: 0.98 });
+    const article = container.querySelector('article') || container;
+    const directChildren = Array.from(article.children).filter(
+        (el) => el !== targetHero && !targetHero?.contains(el) && !el.contains(targetHero)
+    );
 
-    return gsap.timeline({ onComplete: () => { flipState = null; } })
-        .add(flipTimeline)
-        .to(texts, { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, ease: 'power3.out', stagger: 0.05 }, '-=0.15');
+    if (directChildren.length > 0) {
+        return directChildren;
+    }
+
+    const elements = container.querySelectorAll(
+        '.mb-lg, header, .row.g-5, [data-flip-text], .prose, .data-chip'
+    );
+
+    return Array.from(elements).filter((el) => el !== targetHero && !targetHero?.contains(el));
 }
 
 /**
- * Two Barba.js transitions implementing a GSAP Flip "shared element" effect
- * between a card thumbnail (list) and its hero image (detail), in both
- * navigation directions. They take priority over the generic wipe-transition
- * whenever the from/to namespace pair matches (list <-> detail).
- *
- * Flip lifecycle mapped onto Barba hooks:
- *  - First:  `Flip.getState()` captured in `leave()`, while the origin
- *            element is still in the (soon to be replaced) DOM.
- *  - Last:   Barba swaps the container; the target element is already laid
- *            out at its natural final position when `enter()` runs.
- *  - Invert: handled internally by `Flip.from()` — it offsets the target so
- *            it visually starts from the recorded First position.
- *  - Play:   `Flip.from()` animates from Invert to Last (`expo.inOut`).
+ * Real Shared Element Transitions between list and detail pages:
+ *  - leave(): captures geometry snapshot (Flip.getState), freezes scroll,
+ *             and holds active card frozen in place while fading out the rest of the list (0.18s pause).
+ *  - enter(): new container mounts at top (window.scrollTo(0,0)), hides text (opacity: 0),
+ *             applies Flip.from() (1.15s, expo.out, scale: true, absolute: true),
+ *             and reveals detail text only after 60% of flight has elapsed.
  */
 export function createFlipTransitions() {
     return [
@@ -80,26 +76,139 @@ export function createFlipTransitions() {
             from: { namespace: LIST_NAMESPACES },
             to: { namespace: DETAIL_NAMESPACES },
             leave(data) {
-                const media = findOriginMedia(data.trigger, data.current.container);
-                flipState = media ? Flip.getState(media, { props: 'borderRadius' }) : null;
+                // 1. Congelar el scroll de Lenis al instante
+                stopScroll();
 
-                return fadeAroundMedia(data.current.container, media);
-            },
-            enter(data) {
-                const target = data.next.container.querySelector('[data-flip-id]');
+                // 2. Guardar el estado geométrico de la tarjeta seleccionada sin mover la imagen
+                const { el, id, card } = findOriginFlipElement(data.trigger, data.current.container);
+                activeFlipId = id;
 
-                if (!flipState || !target) {
-                    return gsap.fromTo(data.next.container, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 });
+                if (el) {
+                    try {
+                        flipState = Flip.getState(el, { props: 'borderRadius,objectFit' });
+                    } catch (e) {
+                        console.warn('[Flip] Error capturando estado del origen:', e);
+                        flipState = null;
+                        activeFlipId = null;
+                    }
+                } else {
+                    flipState = null;
+                    activeFlipId = null;
                 }
 
-                const flip = Flip.from(flipState, {
-                    targets: target,
-                    duration: 1,
-                    ease: 'expo.inOut',
-                    absolute: true,
-                });
+                // 3. Pausa de captura deliberada:
+                // Desvanecer el resto del listado manteniendo la tarjeta congelada en su lugar exacto
+                // para que el ojo del usuario enfoque la pieza antes del despegue (micropausa 0.18s).
+                const tl = gsap.timeline();
 
-                return revealFlipTextAfter(flip, data.next.container);
+                if (card) {
+                    const otherCards = Array.from(data.current.container.querySelectorAll('[data-flip-card]')).filter(
+                        (c) => c !== card && !card.contains(c)
+                    );
+                    const surroundingElements = Array.from(
+                        data.current.container.querySelectorAll(
+                            'h1, h2, h3, p, .mb-xl, .services-header-row, header, footer, .d-flex.justify-content-center, .editorial-cta-wrap, [data-reveal]'
+                        )
+                    ).filter((node) => !card.contains(node) && node !== card);
+
+                    tl.to([otherCards, surroundingElements], {
+                        opacity: 0,
+                        duration: 0.2,
+                        ease: 'power2.in',
+                    });
+
+                    // Micropausa deliberada para enfocar la pieza
+                    tl.to({}, { duration: 0.18 });
+                } else {
+                    tl.to(data.current.container, {
+                        opacity: 0,
+                        duration: 0.2,
+                        ease: 'power2.in',
+                    });
+                    tl.to({}, { duration: 0.15 });
+                }
+
+                return tl;
+            },
+            enter(data) {
+                // 1. El nuevo contenedor entra de inmediato arriba
+                window.scrollTo(0, 0);
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
+
+                const stateToUse = flipState;
+                const flipId = activeFlipId;
+                flipState = null;
+                activeFlipId = null;
+
+                // Buscar la imagen hero del detalle
+                const heroWrap = flipId
+                    ? data.next.container.querySelector(`[data-flip-id="${flipId}"]`)
+                    : data.next.container.querySelector('[data-flip-id]');
+
+                const target = heroWrap?.querySelector('[data-flip-element="image"]') ||
+                               heroWrap ||
+                               data.next.container.querySelector('[data-flip-element="image"]');
+
+                // Fallback limpio si no existe elemento compartido
+                if (!stateToUse || !target) {
+                    startScroll();
+                    resizeScroll();
+                    return gsap.fromTo(
+                        data.next.container,
+                        { opacity: 0 },
+                        { opacity: 1, duration: 0.35, ease: 'power2.out', clearProps: 'all' }
+                    );
+                }
+
+                // 2. Ocultar todo el contenido textual/bloques del detalle (opacity: 0, y: 30)
+                const detailElements = getDetailContentElements(data.next.container, heroWrap || target);
+                gsap.set(detailElements, { opacity: 0, y: 30 });
+
+                try {
+                    // 3. Aplica Flip.from(state) sobre la imagen hero con duración 1.15s, curva expo.out y scale: true
+                    const flipTween = Flip.from(stateToUse, {
+                        targets: target,
+                        duration: 1.15,
+                        ease: 'expo.out',
+                        absolute: true,
+                        scale: true,
+                        props: 'borderRadius',
+                        onComplete: () => {
+                            startScroll();
+                            resizeScroll();
+                        },
+                    });
+
+                    const tl = gsap.timeline();
+                    tl.add(flipTween, 0);
+
+                    // 4. Retardo en el texto del detalle:
+                    // Aparece solo cuando la imagen ya lleve el 60% de su recorrido completado (1.15 * 0.6 = ~0.69s)
+                    tl.to(
+                        detailElements,
+                        {
+                            opacity: 1,
+                            y: 0,
+                            duration: 0.6,
+                            stagger: 0.06,
+                            ease: 'power2.out',
+                            clearProps: 'opacity,y',
+                        },
+                        0.69
+                    );
+
+                    return tl;
+                } catch (e) {
+                    console.warn('[Flip] Error ejecutando Flip.from:', e);
+                    startScroll();
+                    resizeScroll();
+                    return gsap.fromTo(
+                        data.next.container,
+                        { opacity: 0 },
+                        { opacity: 1, duration: 0.35, clearProps: 'all' }
+                    );
+                }
             },
         },
         {
@@ -107,28 +216,120 @@ export function createFlipTransitions() {
             from: { namespace: DETAIL_NAMESPACES },
             to: { namespace: LIST_NAMESPACES },
             leave(data) {
-                const media = data.current.container.querySelector('[data-flip-id]');
-                flipState = media ? Flip.getState(media, { props: 'borderRadius' }) : null;
+                stopScroll();
 
-                return fadeAroundMedia(data.current.container, media);
-            },
-            enter(data) {
-                const flipId = flipState?.elements?.[0]?.getAttribute('data-flip-id');
-                const target = flipId ? data.next.container.querySelector(`[data-flip-id="${flipId}"]`) : null;
+                const { el, id } = findOriginFlipElement(data.trigger, data.current.container);
+                activeFlipId = id;
 
-                if (!flipState || !target) {
-                    return gsap.fromTo(data.next.container, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 });
+                if (el) {
+                    try {
+                        flipState = Flip.getState(el, { props: 'borderRadius,objectFit' });
+                    } catch (e) {
+                        console.warn('[Flip] Error capturando estado del detalle:', e);
+                        flipState = null;
+                        activeFlipId = null;
+                    }
+                } else {
+                    flipState = null;
+                    activeFlipId = null;
                 }
 
-                return Flip.from(flipState, {
-                    targets: target,
-                    duration: 0.9,
-                    ease: 'expo.inOut',
-                    absolute: true,
-                    onComplete: () => {
-                        flipState = null;
-                    },
-                });
+                const heroWrap = el?.closest?.('[data-flip-id]') || el;
+                const detailElements = getDetailContentElements(data.current.container, heroWrap);
+                const tl = gsap.timeline();
+
+                if (detailElements.length > 0) {
+                    tl.to(detailElements, {
+                        opacity: 0,
+                        duration: 0.2,
+                        ease: 'power2.in',
+                    });
+                    tl.to({}, { duration: 0.18 });
+                } else {
+                    tl.to(data.current.container, {
+                        opacity: 0,
+                        duration: 0.2,
+                        ease: 'power2.in',
+                    });
+                    tl.to({}, { duration: 0.15 });
+                }
+
+                return tl;
+            },
+            enter(data) {
+                window.scrollTo(0, 0);
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
+
+                const stateToUse = flipState;
+                const flipId = activeFlipId;
+                flipState = null;
+                activeFlipId = null;
+
+                const cardWrap = flipId
+                    ? data.next.container.querySelector(`[data-flip-id="${flipId}"]`)
+                    : null;
+
+                const target = cardWrap?.querySelector('[data-flip-element="image"]') ||
+                               cardWrap ||
+                               (flipId ? data.next.container.querySelector(`[data-flip-id="${flipId}"]`) : null);
+
+                if (!stateToUse || !target) {
+                    startScroll();
+                    resizeScroll();
+                    return gsap.fromTo(
+                        data.next.container,
+                        { opacity: 0 },
+                        { opacity: 1, duration: 0.35, ease: 'power2.out', clearProps: 'all' }
+                    );
+                }
+
+                const otherCards = Array.from(data.next.container.querySelectorAll('[data-flip-card]')).filter(
+                    (c) => c !== cardWrap && !cardWrap?.contains(c)
+                );
+                gsap.set(otherCards, { opacity: 0, y: 15 });
+
+                try {
+                    const flipTween = Flip.from(stateToUse, {
+                        targets: target,
+                        duration: 1.15,
+                        ease: 'expo.out',
+                        absolute: true,
+                        scale: true,
+                        props: 'borderRadius',
+                        onComplete: () => {
+                            startScroll();
+                            resizeScroll();
+                        },
+                    });
+
+                    const tl = gsap.timeline();
+                    tl.add(flipTween, 0);
+
+                    tl.to(
+                        otherCards,
+                        {
+                            opacity: 1,
+                            y: 0,
+                            duration: 0.5,
+                            stagger: 0.04,
+                            ease: 'power2.out',
+                            clearProps: 'opacity,y',
+                        },
+                        0.69
+                    );
+
+                    return tl;
+                } catch (e) {
+                    console.warn('[Flip] Error ejecutando Flip.from inverso:', e);
+                    startScroll();
+                    resizeScroll();
+                    return gsap.fromTo(
+                        data.next.container,
+                        { opacity: 0 },
+                        { opacity: 1, duration: 0.35, clearProps: 'all' }
+                    );
+                }
             },
         },
     ];

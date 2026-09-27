@@ -52,18 +52,42 @@ function syncPageMetadata(html) {
 }
 
 /**
+ * Monitors images inside the incoming container to trigger lenis.resize()
+ * and ScrollTrigger.refresh() as they load, preventing zero-height / limit = 0 issues.
+ */
+function watchImagesForScrollResize(container) {
+    if (!container) return;
+
+    const images = Array.from(container.querySelectorAll('img'));
+    if (!images.length) return;
+
+    const onImageSettled = () => {
+        resizeScroll();
+        ScrollTrigger.refresh();
+    };
+
+    images.forEach((img) => {
+        if (!img.complete) {
+            img.addEventListener('load', onImageSettled, { once: true });
+            img.addEventListener('error', onImageSettled, { once: true });
+        }
+    });
+
+    if (window.ResizeObserver) {
+        const ro = new ResizeObserver(() => {
+            resizeScroll();
+            ScrollTrigger.refresh();
+        });
+        ro.observe(container);
+
+        setTimeout(() => {
+            ro.disconnect();
+        }, 2500);
+    }
+}
+
+/**
  * Barba.js v2 lifecycle wiring with GSAP and Lenis.
- *
- * Order per navigation:
- *  1. beforeLeave  -> stop Lenis scroll, kill every ScrollTrigger bound to outgoing DOM.
- *  2. leave        -> animate outgoing page transition.
- *  3. (barba swaps [data-barba="container"] under the hood)
- *  4. beforeEnter  -> sync CSRF meta + <title> + SEO/OG tags, snap scroll to top (0, immediate).
- *  5. enter        -> animate incoming page transition.
- *  6. after        -> initialize animations scoped to data.next.container,
- *                     resume Lenis (start), recalculate scroll limits (resize),
- *                     recompute trigger positions (ScrollTrigger.refresh()),
- *                     re-bind interactive listeners and send analytics.
  */
 export function initBarba({ onAfterEnter } = {}) {
     barba.hooks.beforeLeave(() => {
@@ -79,16 +103,31 @@ export function initBarba({ onAfterEnter } = {}) {
     });
 
     barba.hooks.after((data) => {
-        resetScroll();
+        // Prioridad máxima: desbloquear scroll y posicionar en el tope inmediatamente
         startScroll();
+        resetScroll();
         resizeScroll();
+        ScrollTrigger.refresh();
+
         initPageAnimations(data.next.container);
+
+        // Recálculo continuo de altura al cargar imágenes del contenedor entrante
+        watchImagesForScrollResize(data.next.container);
+
         ScrollTrigger.refresh();
         sendAnalyticsPing(window.location.pathname);
         if (typeof window.updateAdminBarContext === 'function') {
             window.updateAdminBarContext(data.next.container);
         }
         onAfterEnter?.();
+    });
+
+    // Hook de contingencia obligatorio: bajo cualquier excepción el scroll jamás queda bloqueado
+    barba.hooks.error((data, error) => {
+        console.error('[Barba] Error durante la transición de página:', error);
+        startScroll();
+        resizeScroll();
+        ScrollTrigger.refresh();
     });
 
     barba.init({
