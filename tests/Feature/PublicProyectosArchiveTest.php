@@ -98,4 +98,37 @@ class PublicProyectosArchiveTest extends TestCase
         $response->assertSee('data-flip-text', false);
         $response->assertSee('Plataforma E-Commerce Headless');
     }
+
+    public function test_home_selected_cases_renders_stodio_sequence_with_flip_and_cursor_attributes(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $cpt = ContentType::create([
+            'user_id' => $admin->id,
+            'name' => 'Proyectos',
+            'singular_name' => 'Proyecto',
+            'slug' => 'proyectos',
+            'public_slug' => 'proyectos',
+            'is_public' => true,
+        ]);
+
+        $project = Content::create([
+            'content_type_id' => $cpt->id,
+            'user_id' => $admin->id,
+            'title' => 'Stodio Project Test',
+            'slug' => 'stodio-project-test',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $response = $this->get(route('home'));
+
+        $response->assertStatus(200);
+        $response->assertSee('data-selected-cases-stodio', false);
+        $response->assertSee('stodio-pinned-hero');
+        $response->assertSee('data-project-card', false);
+        $response->assertSee('data-flip-card', false);
+        $response->assertSee('data-flip-id="project-stodio-project-test"', false);
+        $response->assertSee('data-flip-element="image"', false);
+    }
 }

@@ -13,10 +13,8 @@ if (typeof window !== 'undefined') {
     document.addEventListener(
         'click',
         (e) => {
-            // Only capture on project archive cards, ignore home
             const card = e.target.closest?.('[data-flip-card]');
-            const isHomePage = window.location.pathname === '/' || document.querySelector('[data-barba="container"]')?.getAttribute('data-barba-namespace') === 'home';
-            if (card && !isHomePage) {
+            if (card) {
                 window.__lastClickedFlipCard = card;
                 markNavigated();
 
@@ -30,7 +28,7 @@ if (typeof window !== 'undefined') {
                 }
 
                 // Desvanecer INMEDIATAMENTE el texto de la tarjeta seleccionada para que solo quede la imagen
-                const cardBody = card.querySelector('.project-showcase-body');
+                const cardBody = card.querySelector('.project-showcase-body') || card.querySelector('.stodio-meta-row');
                 if (cardBody) {
                     gsap.to(cardBody, {
                         opacity: 0,
@@ -58,20 +56,16 @@ export function createFlipTransitions() {
         {
             name: 'flip-to-detail',
             custom({ current, next, trigger }) {
-                // Excluir estrictamente navegación desde Home
-                if (current.namespace === 'home' || current.url?.path === '/') {
-                    return false;
-                }
-
-                const isFromProjects = current.namespace === 'projects-index' ||
-                                       (current.url?.path && /^\/proyectos\/?$/.test(current.url.path));
+                const isFromAllowed = current.namespace === 'projects-index' ||
+                                      current.namespace === 'home' ||
+                                      (current.url?.path && /^\/(proyectos)?\/?$/.test(current.url.path));
                 const isToDetail = DETAIL_NAMESPACES.includes(next.namespace) ||
                                   (next.url?.path && /^\/proyectos\/[^/]+/.test(next.url.path));
 
                 const candidate = (trigger instanceof Element ? trigger : null) || window.__lastClickedFlipCard;
                 const hasCard = Boolean(candidate?.closest?.('[data-flip-card]') || window.__lastClickedFlipCard);
 
-                return Boolean(isFromProjects && isToDetail && hasCard);
+                return Boolean(isFromAllowed && isToDetail && hasCard);
             },
             async leave(data) {
                 return new Promise((resolve) => {
@@ -87,6 +81,7 @@ export function createFlipTransitions() {
                                        window.__lastClickedFlipCard ||
                                        data.current.container.querySelector('[data-flip-card]');
                     const originWrapper = originCard?.querySelector?.('[data-flip-element="image"]') ||
+                                          originCard?.querySelector?.('.stodio-media-frame') ||
                                           originCard?.querySelector?.('.card-media-wrapper') ||
                                           originCard?.querySelector?.('.project-showcase-media') ||
                                           originCard;

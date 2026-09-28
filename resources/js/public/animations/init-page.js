@@ -1,6 +1,7 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from '../lib/smooth-scroll';
 import { initHeroCurtain } from './hero-curtain';
+import { initSelectedCases } from './selected-cases';
 import { initVelixReveals } from './velix-reveal';
 
 /**
@@ -10,6 +11,7 @@ import { initVelixReveals } from './velix-reveal';
  */
 export function initPageAnimations(container) {
     initHeroCurtain(container);
+    initSelectedCases(container);
     initVelixReveals(container);
 
     const reveals = container.querySelectorAll('[data-reveal]');
