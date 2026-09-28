@@ -19,7 +19,7 @@
         {{-- Hero Editorial Sobre Mí (Sin cajas) --}}
         <div class="row align-items-start pb-xl border-bottom-subtle" data-reveal>
             <div class="col-12 col-lg-8 mb-xl mb-lg-0">
-                <span class="text-fluid-xs font-mono text-uppercase tracking-widest text-accent fw-semibold d-block mb-xs">
+                <span class="text-fluid-xs font-mono text-uppercase tracking-widest text-brand fw-semibold d-block mb-xs">
                     // Trayectoria &amp; Perfil
                 </span>
                 <h1 class="font-fluid-hero text-primary mb-md">
@@ -42,7 +42,7 @@
                         <span>Hablemos</span>
                         <span style="font-size: 0.85rem; font-weight: 700; line-height: 1;">&nearr;</span>
                     </a>
-                    <a href="mailto:mjgaliciab@gmail.com" class="text-fluid-xs font-mono text-secondary hover-text-accent no-underline" data-magnetic>
+                    <a href="mailto:mjgaliciab@gmail.com" class="text-fluid-xs font-mono text-secondary hover-text-brand no-underline" data-magnetic>
                         mjgaliciab@gmail.com &rarr;
                     </a>
                 </div>
@@ -73,7 +73,7 @@
 
                     <div>
                         <span class="font-mono text-fluid-xs text-muted text-uppercase d-block mb-xs">Contacto Directo</span>
-                        <a href="tel:+525628425556" class="font-mono text-accent no-underline hover-text-accent">+52 56 2842 5556</a>
+                        <a href="tel:+525628425556" class="font-mono text-brand no-underline hover-text-brand">+52 56 2842 5556</a>
                     </div>
                 </div>
             </div>
@@ -82,7 +82,7 @@
         {{-- Experiencia Laboral Estructurada en Líneas (Sin cajas) --}}
         <div class="py-2xl border-bottom-subtle" data-reveal>
             <div class="mb-xl">
-                <span class="text-fluid-xs font-mono text-uppercase tracking-widest text-accent fw-semibold d-block mb-xs">
+                <span class="text-fluid-xs font-mono text-uppercase tracking-widest text-brand fw-semibold d-block mb-xs">
                     // Recorrido Profesional
                 </span>
                 <h2 class="font-fluid-section text-primary">
@@ -98,7 +98,7 @@
                             <h3 class="font-fluid-step text-primary mb-xs">
                                 Desarrollador Web (WordPress &amp; Front-End)
                             </h3>
-                            <span class="text-accent fw-semibold text-fluid-sm">
+                            <span class="text-brand fw-semibold text-fluid-sm">
                                 Denumeris Interactive
                             </span>
                         </div>
@@ -109,19 +109,19 @@
 
                     <ul class="list-unstyled space-y-3 font-fluid-body text-secondary fw-light mb-lg">
                         <li class="d-flex align-items-start gap-2">
-                            <span class="text-accent font-mono mt-xs">&mdash;</span>
+                            <span class="text-brand font-mono mt-xs">&mdash;</span>
                             <span><strong class="text-primary fw-medium">Desarrollo</strong> de temas a la medida (Custom Themes) en PHP nativo para portales institucionales de alta demanda (Centro Médico ABC, FLACSO México, Saavi Energía, Corazón Raíz y Grupo Médico San José).</span>
                         </li>
                         <li class="d-flex align-items-start gap-2">
-                            <span class="text-accent font-mono mt-xs">&mdash;</span>
+                            <span class="text-brand font-mono mt-xs">&mdash;</span>
                             <span><strong class="text-primary fw-medium">Construcción</strong> de estructuras de contenido personalizadas con CPTs, taxonomías y metaboxes nativos en PHP, prescindiendo de plugins pesados de terceros para mantener un código limpio, seguro y auditable.</span>
                         </li>
                         <li class="d-flex align-items-start gap-2">
-                            <span class="text-accent font-mono mt-xs">&mdash;</span>
+                            <span class="text-brand font-mono mt-xs">&mdash;</span>
                             <span><strong class="text-primary fw-medium">Optimización</strong> de tiempos de carga inicial y métricas de LCP mediante técnicas de carga diferida (lazy-loading) y depuración minuciosa de recursos bloqueantes en JavaScript y CSS.</span>
                         </li>
                         <li class="d-flex align-items-start gap-2">
-                            <span class="text-accent font-mono mt-xs">&mdash;</span>
+                            <span class="text-brand font-mono mt-xs">&mdash;</span>
                             <span><strong class="text-primary fw-medium">Gestión</strong> del control de versiones, integración colaborativa y mantenimiento continuo de plataformas mediante flujos estructurados en Git y GitHub.</span>
                         </li>
                     </ul>
@@ -146,7 +146,7 @@
                             <h3 class="font-fluid-step text-primary mb-xs">
                                 Ingeniero Front-End &amp; Diseñador UI/UX Independiente
                             </h3>
-                            <span class="text-accent fw-semibold text-fluid-sm">
+                            <span class="text-brand fw-semibold text-fluid-sm">
                                 Proyectos Seleccionados
                             </span>
                         </div>
@@ -157,11 +157,11 @@
 
                     <ul class="list-unstyled space-y-3 font-fluid-body text-secondary fw-light mb-lg">
                         <li class="d-flex align-items-start gap-2">
-                            <span class="text-accent font-mono mt-xs">&mdash;</span>
+                            <span class="text-brand font-mono mt-xs">&mdash;</span>
                             <span><strong class="text-primary fw-medium">Next in Line Management:</strong> Conceptualización del sistema visual y UI en Figma, trasladado a un Custom Theme integral con sistema CSS propio y tipografía/espaciado fluido con breakpoints adaptables, logrando una estética visual editorial minimalista de alta retención.</span>
                         </li>
                         <li class="d-flex align-items-start gap-2">
-                            <span class="text-accent font-mono mt-xs">&mdash;</span>
+                            <span class="text-brand font-mono mt-xs">&mdash;</span>
                             <span><strong class="text-primary fw-medium">Accésate:</strong> Diseño y maquetación de la experiencia de usuario (UX/UI) para plataforma web, estructurando el sistema de componentes modulares en Laravel Blade y asegurando flujos intuitivos junto con una navegación responsiva multiplataforma.</span>
                         </li>
                     </ul>
@@ -182,7 +182,7 @@
         {{-- Portales en Producción --}}
         <div class="py-2xl" data-reveal>
             <div class="mb-xl">
-                <span class="text-fluid-xs font-mono text-uppercase tracking-widest text-accent fw-semibold d-block mb-xs">
+                <span class="text-fluid-xs font-mono text-uppercase tracking-widest text-brand fw-semibold d-block mb-xs">
                     // Portafolio Activo
                 </span>
                 <h2 class="font-fluid-section text-primary">
@@ -192,16 +192,16 @@
 
             <div class="row pt-lg border-top-subtle">
                 <div class="col-12 col-md-6 mb-lg">
-                    <span class="text-fluid-xs font-mono text-accent text-uppercase tracking-wider d-block mb-sm">Salud &amp; Hospitalario</span>
+                    <span class="text-fluid-xs font-mono text-brand text-uppercase tracking-wider d-block mb-sm">Salud &amp; Hospitalario</span>
                     <ul class="list-unstyled space-y-3 font-fluid-body">
                         <li>
-                            <a href="https://centromedicoabc.com/" target="_blank" rel="noopener noreferrer" class="text-primary hover-text-accent d-flex align-items-center justify-content-between no-underline pb-xs border-bottom-subtle" data-magnetic>
+                            <a href="https://centromedicoabc.com/" target="_blank" rel="noopener noreferrer" class="text-primary hover-text-brand d-flex align-items-center justify-content-between no-underline pb-xs border-bottom-subtle" data-magnetic>
                                 <span>Centro Médico ABC</span>
                                 <span>&nearr;</span>
                             </a>
                         </li>
                         <li>
-                            <a href="https://grupomedicosanjose.com/" target="_blank" rel="noopener noreferrer" class="text-primary hover-text-accent d-flex align-items-center justify-content-between no-underline pb-xs border-bottom-subtle" data-magnetic>
+                            <a href="https://grupomedicosanjose.com/" target="_blank" rel="noopener noreferrer" class="text-primary hover-text-brand d-flex align-items-center justify-content-between no-underline pb-xs border-bottom-subtle" data-magnetic>
                                 <span>Grupo Médico San José</span>
                                 <span>&nearr;</span>
                             </a>
@@ -210,16 +210,16 @@
                 </div>
 
                 <div class="col-12 col-md-6 mb-lg">
-                    <span class="text-fluid-xs font-mono text-accent text-uppercase tracking-wider d-block mb-sm">Corporativo &amp; Energía</span>
+                    <span class="text-fluid-xs font-mono text-brand text-uppercase tracking-wider d-block mb-sm">Corporativo &amp; Energía</span>
                     <ul class="list-unstyled space-y-3 font-fluid-body">
                         <li>
-                            <a href="https://www.saavienergia.com/" target="_blank" rel="noopener noreferrer" class="text-primary hover-text-accent d-flex align-items-center justify-content-between no-underline pb-xs border-bottom-subtle" data-magnetic>
+                            <a href="https://www.saavienergia.com/" target="_blank" rel="noopener noreferrer" class="text-primary hover-text-brand d-flex align-items-center justify-content-between no-underline pb-xs border-bottom-subtle" data-magnetic>
                                 <span>Saavi Energía</span>
                                 <span>&nearr;</span>
                             </a>
                         </li>
                         <li>
-                            <a href="https://corazonraiz.org/" target="_blank" rel="noopener noreferrer" class="text-primary hover-text-accent d-flex align-items-center justify-content-between no-underline pb-xs border-bottom-subtle" data-magnetic>
+                            <a href="https://corazonraiz.org/" target="_blank" rel="noopener noreferrer" class="text-primary hover-text-brand d-flex align-items-center justify-content-between no-underline pb-xs border-bottom-subtle" data-magnetic>
                                 <span>Corazón Raíz</span>
                                 <span>&nearr;</span>
                             </a>
@@ -228,10 +228,10 @@
                 </div>
 
                 <div class="col-12 col-md-6 mb-lg">
-                    <span class="text-fluid-xs font-mono text-accent text-uppercase tracking-wider d-block mb-sm">Académico &amp; Social</span>
+                    <span class="text-fluid-xs font-mono text-brand text-uppercase tracking-wider d-block mb-sm">Académico &amp; Social</span>
                     <ul class="list-unstyled space-y-3 font-fluid-body">
                         <li>
-                            <a href="https://www.flacso.edu.mx/" target="_blank" rel="noopener noreferrer" class="text-primary hover-text-accent d-flex align-items-center justify-content-between no-underline pb-xs border-bottom-subtle" data-magnetic>
+                            <a href="https://www.flacso.edu.mx/" target="_blank" rel="noopener noreferrer" class="text-primary hover-text-brand d-flex align-items-center justify-content-between no-underline pb-xs border-bottom-subtle" data-magnetic>
                                 <span>FLACSO México</span>
                                 <span>&nearr;</span>
                             </a>
@@ -240,16 +240,16 @@
                 </div>
 
                 <div class="col-12 col-md-6 mb-lg">
-                    <span class="text-fluid-xs font-mono text-accent text-uppercase tracking-wider d-block mb-sm">UI/UX &amp; Plataformas</span>
+                    <span class="text-fluid-xs font-mono text-brand text-uppercase tracking-wider d-block mb-sm">UI/UX &amp; Plataformas</span>
                     <ul class="list-unstyled space-y-3 font-fluid-body">
                         <li>
-                            <a href="https://nextinlinemanagement.com/" target="_blank" rel="noopener noreferrer" class="text-primary hover-text-accent d-flex align-items-center justify-content-between no-underline pb-xs border-bottom-subtle" data-magnetic>
+                            <a href="https://nextinlinemanagement.com/" target="_blank" rel="noopener noreferrer" class="text-primary hover-text-brand d-flex align-items-center justify-content-between no-underline pb-xs border-bottom-subtle" data-magnetic>
                                 <span>Next in Line Management</span>
                                 <span>&nearr;</span>
                             </a>
                         </li>
                         <li>
-                            <a href="https://accesate.com/es" target="_blank" rel="noopener noreferrer" class="text-primary hover-text-accent d-flex align-items-center justify-content-between no-underline pb-xs border-bottom-subtle" data-magnetic>
+                            <a href="https://accesate.com/es" target="_blank" rel="noopener noreferrer" class="text-primary hover-text-brand d-flex align-items-center justify-content-between no-underline pb-xs border-bottom-subtle" data-magnetic>
                                 <span>Accésate</span>
                                 <span>&nearr;</span>
                             </a>

@@ -121,7 +121,7 @@
                                             {{ $val ? 'Sí / Activo' : 'No / Inactivo' }}
                                         </span>
                                     @elseif ($type === 'url' || filter_var($val, FILTER_VALIDATE_URL))
-                                        <a href="{{ $val }}" target="_blank" rel="noopener noreferrer" class="text-accent text-decoration-none d-inline-flex align-items-center gap-1">
+                                        <a href="{{ $val }}" target="_blank" rel="noopener noreferrer" class="text-brand text-decoration-none d-inline-flex align-items-center gap-1">
                                             <span>Abrir enlace</span> &rarr;
                                         </a>
                                     @elseif ($type === 'date')

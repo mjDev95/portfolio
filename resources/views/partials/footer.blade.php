@@ -11,8 +11,8 @@
                     WordPress Architect &amp; Front-End Engineer con 5 años de trayectoria creando temas a la medida, sistemas fluidos y optimización extrema de Core Web Vitals.
                 </p>
                 <div class="d-flex align-items-center gap-2 text-fluid-xs font-mono text-muted">
-                    <span class="pulse-beacon">
-                        <span class="pulse-beacon-ping"></span>
+                    <span class="pulse-beacon bg-brand">
+                        <span class="pulse-beacon-ping bg-brand"></span>
                     </span>
                     <span>Ciudad de México (CDMX) &bull; <span data-live-clock>--:-- CST</span></span>
                 </div>
@@ -24,17 +24,17 @@
                 </span>
                 <ul class="list-unstyled d-flex flex-column gap-2 text-fluid-xs">
                     <li>
-                        <a href="mailto:mjgaliciab@gmail.com" class="text-secondary hover-text-accent no-underline transition-colors" data-magnetic>
+                        <a href="mailto:mjgaliciab@gmail.com" class="text-secondary hover-text-brand no-underline transition-colors" data-magnetic>
                             mjgaliciab@gmail.com
                         </a>
                     </li>
                     <li>
-                        <a href="tel:+525628425556" class="text-secondary hover-text-accent no-underline transition-colors" data-magnetic>
+                        <a href="tel:+525628425556" class="text-secondary hover-text-brand no-underline transition-colors" data-magnetic>
                             +52 56 2842 5556
                         </a>
                     </li>
                     <li>
-                        <a href="https://www.linkedin.com/in/mario-joaquin-galicia/" target="_blank" rel="noopener noreferrer" class="text-secondary hover-text-accent no-underline transition-colors" data-magnetic>
+                        <a href="https://www.linkedin.com/in/mario-joaquin-galicia/" target="_blank" rel="noopener noreferrer" class="text-secondary hover-text-brand no-underline transition-colors" data-magnetic>
                             LinkedIn &rarr;
                         </a>
                     </li>
@@ -46,8 +46,8 @@
                     Navegación
                 </span>
                 <ul class="list-unstyled d-flex flex-column gap-2 text-fluid-xs">
-                    <li><a href="{{ route('home') }}" class="text-secondary hover-text-accent no-underline transition-colors" data-magnetic>Inicio</a></li>
-                    <li><a href="{{ route('about') }}" class="text-secondary hover-text-accent no-underline transition-colors" data-magnetic>Sobre mí</a></li>
+                    <li><a href="{{ route('home') }}" class="text-secondary hover-text-brand no-underline transition-colors" data-magnetic>Inicio</a></li>
+                    <li><a href="{{ route('about') }}" class="text-secondary hover-text-brand no-underline transition-colors" data-magnetic>Sobre mí</a></li>
                     @foreach ($navContentTypes ?? [] as $cpt)
                         @php
                             $cptSlug = is_object($cpt) ? ($cpt->public_route_slug ?? $cpt->slug ?? '') : (is_array($cpt) ? ($cpt['public_route_slug'] ?? $cpt['slug'] ?? '') : (string) $cpt);
@@ -55,13 +55,13 @@
                         @endphp
                         @if (! empty($cptSlug) && ! str_contains((string) $cptSlug, '\\'))
                             <li>
-                                <a href="{{ route('public.content.index', $cptSlug) }}" class="text-secondary hover-text-accent no-underline transition-colors" data-magnetic>
+                                <a href="{{ route('public.content.index', $cptSlug) }}" class="text-secondary hover-text-brand no-underline transition-colors" data-magnetic>
                                     {{ $cptName }}
                                 </a>
                             </li>
                         @endif
                     @endforeach
-                    <li><a href="{{ route('contact') }}" class="text-secondary hover-text-accent no-underline transition-colors" data-magnetic>Contacto</a></li>
+                    <li><a href="{{ route('contact') }}" class="text-secondary hover-text-brand no-underline transition-colors" data-magnetic>Contacto</a></li>
                 </ul>
             </div>
         </div>
@@ -74,12 +74,12 @@
 
             <div class="d-flex align-items-center gap-4">
                 <button type="button" onclick="if (window.openCookieSettings) window.openCookieSettings();" 
-                        class="bg-transparent p-0 border-0 text-fluid-xs font-mono text-muted hover-text-accent cursor-pointer" 
+                        class="bg-transparent p-0 border-0 text-fluid-xs font-mono text-muted hover-text-brand cursor-pointer" 
                         data-magnetic>
                     Privacidad &amp; Cookies
                 </button>
                 <a href="#top" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" 
-                   class="text-fluid-xs font-mono text-muted hover-text-accent no-underline" 
+                   class="text-fluid-xs font-mono text-muted hover-text-brand no-underline" 
                    data-barba-prevent="self"
                    data-magnetic>
                     Volver arriba &uarr;

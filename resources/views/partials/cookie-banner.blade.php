@@ -78,8 +78,8 @@
     width: 2.25rem;
     height: 2.25rem;
     border-radius: 0.75rem;
-    background: rgba(39, 135, 245, 0.15);
-    color: #2787F5;
+    background: var(--accent-glow);
+    color: var(--accent);
     flex-shrink: 0;
 }
 
@@ -118,7 +118,7 @@
 }
 
 .cookie-btn-primary {
-    background: var(--bs-primary, #2787F5);
+    background: var(--accent);
     color: #ffffff;
 }
 

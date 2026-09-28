@@ -61,15 +61,6 @@
     --fluid-step-row-py: clamp(1.5rem, 2.5vw, 2.5rem);
     --fluid-curtain-title: clamp(3.2rem, 10vw + 1rem, 11.5rem);
     --fluid-curtain-bio: clamp(0.85rem, 0.5vw + 0.65rem, 1.05rem);
-
-    /* Paleta de color propia del portafolio (sin acoplamiento a Elementor) */
-    --fluid-color-primary:   #111111;
-    --fluid-color-secondary: #888888;
-    --fluid-color-accent:    #f52727;
-    --fluid-color-muted:     #aaaaaa;
-    --fluid-color-light:     #f9f9f9;
-    --fluid-color-white:     #ffffff;
-    --fluid-color-dark:      #0a0a0a;
 }
 
 /* Modos de densidad de layout (afecta únicamente los gaps de la grilla) */
@@ -81,6 +72,106 @@
 [data-layout="airy"] {
     --fluid-col-gap: clamp(1.25rem, 3vw, 3.5rem);
     --fluid-row-gap: clamp(1.5rem, 4vw, 5rem);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   COLOR TOKENS & MOTOR DE TEMAS (Dark Refinado vs. Wabi-Sabi Warm Paper)
+   ───────────────────────────────────────────────────────────── */
+:root,
+html.dark {
+    /* Superficies y Fondos */
+    --bg-primary: #0d0f12;
+    --bg-secondary: #14171c;
+    --bg-surface: #12151a;
+    --bg-surface-subtle: rgba(255, 255, 255, 0.03);
+    --row-hover-bg: rgba(255, 255, 255, 0.025);
+    
+    /* Lectura y Tipografía Editorial */
+    --text-primary: #ffffff;
+    --text-secondary: #8c9199;
+    --text-muted: #5e646e;
+    
+    /* Bordes y Líneas Hairline */
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.22);
+    
+    /* Acento y Marca (Sincronizado dinámicamente con BD vía theme-styles.blade.php) */
+    --accent: var(--color-primary);
+    --accent-secondary: var(--color-secondary);
+    --accent-glow: rgba(203, 33, 40, 0.25);
+    --color-brand: var(--accent);
+    
+    /* Componentes de Navegación e Isla */
+    --nav-bg: rgba(18, 21, 26, 0.88);
+    --nav-border: rgba(255, 255, 255, 0.1);
+    
+    --pill-bg: rgba(255, 255, 255, 0.03);
+    --pill-border: rgba(255, 255, 255, 0.08);
+    
+    --circle-cta-bg: #151921;
+    --circle-cta-text: #ffffff;
+    --circle-cta-border: rgba(255, 255, 255, 0.12);
+    
+    --btn-solid-bg: #ffffff;
+    --btn-solid-text: #0d0f12;
+
+    --input-bg: rgba(255, 255, 255, 0.03);
+    --input-border: rgba(255, 255, 255, 0.1);
+    
+    /* Bootstrap / System Aliases */
+    --bs-body-bg: var(--bg-primary);
+    --bs-body-color: var(--text-primary);
+    --bs-secondary-color: var(--text-secondary);
+    --bs-border-color: var(--border-subtle);
+    --bs-primary: var(--accent);
+}
+
+html.light {
+    /* Superficies y Fondos */
+    --bg-primary: #f7f6f2;          /* Papel cálido orgánico Wabi-Sabi */
+    --bg-secondary: #edece6;
+    --bg-surface: #ffffff;
+    --bg-surface-subtle: rgba(0, 0, 0, 0.025);
+    --row-hover-bg: rgba(0, 0, 0, 0.025);
+    
+    /* Lectura y Tipografía Editorial */
+    --text-primary: #16171a;        /* Carbón profundo */
+    --text-secondary: #62666d;
+    --text-muted: #959aa3;
+    
+    /* Bordes y Líneas Hairline */
+    --border-subtle: rgba(0, 0, 0, 0.08);
+    --border-hover: rgba(0, 0, 0, 0.25);
+    
+    /* Acento y Marca (Sincronizado dinámicamente con BD vía theme-styles.blade.php) */
+    --accent: var(--color-primary, #CB2128);
+    --accent-secondary: var(--color-secondary, #DFB136);
+    --accent-glow: rgba(203, 33, 40, 0.2);
+    --color-brand: var(--accent);
+    
+    /* Componentes de Navegación e Isla */
+    --nav-bg: rgba(247, 246, 242, 0.88);
+    --nav-border: rgba(0, 0, 0, 0.09);
+    
+    --pill-bg: rgba(0, 0, 0, 0.03);
+    --pill-border: rgba(0, 0, 0, 0.08);
+    
+    --circle-cta-bg: #eae8e1;
+    --circle-cta-text: #16171a;
+    --circle-cta-border: rgba(0, 0, 0, 0.12);
+    
+    --btn-solid-bg: #16171a;
+    --btn-solid-text: #ffffff;
+
+    --input-bg: rgba(0, 0, 0, 0.02);
+    --input-border: rgba(0, 0, 0, 0.1);
+    
+    /* Bootstrap / System Aliases */
+    --bs-body-bg: var(--bg-primary);
+    --bs-body-color: var(--text-primary);
+    --bs-secondary-color: var(--text-secondary);
+    --bs-border-color: var(--border-subtle);
+    --bs-primary: var(--accent);
 }
 
 /* ─────────────────────────────────────────
@@ -414,29 +505,73 @@
 .text-fluid-xl   { font-size: var(--fluid-text-xl); }
 
 /* ─────────────────────────────────────────
-   8. COLOR UTILITIES
+   8. COLOR UTILITIES (Tailwind / Bootstrap 5.3 Unified Standard)
    ───────────────────────────────────────── */
-.text-primary   { color: var(--fluid-color-primary) !important; }
-.text-secondary { color: var(--fluid-color-secondary) !important; }
-.text-muted     { color: var(--fluid-color-muted) !important; }
-.text-white     { color: var(--fluid-color-white) !important; }
-.text-accent    { color: var(--fluid-color-accent) !important; }
-.text-success   { color: #22c55e !important; }
-.text-danger    { color: #ef4444 !important; }
-.text-warning   { color: #eab308 !important; }
-.text-info      { color: #06b6d4 !important; }
+/* 8.1 Lectura y Tipografía Editorial (Dark / Light) */
+.text-body,
+.text-foreground,
+.text-primary,
+.text-heading,
+.text-primary-color     { color: var(--text-primary) !important; }
+.text-secondary,
+.text-secondary-color   { color: var(--text-secondary) !important; }
+.text-muted,
+.text-muted-color,
+.text-muted-foreground  { color: var(--text-muted) !important; }
+.text-white             { color: #ffffff !important; }
 
-.bg-primary     { background-color: var(--fluid-color-primary) !important; }
-.bg-secondary   { background-color: var(--fluid-color-secondary) !important; }
-.bg-light       { background-color: var(--fluid-color-light) !important; }
-.bg-white       { background-color: var(--fluid-color-white) !important; }
-.bg-dark        { background-color: var(--fluid-color-dark) !important; }
-.bg-transparent { background-color: transparent !important; }
-.bg-success-subtle   { background-color: rgba(34, 197, 94, 0.12) !important; }
-.bg-danger-subtle    { background-color: rgba(239, 68, 68, 0.12) !important; }
-.bg-warning-subtle   { background-color: rgba(234, 179, 8, 0.12) !important; }
-.bg-info-subtle      { background-color: rgba(6, 182, 212, 0.12) !important; }
-.bg-secondary-subtle { background-color: rgba(255, 255, 255, 0.05) !important; }
+/* 8.2 Acento y Marca Dinámica (Base de Datos) */
+.text-brand,
+.text-accent            { color: var(--accent) !important; }
+.text-brand-secondary,
+.text-accent-secondary  { color: var(--accent-secondary) !important; }
+
+.bg-brand,
+.bg-accent              { background-color: var(--accent) !important; }
+.bg-brand-subtle,
+.bg-accent-subtle       { background-color: var(--accent-glow) !important; }
+
+.hover-text-brand:hover,
+.hover-text-accent:hover { color: var(--accent) !important; }
+.hover-bg-brand:hover,
+.hover-bg-accent:hover   { background-color: var(--accent) !important; }
+
+/* 8.3 Superficies, Lienzo y Fondos */
+.bg-canvas,
+.bg-page,
+.bg-background,
+.bg-primary             { background-color: var(--bg-primary) !important; }
+.bg-secondary           { background-color: var(--bg-secondary) !important; }
+.bg-surface             { background-color: var(--bg-surface) !important; }
+.bg-surface-subtle      { background-color: var(--bg-surface-subtle) !important; }
+.bg-transparent         { background-color: transparent !important; }
+
+/* 8.4 Bordes y Líneas Hairline */
+.border-subtle          { border: 1px solid var(--border-subtle) !important; }
+.border-top-subtle      { border-top: 1px solid var(--border-subtle) !important; }
+.border-bottom-subtle   { border-bottom: 1px solid var(--border-subtle) !important; }
+.border-left-subtle     { border-left: 1px solid var(--border-subtle) !important; }
+.border-right-subtle    { border-right: 1px solid var(--border-subtle) !important; }
+.border-hover:hover     { border-color: var(--border-hover) !important; }
+
+.border-brand,
+.border-accent          { border-color: var(--accent) !important; }
+.border-brand-subtle,
+.border-accent-subtle   { border-color: var(--accent-glow) !important; }
+.hover-border-brand:hover,
+.hover-border-accent:hover { border-color: var(--accent) !important; }
+
+/* 8.5 Estados semánticos */
+.text-success           { color: #22c55e !important; }
+.text-danger            { color: #ef4444 !important; }
+.text-warning           { color: #eab308 !important; }
+.text-info              { color: #06b6d4 !important; }
+
+.bg-success-subtle      { background-color: rgba(34, 197, 94, 0.12) !important; }
+.bg-danger-subtle       { background-color: rgba(239, 68, 68, 0.12) !important; }
+.bg-warning-subtle      { background-color: rgba(234, 179, 8, 0.12) !important; }
+.bg-info-subtle         { background-color: rgba(6, 182, 212, 0.12) !important; }
+.bg-secondary-subtle    { background-color: var(--bg-surface-subtle) !important; }
 
 /* Badges Bootstrap 5.3 fluid */
 .badge {

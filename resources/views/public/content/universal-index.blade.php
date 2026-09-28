@@ -68,7 +68,7 @@
 
                     <div class="d-flex align-items-center justify-content-between text-fluid-xs text-muted mt-auto pt-2 border-top-subtle">
                         <span>{{ $item->published_at ? $item->published_at->format('d M Y') : $item->created_at->format('d M Y') }}</span>
-                        <span class="text-accent font-semibold">Ver detalle &rarr;</span>
+                        <span class="text-brand font-semibold">Ver detalle &rarr;</span>
                     </div>
                 </a>
             </div>

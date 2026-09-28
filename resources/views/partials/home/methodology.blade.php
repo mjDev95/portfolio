@@ -19,7 +19,7 @@
 
                 {{-- Card de Garantía de Estabilidad --}}
                 <div class="service-card p-lg mb-lg d-block">
-                    <span class="font-mono text-fluid-xs text-accent fw-bold text-uppercase d-block mb-xs">
+                    <span class="font-mono text-fluid-xs text-brand fw-bold text-uppercase d-block mb-xs">
                         Garantía de Estabilidad
                     </span>
                     <p class="text-fluid-sm text-secondary fw-light mb-0">
@@ -43,7 +43,7 @@
                 {{-- Fase 01 --}}
                 <div class="methodology-step-row">
                     <div class="d-flex align-items-baseline justify-content-between mb-xs">
-                        <span class="font-mono text-accent fw-bold text-fluid-xs text-uppercase tracking-wider">Fase 01</span>
+                        <span class="font-mono text-brand fw-bold text-fluid-xs text-uppercase tracking-wider">Fase 01</span>
                         <span class="text-fluid-xs font-mono text-muted">Figma UI/UX</span>
                     </div>
                     <h3 class="font-heading text-fluid-h3 text-primary mb-xs">
@@ -57,7 +57,7 @@
                 {{-- Fase 02 --}}
                 <div class="methodology-step-row">
                     <div class="d-flex align-items-baseline justify-content-between mb-xs">
-                        <span class="font-mono text-accent fw-bold text-fluid-xs text-uppercase tracking-wider">Fase 02</span>
+                        <span class="font-mono text-brand fw-bold text-fluid-xs text-uppercase tracking-wider">Fase 02</span>
                         <span class="text-fluid-xs font-mono text-muted">Design Systems</span>
                     </div>
                     <h3 class="font-heading text-fluid-h3 text-primary mb-xs">
@@ -71,7 +71,7 @@
                 {{-- Fase 03 --}}
                 <div class="methodology-step-row">
                     <div class="d-flex align-items-baseline justify-content-between mb-xs">
-                        <span class="font-mono text-accent fw-bold text-fluid-xs text-uppercase tracking-wider">Fase 03</span>
+                        <span class="font-mono text-brand fw-bold text-fluid-xs text-uppercase tracking-wider">Fase 03</span>
                         <span class="text-fluid-xs font-mono text-muted">PHP 8.4 Nativo</span>
                     </div>
                     <h3 class="font-heading text-fluid-h3 text-primary mb-xs">
@@ -85,7 +85,7 @@
                 {{-- Fase 04 --}}
                 <div class="methodology-step-row">
                     <div class="d-flex align-items-baseline justify-content-between mb-xs">
-                        <span class="font-mono text-accent fw-bold text-fluid-xs text-uppercase tracking-wider">Fase 04</span>
+                        <span class="font-mono text-brand fw-bold text-fluid-xs text-uppercase tracking-wider">Fase 04</span>
                         <span class="text-fluid-xs font-mono text-muted">Core Web Vitals</span>
                     </div>
                     <h3 class="font-heading text-fluid-h3 text-primary mb-xs">

@@ -57,7 +57,7 @@
     <div class="row">
         <div class="col-12 col-lg-8" data-reveal>
             @if ($content->body)
-                <div class="prose text-white leading-relaxed">
+                <div class="prose text-primary leading-relaxed">
                     {!! $content->body_html !!}
                 </div>
             @endif
@@ -66,17 +66,17 @@
         {{-- Barra lateral con campos personalizados dinámicos si existen --}}
         @if (!empty($content->custom_values) && count($content->custom_values) > 0)
             <div class="col-12 col-lg-4 mt-xl mt-lg-0" data-reveal>
-                <div class="p-4 rounded-4" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
+                <div class="p-4 rounded-4 bg-surface-subtle border-subtle">
                     <h3 class="h6 text-muted text-uppercase tracking-wider mb-3">Detalles</h3>
                     <dl class="mb-0">
                         @foreach ($content->custom_values as $key => $val)
                             @if (!empty($val))
                                 <dt class="text-muted text-fluid-xs text-uppercase">{{ str_replace('_', ' ', $key) }}</dt>
-                                <dd class="text-white text-fluid-sm mb-3 font-semibold">
+                                <dd class="text-primary text-fluid-sm mb-3 font-semibold">
                                     @if (is_bool($val))
                                         {{ $val ? 'Sí' : 'No' }}
                                     @elseif (filter_var($val, FILTER_VALIDATE_URL))
-                                        <a href="{{ $val }}" target="_blank" rel="noopener noreferrer" class="text-primary text-decoration-none">
+                                        <a href="{{ $val }}" target="_blank" rel="noopener noreferrer" class="text-brand text-decoration-none">
                                             Visitar enlace &rarr;
                                         </a>
                                     @else

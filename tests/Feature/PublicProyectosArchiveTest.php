@@ -66,7 +66,7 @@ class PublicProyectosArchiveTest extends TestCase
         $response->assertSee('Plataforma E-Commerce Headless');
         $response->assertDontSee('Auto Key Access');
         $response->assertDontSee('Clearbox Communications');
-        $response->assertSee('View Project');
+        $response->assertSee('project-showcase-card');
     }
 
     public function test_project_single_renders_matching_flip_attributes(): void

@@ -5,94 +5,9 @@
  */
 
 /* ─────────────────────────────────────────────────────────────
-   1. COLOR TOKENS & MODES (Dark Refinado vs. Wabi-Sabi Warm Paper)
+   1. BASE DOCUMENT STYLES
+   (Tokens fluidos y motor de temas centralizados en fluid-system.css)
    ───────────────────────────────────────────────────────────── */
-
-:root,
-html.dark {
-    --bg-primary: #0d0f12;
-    --bg-secondary: #14171c;
-    --bg-surface: #12151a;
-    --bg-surface-subtle: rgba(255, 255, 255, 0.03);
-    --row-hover-bg: rgba(255, 255, 255, 0.025);
-    
-    --text-primary: #ffffff;
-    --text-secondary: #8c9199;
-    --text-muted: #5e646e;
-    
-    --border-subtle: rgba(255, 255, 255, 0.08);
-    --border-hover: rgba(255, 255, 255, 0.22);
-    
-    /* Vinculado a la base de datos a través de theme-styles.blade.php */
-    --accent: var(--color-primary, #CB2128);
-    --accent-secondary: var(--color-secondary, #DFB136);
-    --accent-glow: rgba(203, 33, 40, 0.25);
-    
-    --nav-bg: rgba(18, 21, 26, 0.88);
-    --nav-border: rgba(255, 255, 255, 0.1);
-    
-    --pill-bg: rgba(255, 255, 255, 0.03);
-    --pill-border: rgba(255, 255, 255, 0.08);
-    
-    --circle-cta-bg: #151921;
-    --circle-cta-text: #ffffff;
-    --circle-cta-border: rgba(255, 255, 255, 0.12);
-    
-    --btn-solid-bg: #ffffff;
-    --btn-solid-text: #0d0f12;
-
-    --input-bg: rgba(255, 255, 255, 0.03);
-    --input-border: rgba(255, 255, 255, 0.1);
-    
-    /* Aliases */
-    --bs-body-bg: var(--bg-primary);
-    --bs-body-color: var(--text-primary);
-    --bs-secondary-color: var(--text-secondary);
-    --bs-border-color: var(--border-subtle);
-    --bs-primary: var(--accent);
-}
-
-html.light {
-    --bg-primary: #f7f6f2;          /* Papel cálido orgánico Wabi-Sabi */
-    --bg-secondary: #edece6;
-    --bg-surface: #ffffff;
-    --bg-surface-subtle: rgba(0, 0, 0, 0.025);
-    --row-hover-bg: rgba(0, 0, 0, 0.025);
-    
-    --text-primary: #16171a;        /* Carbón profundo */
-    --text-secondary: #62666d;
-    --text-muted: #959aa3;
-    
-    --border-subtle: rgba(0, 0, 0, 0.08);
-    --border-hover: rgba(0, 0, 0, 0.25);
-    
-    --accent: var(--color-primary, #CB2128);
-    --accent-secondary: var(--color-secondary, #DFB136);
-    --accent-glow: rgba(203, 33, 40, 0.2);
-    
-    --nav-bg: rgba(247, 246, 242, 0.88);
-    --nav-border: rgba(0, 0, 0, 0.09);
-    
-    --pill-bg: rgba(0, 0, 0, 0.03);
-    --pill-border: rgba(0, 0, 0, 0.08);
-    
-    --circle-cta-bg: #eae8e1;
-    --circle-cta-text: #16171a;
-    --circle-cta-border: rgba(0, 0, 0, 0.12);
-    
-    --btn-solid-bg: #16171a;
-    --btn-solid-text: #ffffff;
-
-    --input-bg: rgba(0, 0, 0, 0.02);
-    --input-border: rgba(0, 0, 0, 0.1);
-    
-    /* Aliases */
-    --bs-body-bg: var(--bg-primary);
-    --bs-body-color: var(--text-primary);
-    --bs-secondary-color: var(--text-secondary);
-    --bs-border-color: var(--border-subtle);
-    --bs-primary: var(--accent);
-}
 
 html {
     scrollbar-gutter: stable;
@@ -151,31 +66,8 @@ a {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   2. COLORES Y UTILIDADES DINÁMICAS
+   2. COMPONENT & LAYOUT UTILITIES
    ───────────────────────────────────────────────────────────── */
-.text-accent            { color: var(--accent) !important; }
-.text-accent-secondary  { color: var(--accent-secondary) !important; }
-.text-primary,
-.text-heading,
-.text-primary-color     { color: var(--text-primary) !important; }
-.text-secondary,
-.text-secondary-color   { color: var(--text-secondary) !important; }
-.text-muted-color       { color: var(--text-muted) !important; }
-
-.bg-primary             { background-color: var(--bg-primary) !important; }
-.bg-secondary           { background-color: var(--bg-secondary) !important; }
-.bg-surface             { background-color: var(--bg-surface) !important; }
-.bg-surface-subtle      { background-color: var(--bg-surface-subtle) !important; }
-.bg-accent              { background-color: var(--accent) !important; }
-.bg-accent-subtle       { background-color: var(--accent-glow) !important; }
-
-.border-accent          { border-color: var(--accent) !important; }
-.border-accent-subtle   { border-color: var(--accent-glow) !important; }
-.border-subtle          { border: 1px solid var(--border-subtle) !important; }
-.border-top-subtle      { border-top: 1px solid var(--border-subtle) !important; }
-.border-bottom-subtle   { border-bottom: 1px solid var(--border-subtle) !important; }
-.border-left-subtle     { border-left: 1px solid var(--border-subtle) !important; }
-.border-right-subtle    { border-right: 1px solid var(--border-subtle) !important; }
 
 @media (min-width: 1024px) {
     .border-lg-top-0       { border-top: 0 !important; }
@@ -895,7 +787,6 @@ html.light .island-theme-btn .icon-sun  { display: none; }
     width: 8px;
     height: 8px;
     border-radius: 9999px;
-    background-color: var(--accent);
     position: relative;
     display: inline-block;
 }
@@ -904,7 +795,6 @@ html.light .island-theme-btn .icon-sun  { display: none; }
     position: absolute;
     inset: 0;
     border-radius: 9999px;
-    background-color: var(--accent);
     opacity: 0.75;
     animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
 }

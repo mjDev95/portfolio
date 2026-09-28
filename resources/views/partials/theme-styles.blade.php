@@ -44,40 +44,45 @@
         --accent-highlight: {{ $accent }};
         --accent-glow: {{ $primary }}33;
         
+        --color-brand: {{ $primary }};
         --color-primary: {{ $primary }};
         --color-secondary: {{ $secondary }};
         --color-accent: {{ $primary }};
 
         --bs-primary: {{ $primary }};
         --bs-secondary: {{ $secondary }};
-
-        --fluid-color-primary: {{ $primary }};
-        --fluid-color-secondary: {{ $secondary }};
-        --fluid-color-accent: {{ $primary }};
     }
 
     /* Clases utilitarias directas vinculadas al color de la Base de Datos */
+    .text-brand,
     .text-accent {
         color: var(--accent) !important;
     }
+    .text-brand-secondary,
     .text-accent-secondary {
         color: var(--accent-secondary) !important;
     }
+    .bg-brand,
     .bg-accent {
         background-color: var(--accent) !important;
     }
+    .bg-brand-subtle,
     .bg-accent-subtle {
         background-color: var(--accent-glow) !important;
     }
+    .border-brand,
     .border-accent {
         border-color: var(--accent) !important;
     }
+    .border-brand-subtle,
     .border-accent-subtle {
         border-color: var(--accent-glow) !important;
     }
+    .hover-text-brand:hover,
     .hover-text-accent:hover {
         color: var(--accent) !important;
     }
+    .hover-border-brand:hover,
     .hover-border-accent:hover {
         border-color: var(--accent) !important;
     }

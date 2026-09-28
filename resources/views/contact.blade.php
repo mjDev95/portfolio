@@ -19,7 +19,7 @@
         <div class="row align-items-start">
             {{-- Columna de Información Directa --}}
             <div class="col-12 col-lg-5 mb-xl mb-lg-0" data-reveal>
-                <span class="text-fluid-xs font-mono text-uppercase tracking-widest text-accent fw-semibold d-block mb-xs">
+                <span class="text-fluid-xs font-mono text-uppercase tracking-widest text-brand fw-semibold d-block mb-xs">
                     // Hablemos de tu proyecto
                 </span>
                 <h1 class="font-fluid-hero text-primary mb-md">
@@ -32,14 +32,14 @@
                 <div class="space-y-4 pt-md border-top-subtle mb-lg text-fluid-xs">
                     <div>
                         <span class="text-fluid-xs font-mono text-uppercase tracking-wider text-muted fw-semibold d-block mb-xs">Email</span>
-                        <a href="mailto:mjgaliciab@gmail.com" class="text-primary font-mono hover-text-accent no-underline text-fluid-base" data-magnetic>
+                        <a href="mailto:mjgaliciab@gmail.com" class="text-primary font-mono hover-text-brand no-underline text-fluid-base" data-magnetic>
                             mjgaliciab@gmail.com
                         </a>
                     </div>
 
                     <div>
                         <span class="text-fluid-xs font-mono text-uppercase tracking-wider text-muted fw-semibold d-block mb-xs">Teléfono / WhatsApp</span>
-                        <a href="tel:+525628425556" class="text-primary font-mono hover-text-accent no-underline text-fluid-base" data-magnetic>
+                        <a href="tel:+525628425556" class="text-primary font-mono hover-text-brand no-underline text-fluid-base" data-magnetic>
                             +52 56 2842 5556
                         </a>
                     </div>
@@ -53,9 +53,9 @@
                     </div>
                 </div>
 
-                <div class="p-md rounded-xl d-inline-flex align-items-center gap-2 bg-accent-subtle border-accent-subtle text-fluid-xs text-secondary">
-                    <span class="pulse-beacon">
-                        <span class="pulse-beacon-ping"></span>
+                <div class="p-md rounded-xl d-inline-flex align-items-center gap-2 bg-brand-subtle border-brand-subtle text-fluid-xs text-secondary">
+                    <span class="pulse-beacon bg-brand">
+                        <span class="pulse-beacon-ping bg-brand"></span>
                     </span>
                     <span>Tiempo estimado de respuesta: menos de 24 horas.</span>
                 </div>
@@ -65,7 +65,7 @@
             <div class="col-12 col-lg-7" data-reveal>
                 <div class="border-top-subtle border-lg-top-0 border-lg-left-subtle pl-lg-xl pt-lg pt-lg-0">
                     @if (session('success'))
-                        <div class="p-md rounded-xl mb-lg text-fluid-sm bg-accent-subtle border-accent-subtle text-accent">
+                        <div class="p-md rounded-xl mb-lg text-fluid-sm bg-brand-subtle border-brand-subtle text-brand">
                             {{ session('success') }}
                         </div>
                     @endif
@@ -85,7 +85,7 @@
                                 <input type="text" id="name" name="name" value="{{ old('name') }}" required
                                        placeholder="Tu nombre o empresa"
                                        class="form-control-fluid">
-                                @error('name') <p class="text-accent text-fluid-xs mt-xs">{{ $message }}</p> @enderror
+                                @error('name') <p class="text-brand text-fluid-xs mt-xs">{{ $message }}</p> @enderror
                             </div>
 
                             <div class="col-12 col-sm-6">
@@ -93,7 +93,7 @@
                                 <input type="email" id="email" name="email" value="{{ old('email') }}" required
                                        placeholder="nombre@ejemplo.com"
                                        class="form-control-fluid">
-                                @error('email') <p class="text-accent text-fluid-xs mt-xs">{{ $message }}</p> @enderror
+                                @error('email') <p class="text-brand text-fluid-xs mt-xs">{{ $message }}</p> @enderror
                             </div>
                         </div>
 
@@ -102,7 +102,7 @@
                             <input type="text" id="budget_range" name="budget_range" value="{{ old('budget_range') }}"
                                    placeholder="Ej. Custom Theme WordPress, Migración, UI/UX en Figma..."
                                    class="form-control-fluid">
-                            @error('budget_range') <p class="text-accent text-fluid-xs mt-xs">{{ $message }}</p> @enderror
+                            @error('budget_range') <p class="text-brand text-fluid-xs mt-xs">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
@@ -110,7 +110,7 @@
                             <textarea id="message" name="message" rows="5" required
                                       placeholder="Cuéntame sobre los objetivos, tiempos previstos y requerimientos técnicos..."
                                       class="form-control-fluid">{{ old('message') }}</textarea>
-                            @error('message') <p class="text-accent text-fluid-xs mt-xs">{{ $message }}</p> @enderror
+                            @error('message') <p class="text-brand text-fluid-xs mt-xs">{{ $message }}</p> @enderror
                         </div>
 
                         <p data-contact-feedback class="text-fluid-sm m-0" role="status" aria-live="polite"></p>

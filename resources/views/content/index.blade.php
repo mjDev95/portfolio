@@ -16,7 +16,7 @@
     <div class="row row-cols-1 row-cols-md-2 gap-4">
         @forelse ($contents as $item)
             <a href="{{ route('public.content.show', [$contentType->public_route_slug, $item->slug]) }}"
-               class="col-md-6 text-decoration-none text-white"
+               class="col-md-6 text-decoration-none text-primary"
                data-flip-card data-reveal data-magnetic>
                 @if ($item->thumbnail)
                     <div class="media-wrap overflow-hidden mb-sm"
