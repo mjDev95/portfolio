@@ -1,5 +1,6 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from '../lib/smooth-scroll';
+import { splitTextIntoFramerChars } from './shared/text-reveal';
 
 let selectedCasesCtx = null;
 
@@ -14,6 +15,7 @@ export function cleanupSelectedCases() {
  * Initializes the Pinned Header & Floating Asymmetric Cards sequence for Selected Cases
  * on the homepage, based on the Webflow Stodio Sequence reference:
  * - Header is vertically centered (100vh) and pins as the top of the section reaches top: 0.
+ * - Title animates with Velix character-by-character blur reveal (identical to "hello I'm Mario").
  * - Cards rise over the pinned header.
  * - Row 1 features a soft gradient overlay (linear-gradient) that masks the centered text as it reaches it.
  * - Header text smoothly fades/blurs out, reaching opacity 0 as the row touches the top of the viewport.
@@ -35,41 +37,82 @@ export function initSelectedCases(container) {
 
         if (!pinnedHeader || !cardsContainer || !headerContent) return;
 
+        const titleEl = headerContent.querySelector('.stodio-title');
+        const subtitleEl = headerContent.querySelector('.stodio-subtitle');
+
+        // Split text into individual characters for Velix blur reveal
+        const titleChars = titleEl ? splitTextIntoFramerChars(titleEl) : [];
+
+        const finalizeChars = (chars) => {
+            chars.forEach((c) => {
+                c.classList.add('is-revealed');
+                c.style.filter = 'none';
+                c.style.webkitFilter = 'none';
+                c.style.transform = 'none';
+                c.style.opacity = '1';
+            });
+        };
+
         const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         if (isReduced) {
-            gsap.set([headerContent, ...cards], { opacity: 1, filter: 'none', y: 0 });
+            finalizeChars(titleChars);
+            if (subtitleEl) gsap.set(subtitleEl, { opacity: 1, filter: 'none', y: 0 });
+            gsap.set(cards, { opacity: 1, filter: 'none', y: 0 });
             return;
         }
 
-        const headerElements = [
-            headerContent.querySelector('.stodio-badge-pill'),
-            headerContent.querySelector('.stodio-title'),
-            headerContent.querySelector('.stodio-subtitle'),
-        ].filter(Boolean);
+        // 1. Configuración de entrada con blur reveal letra por letra (estilo "hello I'm Mario")
+        if (titleChars.length) {
+            gsap.set(titleChars, {
+                opacity: 0,
+                y: 16,
+                filter: 'blur(12px)',
+                webkitFilter: 'blur(12px)',
+            });
+        }
 
-        // 1. Revelado inicial con blur al entrar a la sección
-        gsap.set(headerElements, {
-            opacity: 0,
-            y: 35,
-            filter: 'blur(10px)',
-        });
+        if (subtitleEl) {
+            gsap.set(subtitleEl, {
+                opacity: 0,
+                y: 24,
+                filter: 'blur(8px)',
+            });
+        }
 
         const entranceTl = gsap.timeline({ paused: true });
-        entranceTl.to(headerElements, {
-            opacity: 1,
-            y: 0,
-            filter: 'blur(0px)',
-            duration: 0.9,
-            stagger: 0.08,
-            ease: 'power2.out',
-        });
+
+        if (titleChars.length) {
+            entranceTl.to(titleChars, {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                webkitFilter: 'blur(0px)',
+                duration: 0.75,
+                ease: 'power2.out',
+                stagger: { each: 0.035, from: 'start' },
+                onComplete: () => finalizeChars(titleChars),
+            }, 0);
+        }
+
+        if (subtitleEl) {
+            entranceTl.to(subtitleEl, {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                duration: 0.8,
+                ease: 'power2.out',
+            }, titleChars.length ? 0.25 : 0);
+        }
 
         ScrollTrigger.create({
             trigger: section,
             start: 'top 80%',
             onEnter: () => entranceTl.play(),
-            onLeaveBack: () => entranceTl.reverse(),
+            onLeaveBack: () => {
+                titleChars.forEach((c) => c.classList.remove('is-revealed'));
+                entranceTl.reverse();
+            },
             onEnterBack: () => entranceTl.play(),
         });
 

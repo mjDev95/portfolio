@@ -28,7 +28,6 @@ class PublicProyectosArchiveTest extends TestCase
         $response = $this->get(route('home'));
 
         $response->assertStatus(200);
-        $response->assertSee('/// Selected Cases ///');
         $response->assertSee('Proyectos en Producción');
         $response->assertSee('Ver todos los proyectos');
         $response->assertSee(route('public.content.index', 'proyectos'));

@@ -127,7 +127,7 @@ export function initVelixReveals(container = document) {
     const targets = container.querySelectorAll('[data-velix-target], [data-blur-reveal]');
 
     targets.forEach((target) => {
-        if (target.closest('[data-hero-curtain]')) {
+        if (target.closest('[data-hero-curtain]') || target.closest('[data-selected-cases-stodio]')) {
             return;
         }
 
