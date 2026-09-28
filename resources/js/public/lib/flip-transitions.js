@@ -152,32 +152,33 @@ export function createFlipTransitions() {
                         }
                     }
 
-                    // Fallback de alta precisión si la medición directa no estuviera disponible
+                    // Fallback de alta precisión garantizando la geometría exacta de .container (idéntico al detalle del post/proyecto)
                     if (targetTop === null || targetWidth === null) {
-                        const containerEl = data.current.container.querySelector('.container') || data.current.container;
-                        const containerRect = containerEl.getBoundingClientRect();
-                        const containerStyle = window.getComputedStyle(containerEl);
-                        const padLeft = parseFloat(containerStyle.paddingLeft) || 16;
-                        const padRight = parseFloat(containerStyle.paddingRight) || 16;
-                        const paddingTop = parseFloat(containerStyle.paddingTop) || 64;
-                        const bodyPaddingTop = parseFloat(window.getComputedStyle(document.body).paddingTop) || 0;
+                        const dummy = document.createElement('div');
+                        dummy.className = 'container py-3xl';
+                        dummy.style.visibility = 'hidden';
+                        dummy.style.position = 'fixed';
+                        dummy.style.top = '0';
+                        dummy.style.left = '0';
+                        dummy.style.right = '0';
+                        dummy.style.pointerEvents = 'none';
+                        dummy.style.zIndex = '-99999';
+                        dummy.innerHTML = `
+                            <div class="mb-lg" style="height: 24px;"></div>
+                            <div class="media-wrap hero-media-wrapper" style="aspect-ratio: 16 / 9; width: 100%;"></div>
+                        `;
+                        document.body.appendChild(dummy);
 
-                        targetWidth = containerRect.width - padLeft - padRight;
-                        targetHeight = Math.round(targetWidth * (9 / 16));
-                        targetLeft = containerRect.left + padLeft;
-
-                        const breadcrumbsEl = data.current.container.querySelector('[data-detail-breadcrumbs], .public-breadcrumbs, .breadcrumbs, .mb-sm');
-                        const breadcrumbsHeight = breadcrumbsEl ? breadcrumbsEl.getBoundingClientRect().height : 24;
-
-                        const dummyMbLg = document.createElement('div');
-                        dummyMbLg.className = 'mb-lg';
-                        dummyMbLg.style.visibility = 'hidden';
-                        dummyMbLg.style.position = 'absolute';
-                        document.body.appendChild(dummyMbLg);
-                        const mbLgVal = parseFloat(window.getComputedStyle(dummyMbLg).marginBottom) || 56;
-                        dummyMbLg.remove();
-
-                        targetTop = bodyPaddingTop + paddingTop + breadcrumbsHeight + mbLgVal;
+                        const heroEl = dummy.querySelector('.hero-media-wrapper');
+                        if (heroEl) {
+                            const rect = heroEl.getBoundingClientRect();
+                            const bodyPaddingTop = parseFloat(window.getComputedStyle(document.body).paddingTop) || 0;
+                            targetTop = rect.top + bodyPaddingTop;
+                            targetLeft = rect.left;
+                            targetWidth = rect.width;
+                            targetHeight = rect.height;
+                        }
+                        dummy.remove();
                     }
 
                     // 5. Crear el proxy de vuelo fijado en el viewport (Sin border-radius)

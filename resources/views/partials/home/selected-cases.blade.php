@@ -50,7 +50,7 @@
         
         {{-- Fila 1: Proyectos 0 y 1 --}}
         @if ($dbProjects->count() > 0)
-            <div class="stodio-card-row two-cols">
+            <div class="stodio-card-row two-cols row-01">
                 {{-- Tarjeta 1 (Aspect 4:3) --}}
                 @php
                     $item0 = $dbProjects->get(0);
@@ -135,7 +135,7 @@
                 $cat2 = $item2->categories->first()?->name ?? ($item2->contentType?->singular_name ?? 'Proyecto');
                 $url2 = route('public.content.show', [$cptSlug, $item2->slug]);
             @endphp
-            <div class="stodio-card-row center-col">
+            <div class="stodio-card-row center-col row-02">
                 <article class="stodio-card-wrap">
                     <a href="{{ $url2 }}" 
                        class="stodio-card" 
@@ -169,7 +169,7 @@
 
         {{-- Fila 3: Proyectos 3 y 4 (Asimetría Alterna) --}}
         @if ($dbProjects->count() > 3)
-            <div class="stodio-card-row two-cols-alt">
+            <div class="stodio-card-row two-cols-alt row-03">
                 {{-- Tarjeta 4 (Aspect 16:10) --}}
                 @php
                     $item3 = $dbProjects->get(3);
