@@ -37,7 +37,7 @@
         }
     }
 
-    // Estructurar JSON-LD para Schema.org
+    // Estructurar JSON-LD completo para Schema.org sin recortes ni truncamientos
     $jsonLd = [
         '@context' => 'https://schema.org',
         '@type' => 'BreadcrumbList',
@@ -56,29 +56,30 @@
 @endphp
 
 @if(count($resolvedItems) > 1)
-    {{-- Inyección Schema.org estructurada para motores de búsqueda --}}
+    {{-- Inyección Schema.org estructurada para motores de búsqueda (JSON-LD Completo) --}}
     <script type="application/ld+json">
         {!! json_encode($jsonLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
     </script>
 
-    <nav aria-label="breadcrumb" class="public-breadcrumbs {{ $class }}" itemscope itemtype="https://schema.org/BreadcrumbList">
-        <ol class="list-unstyled d-inline-flex align-items-center flex-wrap gap-2 m-0 p-0" style="font-size: 0.8125rem;">
+    {{-- Renderizado Visual en 1 Sola Línea con truncamiento elíptico (Estabilidad geométrica para GSAP Flip) --}}
+    <nav aria-label="breadcrumb" class="breadcrumbs-single-line public-breadcrumbs {{ $class }}" data-detail-breadcrumbs itemscope itemtype="https://schema.org/BreadcrumbList">
+        <ol class="breadcrumbs-list list-unstyled m-0 p-0" style="font-size: 0.8125rem;">
             @foreach($resolvedItems as $index => $crumb)
                 @php
                     $isLast = ($index === count($resolvedItems) - 1);
                 @endphp
 
-                <li class="d-inline-flex align-items-center gap-2 text-muted" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                <li class="breadcrumb-item {{ $isLast ? 'current-crumb' : '' }}" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
                     @if($index > 0)
-                        <span class="text-muted opacity-50" aria-hidden="true">&rsaquo;</span>
+                        <span class="breadcrumb-separator text-muted opacity-50" aria-hidden="true">&rsaquo;</span>
                     @endif
 
                     @if(!empty($crumb['url']) && !$isLast)
-                        <a href="{{ $crumb['url'] }}" class="text-muted text-decoration-none transition-opacity hover:opacity-100" itemprop="item">
+                        <a href="{{ $crumb['url'] }}" class="breadcrumb-link text-muted text-decoration-none transition-opacity hover:opacity-100" itemprop="item">
                             <span itemprop="name">{{ $crumb['label'] }}</span>
                         </a>
                     @else
-                        <span class="text-white" aria-current="page" itemprop="name">
+                        <span class="breadcrumb-current text-white" aria-current="page" itemprop="name" title="{{ $crumb['label'] }}">
                             {{ $crumb['label'] }}
                         </span>
                     @endif

@@ -243,6 +243,99 @@
 .mb-auto { margin-bottom: auto !important; }
 .mx-auto { margin-inline: auto !important; }
 
+/* Escala numérica Bootstrap 5.3 (1 a 5) mapeada a tokens fluidos modernos */
+.p-1  { padding: var(--fluid-s-2xs) !important; }
+.p-2  { padding: var(--fluid-s-xs) !important; }
+.p-3  { padding: var(--fluid-s-sm) !important; }
+.p-4  { padding: var(--fluid-s-md) !important; }
+.p-5  { padding: var(--fluid-s-lg) !important; }
+
+.px-1 { padding-inline: var(--fluid-s-2xs) !important; }
+.px-2 { padding-inline: var(--fluid-s-xs) !important; }
+.px-3 { padding-inline: var(--fluid-s-sm) !important; }
+.px-4 { padding-inline: var(--fluid-s-md) !important; }
+.px-5 { padding-inline: var(--fluid-s-lg) !important; }
+
+.py-1 { padding-block: var(--fluid-s-2xs) !important; }
+.py-2 { padding-block: var(--fluid-s-xs) !important; }
+.py-3 { padding-block: var(--fluid-s-sm) !important; }
+.py-4 { padding-block: var(--fluid-s-md) !important; }
+.py-5 { padding-block: var(--fluid-s-lg) !important; }
+
+.pt-1 { padding-top: var(--fluid-s-2xs) !important; }
+.pt-2 { padding-top: var(--fluid-s-xs) !important; }
+.pt-3 { padding-top: var(--fluid-s-sm) !important; }
+.pt-4 { padding-top: var(--fluid-s-md) !important; }
+.pt-5 { padding-top: var(--fluid-s-lg) !important; }
+
+.pb-1 { padding-bottom: var(--fluid-s-2xs) !important; }
+.pb-2 { padding-bottom: var(--fluid-s-xs) !important; }
+.pb-3 { padding-bottom: var(--fluid-s-sm) !important; }
+.pb-4 { padding-bottom: var(--fluid-s-md) !important; }
+.pb-5 { padding-bottom: var(--fluid-s-lg) !important; }
+
+.ps-0 { padding-left: 0 !important; }
+.ps-1 { padding-left: var(--fluid-s-2xs) !important; }
+.ps-2 { padding-left: var(--fluid-s-xs) !important; }
+.ps-3 { padding-left: var(--fluid-s-sm) !important; }
+.ps-4 { padding-left: var(--fluid-s-md) !important; }
+.ps-5 { padding-left: var(--fluid-s-lg) !important; }
+
+.pe-0 { padding-right: 0 !important; }
+.pe-1 { padding-right: var(--fluid-s-2xs) !important; }
+.pe-2 { padding-right: var(--fluid-s-xs) !important; }
+.pe-3 { padding-right: var(--fluid-s-sm) !important; }
+.pe-4 { padding-right: var(--fluid-s-md) !important; }
+.pe-5 { padding-right: var(--fluid-s-lg) !important; }
+
+.m-1  { margin: var(--fluid-s-2xs) !important; }
+.m-2  { margin: var(--fluid-s-xs) !important; }
+.m-3  { margin: var(--fluid-s-sm) !important; }
+.m-4  { margin: var(--fluid-s-md) !important; }
+.m-5  { margin: var(--fluid-s-lg) !important; }
+
+.mx-1 { margin-inline: var(--fluid-s-2xs) !important; }
+.mx-2 { margin-inline: var(--fluid-s-xs) !important; }
+.mx-3 { margin-inline: var(--fluid-s-sm) !important; }
+.mx-4 { margin-inline: var(--fluid-s-md) !important; }
+.mx-5 { margin-inline: var(--fluid-s-lg) !important; }
+
+.my-1 { margin-block: var(--fluid-s-2xs) !important; }
+.my-2 { margin-block: var(--fluid-s-xs) !important; }
+.my-3 { margin-block: var(--fluid-s-sm) !important; }
+.my-4 { margin-block: var(--fluid-s-md) !important; }
+.my-5 { margin-block: var(--fluid-s-lg) !important; }
+
+.mt-1 { margin-top: var(--fluid-s-2xs) !important; }
+.mt-2 { margin-top: var(--fluid-s-xs) !important; }
+.mt-3 { margin-top: var(--fluid-s-sm) !important; }
+.mt-4 { margin-top: var(--fluid-s-md) !important; }
+.mt-5 { margin-top: var(--fluid-s-lg) !important; }
+
+.mb-1 { margin-bottom: var(--fluid-s-2xs) !important; }
+.mb-2 { margin-bottom: var(--fluid-s-xs) !important; }
+.mb-3 { margin-bottom: var(--fluid-s-sm) !important; }
+.mb-3\.5 { margin-bottom: clamp(0.875rem, 2vw, 1.5rem) !important; }
+.mb-4 { margin-bottom: var(--fluid-s-md) !important; }
+.mb-5 { margin-bottom: var(--fluid-s-lg) !important; }
+
+.ms-0 { margin-left: 0 !important; }
+.ms-1 { margin-left: var(--fluid-s-2xs) !important; }
+.ms-2 { margin-left: var(--fluid-s-xs) !important; }
+.ms-3 { margin-left: var(--fluid-s-sm) !important; }
+.ms-4 { margin-left: var(--fluid-s-md) !important; }
+.ms-5 { margin-left: var(--fluid-s-lg) !important; }
+.ms-auto { margin-left: auto !important; }
+
+.me-0 { margin-right: 0 !important; }
+.me-1 { margin-right: var(--fluid-s-2xs) !important; }
+.me-2 { margin-right: var(--fluid-s-xs) !important; }
+.me-3 { margin-right: var(--fluid-s-sm) !important; }
+.me-4 { margin-right: var(--fluid-s-md) !important; }
+.me-5 { margin-right: var(--fluid-s-lg) !important; }
+.me-auto { margin-right: auto !important; }
+
+
 /* ─────────────────────────────────────────
    6. TEXT UTILITIES
    ───────────────────────────────────────── */
@@ -254,10 +347,17 @@
 .text-uppercase  { text-transform: uppercase !important; }
 .text-capitalize { text-transform: capitalize !important; }
 
-.fw-light  { font-weight: 300 !important; }
-.fw-normal { font-weight: 400 !important; }
-.fw-medium { font-weight: 500 !important; }
-.fw-bold   { font-weight: 700 !important; }
+.fw-light, .font-light       { font-weight: 300 !important; }
+.fw-normal, .font-normal     { font-weight: 400 !important; }
+.fw-medium, .font-medium     { font-weight: 500 !important; }
+.fw-semibold, .font-semibold { font-weight: 600 !important; }
+.fw-bold, .font-bold         { font-weight: 700 !important; }
+
+.tracking-tight   { letter-spacing: -0.025em !important; }
+.tracking-normal  { letter-spacing: 0 !important; }
+.tracking-wide    { letter-spacing: 0.025em !important; }
+.tracking-wider   { letter-spacing: 0.05em !important; }
+.tracking-widest  { letter-spacing: 0.1em !important; }
 
 .fst-italic { font-style: italic !important; }
 
@@ -321,6 +421,10 @@
 .text-muted     { color: var(--fluid-color-muted) !important; }
 .text-white     { color: var(--fluid-color-white) !important; }
 .text-accent    { color: var(--fluid-color-accent) !important; }
+.text-success   { color: #22c55e !important; }
+.text-danger    { color: #ef4444 !important; }
+.text-warning   { color: #eab308 !important; }
+.text-info      { color: #06b6d4 !important; }
 
 .bg-primary     { background-color: var(--fluid-color-primary) !important; }
 .bg-secondary   { background-color: var(--fluid-color-secondary) !important; }
@@ -328,6 +432,26 @@
 .bg-white       { background-color: var(--fluid-color-white) !important; }
 .bg-dark        { background-color: var(--fluid-color-dark) !important; }
 .bg-transparent { background-color: transparent !important; }
+.bg-success-subtle   { background-color: rgba(34, 197, 94, 0.12) !important; }
+.bg-danger-subtle    { background-color: rgba(239, 68, 68, 0.12) !important; }
+.bg-warning-subtle   { background-color: rgba(234, 179, 8, 0.12) !important; }
+.bg-info-subtle      { background-color: rgba(6, 182, 212, 0.12) !important; }
+.bg-secondary-subtle { background-color: rgba(255, 255, 255, 0.05) !important; }
+
+/* Badges Bootstrap 5.3 fluid */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.35em 0.65em;
+    font-size: var(--fluid-text-xs);
+    font-weight: 500;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: var(--fluid-s-2xs);
+}
 
 /* ─────────────────────────────────────────
    9. DISPLAY, FLEXBOX & SIZING
@@ -401,6 +525,82 @@
 .position-fixed    { position: fixed !important; }
 .position-sticky   { position: sticky !important; }
 
+.sticky-top {
+    position: sticky !important;
+    top: 0;
+    align-self: start;
+    z-index: 10;
+}
+.sticky-bottom {
+    position: sticky !important;
+    bottom: 0;
+    z-index: 10;
+}
+
+@media (min-width: 576px) {
+    .sticky-sm-top {
+        position: sticky !important;
+        top: 0;
+        align-self: start;
+        z-index: 10;
+    }
+    .sticky-sm-bottom {
+        position: sticky !important;
+        bottom: 0;
+        z-index: 10;
+    }
+}
+
+@media (min-width: 768px) {
+    .sticky-md-top {
+        position: sticky !important;
+        top: 0;
+        align-self: start;
+        z-index: 10;
+    }
+    .sticky-md-bottom {
+        position: sticky !important;
+        bottom: 0;
+        z-index: 10;
+    }
+}
+
+@media (min-width: 992px) {
+    .sticky-lg-top {
+        position: sticky !important;
+        top: 100px;
+        align-self: start !important;
+        z-index: 10;
+    }
+    .sticky-lg-bottom {
+        position: sticky !important;
+        bottom: 0;
+        z-index: 10;
+    }
+}
+
+@media (min-width: 1200px) {
+    .sticky-xl-top {
+        position: sticky !important;
+        top: 100px;
+        align-self: start !important;
+        z-index: 10;
+    }
+    .sticky-xl-bottom {
+        position: sticky !important;
+        bottom: 0;
+        z-index: 10;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .sticky-lg-top {
+        position: static !important;
+        top: auto !important;
+        align-self: auto !important;
+    }
+}
+
 .inset-0  { inset: 0 !important; }
 .top-0    { top: 0 !important; }
 .bottom-0 { bottom: 0 !important; }
@@ -428,7 +628,25 @@
 }
 
 /* ─────────────────────────────────────────
-   10. COMPATIBILIDAD LENIS + BARBA.JS
+   10. BORDER RADIUS & ROUNDED UTILITIES (Bootstrap 5.3 + Fluid)
+   ───────────────────────────────────────── */
+.rounded-0      { border-radius: 0 !important; }
+.rounded-1      { border-radius: var(--fluid-s-2xs) !important; }
+.rounded-2      { border-radius: var(--fluid-s-xs) !important; }
+.rounded-3      { border-radius: var(--fluid-s-sm) !important; }
+.rounded-4      { border-radius: var(--fluid-s-md) !important; }
+.rounded-5      { border-radius: var(--fluid-s-lg) !important; }
+.rounded        { border-radius: var(--fluid-s-xs) !important; }
+.rounded-pill   { border-radius: 9999px !important; }
+.rounded-circle { border-radius: 50% !important; }
+
+.rounded-top    { border-top-left-radius: var(--fluid-s-xs) !important; border-top-right-radius: var(--fluid-s-xs) !important; }
+.rounded-bottom { border-bottom-left-radius: var(--fluid-s-xs) !important; border-bottom-right-radius: var(--fluid-s-xs) !important; }
+.rounded-start  { border-top-left-radius: var(--fluid-s-xs) !important; border-bottom-left-radius: var(--fluid-s-xs) !important; }
+.rounded-end    { border-top-right-radius: var(--fluid-s-xs) !important; border-bottom-right-radius: var(--fluid-s-xs) !important; }
+
+/* ─────────────────────────────────────────
+   11. COMPATIBILIDAD LENIS + BARBA.JS
    -----------------------------------------
    Lenis reemplaza el scroll nativo del elemento <html>. Cualquier
    `overflow: hidden` u `overflow-x: hidden` puesto globalmente en html/body
@@ -470,7 +688,7 @@ html.lenis-smooth {
     position: relative;
     width: 100%;
     max-width: 100%;
-    overflow-x: clip;
+    overflow: visible;
 }
 
 .prose {

@@ -9,10 +9,11 @@
     <div class="container py-3xl">
         
         {{-- Breadcrumbs --}}
-        <div class="mb-lg text-fluid-xs font-mono text-muted">
-            <a href="{{ route('home') }}" class="text-muted hover-text-accent no-underline">Inicio</a>
-            <span class="mx-2">/</span>
-            <span class="text-primary">Contacto</span>
+        <div class="mb-lg" data-detail-breadcrumbs>
+            <x-breadcrumbs :items="[
+                ['label' => 'Inicio', 'url' => route('home')],
+                ['label' => 'Contacto', 'url' => null]
+            ]" />
         </div>
 
         <div class="row align-items-start">

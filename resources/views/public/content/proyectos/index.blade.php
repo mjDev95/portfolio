@@ -26,6 +26,7 @@
             @php
                 $itemThumb = $item->thumbnail;
                 $categoryName = $item->categories->first()?->name ?? ($cpt->singular_name ?? 'Proyecto');
+                $clientName = $item->custom_values['client'] ?? null;
                 $detailUrl = route('public.content.show', [$cpt->public_route_slug, $item->slug]);
             @endphp
             <div class="col-12 col-md-6" data-reveal>
@@ -52,16 +53,15 @@
                         @endif
                     </div>
                     <div class="project-showcase-body">
-                        <span class="project-category-subtitle d-block">
-                            {{ $categoryName }}
-                        </span>
-                        <h3 class="project-title-heading">
-                            {{ $item->title }}
-                        </h3>
-                        <div class="project-view-link">
-                            <span>View Project</span>
-                            <span class="project-view-arrow">&nearr;</span>
-                        </div>
+                            <div class="project-category-subtitle project-card-sub-details-wrapper-v3 bottom">
+                                <div class="d-flex align-items-center details h5">
+                                    <div>{{ $clientName }}</div>
+                                    <div class="text-divider project-card-v3 mx-2"></div>
+                                    <div>{{ $categoryName }} </div>
+                                </div>
+                            </div>
+                        
+                        <h2 class="project-title-heading h3 mt-2">{{ $item->title }}</h2>                    
                     </div>
                 </a>
             </div>

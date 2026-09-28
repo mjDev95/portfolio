@@ -49,6 +49,7 @@ if (typeof window !== 'undefined') {
  * Shared Element Transition:
  * - Transforms the card from 4:3 into 16:9 during leave(), flying to the hero header position.
  * - Zero double image: the origin is hidden instantly upon take-off.
+ * - Zero border-radius: hard rectangular edges throughout flight and destination.
  * - Pill state is completely preserved without any reset or flicker.
  * - Entering page receives the pre-positioned hero with a seamless 0-shift hand-off.
  */
@@ -108,8 +109,6 @@ export function createFlipTransitions() {
 
                     // 3. Medir coordenadas iniciales de la tarjeta (4:3)
                     const originRect = originWrapper.getBoundingClientRect();
-                    const originStyle = window.getComputedStyle(originWrapper);
-                    const originRadius = originStyle.borderRadius || '24px';
                     const imgSrc = originImage?.currentSrc || originImage?.src || '';
                     const imgAlt = originImage?.alt || '';
 
@@ -118,7 +117,6 @@ export function createFlipTransitions() {
                     let targetLeft = null;
                     let targetWidth = null;
                     let targetHeight = null;
-                    let targetRadius = 'clamp(22px, 2.5vw, 32px)';
 
                     if (data.next?.html) {
                         try {
@@ -149,7 +147,6 @@ export function createFlipTransitions() {
                                         targetLeft = rect.left;
                                         targetWidth = rect.width;
                                         targetHeight = rect.height;
-                                        targetRadius = window.getComputedStyle(nextHero).borderRadius || targetRadius;
                                     }
                                 }
 
@@ -175,7 +172,7 @@ export function createFlipTransitions() {
                         targetLeft = containerRect.left + padLeft;
 
                         const breadcrumbsEl = data.current.container.querySelector('[data-detail-breadcrumbs], .public-breadcrumbs, .breadcrumbs, .mb-sm');
-                        const breadcrumbsHeight = breadcrumbsEl ? breadcrumbsEl.getBoundingClientRect().height : 36;
+                        const breadcrumbsHeight = breadcrumbsEl ? breadcrumbsEl.getBoundingClientRect().height : 24;
 
                         const dummyMbLg = document.createElement('div');
                         dummyMbLg.className = 'mb-lg';
@@ -188,7 +185,7 @@ export function createFlipTransitions() {
                         targetTop = bodyPaddingTop + paddingTop + breadcrumbsHeight + mbLgVal;
                     }
 
-                    // 5. Crear el proxy de vuelo fijado en el viewport
+                    // 5. Crear el proxy de vuelo fijado en el viewport (Sin border-radius)
                     const proxy = document.createElement('div');
                     proxy.id = 'active-flight-proxy';
                     Object.assign(proxy.style, {
@@ -197,14 +194,14 @@ export function createFlipTransitions() {
                         left: `${originRect.left}px`,
                         width: `${originRect.width}px`,
                         height: `${originRect.height}px`,
-                        borderRadius: originRadius,
+                        borderRadius: '0px',
                         overflow: 'hidden',
                         zIndex: '99999',
                         pointerEvents: 'none',
                         boxSizing: 'border-box',
                         border: '1px solid var(--border-subtle, rgba(255,255,255,0.08))',
                         backgroundColor: 'var(--bg-surface, #14171c)',
-                        willChange: 'top, left, width, height, border-radius',
+                        willChange: 'top, left, width, height',
                     });
 
                     const proxyImg = document.createElement('img');
@@ -215,11 +212,12 @@ export function createFlipTransitions() {
                         height: '100%',
                         objectFit: 'cover',
                         display: 'block',
+                        borderRadius: '0px',
                     });
                     proxy.appendChild(proxyImg);
                     document.body.appendChild(proxy);
 
-                    // Ocultar inmediatamente el wrapper de la tarjeta original para CERO duplicidad (el proxy toma su lugar)
+                    // Ocultar inmediatamente el wrapper de la tarjeta original para CERO duplicidad
                     originWrapper.style.visibility = 'hidden';
 
                     // Desvanecer cualquier texto de la tarjeta seleccionada para que SOLO quede la imagen
@@ -259,13 +257,13 @@ export function createFlipTransitions() {
                         ease: 'power2.inOut',
                     }, 0);
 
-                    // Vuelo y transformación física de 4:3 a 16:9 en la cabecera
+                    // Vuelo y transformación física de 4:3 a 16:9 en la cabecera (sin redondeo)
                     tl.to(proxy, {
                         top: targetTop,
                         left: targetLeft,
                         width: targetWidth,
                         height: targetHeight,
-                        borderRadius: targetRadius,
+                        borderRadius: '0px',
                         duration: 0.9,
                         ease: 'expo.out',
                     }, 0);
@@ -288,19 +286,20 @@ export function createFlipTransitions() {
                 // 2. Encabezado y cuerpo del detalle preparados abajo con opacidad 0
                 const header = data.next.container.querySelector('[data-detail-header], header');
                 const meta = Array.from(
-                    data.next.container.querySelectorAll('[data-detail-body], .row.g-5, [data-flip-text], .prose')
+                    data.next.container.querySelectorAll('[data-detail-body], [data-flip-text], .prose')
                 ).filter((el) => el !== breadcrumbs && !breadcrumbs?.contains(el));
                 const detailTargets = [header, ...meta].filter(Boolean);
                 if (detailTargets.length > 0) {
                     gsap.set(detailTargets, { opacity: 0, y: 25 });
                 }
 
-                // Ocultar preventivamente el hero real hasta hacer el intercambio
+                // Ocultar preventivamente el hero real y remover cualquier border-radius
                 const targetHero = data.next.container.querySelector('.hero-media-wrapper') ||
                                    data.next.container.querySelector('[data-flip-id]') ||
                                    data.next.container.querySelector('[data-flip-element="image"]');
                 if (targetHero) {
-                    gsap.set(targetHero, { opacity: 0, visibility: 'hidden' });
+                    targetHero.style.borderRadius = '0px';
+                    gsap.set(targetHero, { opacity: 0, visibility: 'hidden', borderRadius: '0px' });
                 }
 
                 // Al llegar a la nueva vista de detalle, la píldora se fija compactada de forma inmediata
@@ -342,7 +341,7 @@ export function createFlipTransitions() {
                 const breadcrumbs = data.next.container.querySelector('[data-detail-breadcrumbs], .public-breadcrumbs');
                 const header = data.next.container.querySelector('[data-detail-header], header');
                 const meta = Array.from(
-                    data.next.container.querySelectorAll('[data-detail-body], .row.g-5, [data-flip-text], .prose')
+                    data.next.container.querySelectorAll('[data-detail-body], [data-flip-text], .prose')
                 ).filter((el) => el !== targetHero && !targetHero?.contains(el) && el !== breadcrumbs && !breadcrumbs?.contains(el));
                 const detailTargets = [header, ...meta].filter(Boolean);
 
@@ -354,7 +353,7 @@ export function createFlipTransitions() {
                         duration: 0.65,
                         ease: 'power2.out',
                         delay: 0.05,
-                        clearProps: 'opacity,y',
+                        clearProps: 'all',
                     });
                 }
 
@@ -368,15 +367,18 @@ export function createFlipTransitions() {
                         left: realRect.left,
                         width: realRect.width,
                         height: realRect.height,
+                        borderRadius: '0px',
                         duration: 0.15,
                         ease: 'power2.out',
                     });
 
-                    // Intercambio sin salto
-                    gsap.set(targetHero, { opacity: 1, visibility: 'visible', clearProps: 'opacity,visibility' });
+                    // Intercambio sin salto asegurando bordes rectos
+                    targetHero.style.borderRadius = '0px';
+                    gsap.set(targetHero, { opacity: 1, visibility: 'visible', borderRadius: '0px', clearProps: 'opacity,visibility' });
                     proxy.remove();
                 } else if (targetHero) {
-                    gsap.set(targetHero, { opacity: 1, visibility: 'visible', clearProps: 'opacity,visibility' });
+                    targetHero.style.borderRadius = '0px';
+                    gsap.set(targetHero, { opacity: 1, visibility: 'visible', borderRadius: '0px', clearProps: 'opacity,visibility' });
                     if (proxy) proxy.remove();
                 } else if (proxy) {
                     proxy.remove();
@@ -390,7 +392,7 @@ export function createFlipTransitions() {
                         stagger: 0.08,
                         duration: 0.6,
                         ease: 'power2.out',
-                        clearProps: 'opacity,y',
+                        clearProps: 'all',
                     });
                 }
 

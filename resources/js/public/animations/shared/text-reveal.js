@@ -181,6 +181,7 @@ export function initTextReveal(container = document) {
                     y: 0,
                     duration: 0.8,
                     ease: 'power3.out',
+                    clearProps: 'transform',
                     scrollTrigger: {
                         trigger: el,
                         start: 'top 85%',

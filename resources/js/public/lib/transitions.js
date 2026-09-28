@@ -32,22 +32,67 @@ function syncPageMetadata(html) {
             currentDesc.setAttribute('content', newDesc);
         }
 
-        // 3. Open Graph tags
-        const ogTags = ['og:title', 'og:description', 'og:url', 'og:type'];
-        ogTags.forEach((property) => {
-            const newMeta = doc.querySelector(`meta[property="${property}"]`)?.getAttribute('content');
-            let currentMeta = document.querySelector(`meta[property="${property}"]`);
-            if (newMeta !== undefined && newMeta !== null) {
-                if (!currentMeta) {
-                    currentMeta = document.createElement('meta');
-                    currentMeta.setAttribute('property', property);
-                    document.head.appendChild(currentMeta);
+        // 3. Link Canonical
+        const newCanonical = doc.querySelector('link[rel="canonical"]')?.getAttribute('href') || window.location.href;
+        let currentCanonical = document.querySelector('link[rel="canonical"]');
+        if (newCanonical) {
+            if (!currentCanonical) {
+                currentCanonical = document.createElement('link');
+                currentCanonical.setAttribute('rel', 'canonical');
+                document.head.appendChild(currentCanonical);
+            }
+            currentCanonical.setAttribute('href', newCanonical);
+        }
+
+        // 4. Open Graph & Twitter Cards
+        const metaTags = [
+            { key: 'og:title', type: 'property' },
+            { key: 'og:description', type: 'property' },
+            { key: 'og:url', type: 'property' },
+            { key: 'og:type', type: 'property' },
+            { key: 'og:image', type: 'property' },
+            { key: 'og:site_name', type: 'property' },
+            { key: 'twitter:card', type: 'name' },
+            { key: 'twitter:title', type: 'name' },
+            { key: 'twitter:description', type: 'name' },
+            { key: 'twitter:image', type: 'name' },
+        ];
+
+        metaTags.forEach(({ key, type }) => {
+            const incoming = doc.querySelector(`meta[${type}="${key}"]`) || doc.querySelector(`meta[name="${key}"]`) || doc.querySelector(`meta[property="${key}"]`);
+            let current = document.querySelector(`meta[${type}="${key}"]`) || document.querySelector(`meta[name="${key}"]`) || document.querySelector(`meta[property="${key}"]`);
+
+            if (incoming) {
+                const content = incoming.getAttribute('content');
+                if (!current) {
+                    current = document.createElement('meta');
+                    current.setAttribute(type, key);
+                    document.head.appendChild(current);
                 }
-                currentMeta.setAttribute('content', newMeta);
+                current.setAttribute('content', content || '');
+            } else if (current) {
+                current.remove();
             }
         });
+
+        // 5. Reemplazo de Scripts JSON-LD (Schema.org estructurado)
+        const incomingJsonLd = doc.querySelectorAll('script[type="application/ld+json"]');
+        if (incomingJsonLd.length > 0) {
+            // Eliminar los bloques JSON-LD existentes en <head>
+            document.querySelectorAll('head script[type="application/ld+json"]').forEach((script) => {
+                script.remove();
+            });
+
+            // Inyectar los nuevos bloques JSON-LD con datos frescos
+            incomingJsonLd.forEach((jsonScript) => {
+                const scriptEl = document.createElement('script');
+                scriptEl.type = 'application/ld+json';
+                scriptEl.textContent = jsonScript.textContent;
+                document.head.appendChild(scriptEl);
+            });
+        }
     } catch (e) {
-        console.warn('[Barba] Error sincronizando metadatos:', e);
+        console.warn('[Barba] Error sincronizando metadatos y SEO:', e);
     }
 }
 
@@ -120,13 +165,40 @@ export function initBarba({ onAfterEnter } = {}) {
         resizeScroll();
         ScrollTrigger.refresh();
 
+        // Sincronización final de metadatos, canonical, Open Graph y JSON-LD
+        syncPageMetadata(data.next.html);
+
         initPageAnimations(data.next.container);
 
         // Recálculo continuo de altura al cargar imágenes del contenedor entrante
         watchImagesForScrollResize(data.next.container);
 
         ScrollTrigger.refresh();
-        sendAnalyticsPing(window.location.pathname);
+
+        // Rastreo de Analíticas: Disparo de page_view para Google Analytics (gtag), Tag Manager (dataLayer) y telemetría
+        const currentPath = window.location.pathname;
+        const currentUrl = window.location.href;
+        const currentTitle = document.title;
+
+        if (typeof window.gtag === 'function') {
+            window.gtag('event', 'page_view', {
+                page_title: currentTitle,
+                page_location: currentUrl,
+                page_path: currentPath,
+            });
+        }
+
+        if (Array.isArray(window.dataLayer)) {
+            window.dataLayer.push({
+                event: 'page_view',
+                page_title: currentTitle,
+                page_location: currentUrl,
+                page_path: currentPath,
+            });
+        }
+
+        sendAnalyticsPing(currentPath);
+
         if (typeof window.updateAdminBarContext === 'function') {
             window.updateAdminBarContext(data.next.container);
         }

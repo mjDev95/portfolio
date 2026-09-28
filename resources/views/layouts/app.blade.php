@@ -7,11 +7,16 @@
     <title>@yield('title', config('app.name'))</title>
     <meta name="description" content="@yield('meta_description', $__env->yieldContent('description', config('app.name').' — Creative Developer & UX/UI Designer portfolio.'))">
 
+    <link rel="canonical" href="@yield('canonical', url()->current())">
+
     {{-- Open Graph / Social Media Meta Tags --}}
     <meta property="og:title" content="@yield('og_title', $__env->yieldContent('title', config('app.name')))">
     <meta property="og:description" content="@yield('og_description', $__env->yieldContent('meta_description', $__env->yieldContent('description', config('app.name'))))">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('og_title', $__env->yieldContent('title', config('app.name')))">
+    <meta name="twitter:description" content="@yield('og_description', $__env->yieldContent('meta_description', $__env->yieldContent('description', config('app.name'))))">
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=bricolage-grotesque:400,500,600,700,800|poppins:300,400,500,600,700|jetbrains-mono:400,500,600,700&display=swap" rel="stylesheet" />

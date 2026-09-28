@@ -2,15 +2,17 @@
 
 @section('title', ($content->seo_title ?: $content->title) . ' — ' . config('app.name'))
 @section('meta_description', $content->seo_description ?: $content->excerpt)
+@section('canonical', url()->current())
 @section('og_title', ($content->seo_title ?: $content->title) . ' — ' . config('app.name'))
 @section('og_description', $content->seo_description ?: $content->excerpt)
+@section('og_type', 'article')
 @section('namespace', 'content-show')
 @section('edit_url', route('admin.content.edit', [$cpt->slug, $content->id]))
 @section('edit_label', 'Editar ' . ($cpt->singular_name ?? $cpt->name))
 
 @section('content')
 <article class="container py-3xl" style="min-height: 100vh;">
-    <div class="mb-lg d-flex flex-wrap align-items-center justify-content-between gap-3" data-detail-breadcrumbs>
+    <div class="mb-lg" data-detail-breadcrumbs>
         <x-breadcrumbs :items="[
             ['label' => 'Inicio', 'url' => route('home')],
             ['label' => $cpt->name, 'url' => route('public.content.index', $cpt->public_route_slug)],
@@ -55,15 +57,15 @@
             @if ($content->tags->isNotEmpty())
                 <div class="d-flex flex-wrap gap-1 align-items-center">
                     @foreach ($content->tags as $tag)
-                        <span class="text-fluid-xs text-muted">#{{ $tag->name }}</span>
+                        <span class="text-fluid-xs text-muted item-tag">#{{ $tag->name }}</span>
                     @endforeach
                 </div>
             @endif
         </div>
     </header>
 
-    <div class="row g-4 g-lg-5" data-detail-body>
-        <div class="col-12 {{ (!empty($content->custom_values) && count($content->custom_values) > 0) ? 'col-lg-8' : 'col-lg-10 mx-auto' }}" data-reveal>
+    <div class="row g-4 g-lg-5">
+        <div class="col-12 {{ (!empty($content->custom_values) && count($content->custom_values) > 0) ? 'col-lg-8' : 'col-lg-10 mx-auto' }}" data-reveal data-detail-body>
             @if ($content->body)
                 <div class="prose text-primary leading-relaxed text-fluid-base text-break">
                     {!! $content->body_html !!}
@@ -97,8 +99,8 @@
 
         {{-- Ficha Técnica con Campos Personalizados Dinámicos (EAV) --}}
         @if (!empty($content->custom_values) && count($content->custom_values) > 0)
-            <div class="col-12 col-lg-4" data-reveal>
-                <div class="p-4 rounded-4 sticky-top bg-surface-subtle border-subtle" style="top: 100px;">
+            <div class="col-12 col-lg-4">
+                <div class="p-4 rounded-4 bg-surface-subtle border-subtle">
                     <h3 class="h6 text-muted text-uppercase tracking-wider mb-3">Información Específica</h3>
                     <dl class="mb-0">
                         @php
