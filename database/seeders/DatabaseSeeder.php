@@ -65,5 +65,8 @@ class DatabaseSeeder extends Seeder
 
         // ── 4. Sembrar CPTs, Taxonomías y Publicaciones para el cliente ────
         $this->call(UserCptSeeder::class);
+
+        // ── 5. Sembrar Casos de Estudio Insignia y Artículos del Administrador ──
+        $this->call(ContentSeeder::class);
     }
 }

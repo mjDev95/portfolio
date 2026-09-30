@@ -1,90 +1,96 @@
-<footer class="py-2xl border-top-subtle" data-magnetic-zone>
-    <div class="container">
-        
-        {{-- Fila Principal: Identidad, Enlaces y Contacto --}}
-        <div class="row pb-xl border-bottom-subtle">
-            <div class="col-12 col-md-6 mb-lg mb-md-0">
-                <span class="text-fluid-sm fw-semibold text-primary d-block mb-xs">
-                    Mario Joaquín Galicia Blanco
-                </span>
-                <p class="text-fluid-xs text-secondary fw-light mb-md" style="max-width: 44ch; line-height: 1.6;">
-                    WordPress Architect &amp; Front-End Engineer con 5 años de trayectoria creando temas a la medida, sistemas fluidos y optimización extrema de Core Web Vitals.
-                </p>
-                <div class="d-flex align-items-center gap-2 text-fluid-xs font-mono text-muted">
-                    <span class="pulse-beacon bg-brand">
-                        <span class="pulse-beacon-ping bg-brand"></span>
-                    </span>
-                    <span>Ciudad de México (CDMX) &bull; <span data-live-clock>--:-- CST</span></span>
-                </div>
-            </div>
+{{-- 
+  Footer Minimalista Editorial (Editorial Colophon)
+  Alineado con el sistema editorial fluido, cero sombras y tipografía matemática.
+--}}
+<footer class="editorial-colophon" id="contact" data-magnetic-zone>
+    <div class="colophon-container">
 
-            <div class="col-12 col-sm-6 col-md-3 mb-md mb-md-0">
-                <span class="text-fluid-xs font-mono text-uppercase tracking-wider text-muted fw-semibold d-block mb-sm">
-                    Contacto Directo
-                </span>
-                <ul class="list-unstyled d-flex flex-column gap-2 text-fluid-xs">
-                    <li>
-                        <a href="mailto:mjgaliciab@gmail.com" class="text-secondary hover-text-brand no-underline transition-colors" data-magnetic>
-                            mjgaliciab@gmail.com
-                        </a>
-                    </li>
-                    <li>
-                        <a href="tel:+525628425556" class="text-secondary hover-text-brand no-underline transition-colors" data-magnetic>
-                            +52 56 2842 5556
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://www.linkedin.com/in/mario-joaquin-galicia/" target="_blank" rel="noopener noreferrer" class="text-secondary hover-text-brand no-underline transition-colors" data-magnetic>
-                            LinkedIn &rarr;
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="col-12 col-sm-6 col-md-3">
-                <span class="text-fluid-xs font-mono text-uppercase tracking-wider text-muted fw-semibold d-block mb-sm">
-                    Navegación
-                </span>
-                <ul class="list-unstyled d-flex flex-column gap-2 text-fluid-xs">
-                    <li><a href="{{ route('home') }}" class="text-secondary hover-text-brand no-underline transition-colors" data-magnetic>Inicio</a></li>
-                    <li><a href="{{ route('about') }}" class="text-secondary hover-text-brand no-underline transition-colors" data-magnetic>Sobre mí</a></li>
-                    @foreach ($navContentTypes ?? [] as $cpt)
-                        @php
-                            $cptSlug = is_object($cpt) ? ($cpt->public_route_slug ?? $cpt->slug ?? '') : (is_array($cpt) ? ($cpt['public_route_slug'] ?? $cpt['slug'] ?? '') : (string) $cpt);
-                            $cptName = is_object($cpt) ? ($cpt->name ?? ucfirst($cptSlug)) : (is_array($cpt) ? ($cpt['name'] ?? ucfirst($cptSlug)) : ucfirst($cptSlug));
-                        @endphp
-                        @if (! empty($cptSlug) && ! str_contains((string) $cptSlug, '\\'))
-                            <li>
-                                <a href="{{ route('public.content.index', $cptSlug) }}" class="text-secondary hover-text-brand no-underline transition-colors" data-magnetic>
-                                    {{ $cptName }}
-                                </a>
-                            </li>
-                        @endif
-                    @endforeach
-                    <li><a href="{{ route('contact') }}" class="text-secondary hover-text-brand no-underline transition-colors" data-magnetic>Contacto</a></li>
-                </ul>
-            </div>
-        </div>
-
-        {{-- Barra Inferior de Copyright & Consentimiento --}}
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 pt-lg text-fluid-xs font-mono text-muted">
-            <p class="m-0">
-                &copy; {{ now()->year }} Mario Joaquín Galicia Blanco. Diseñado con tipografía matemática y arquitectura nativa en PHP 8.4.
-            </p>
-
-            <div class="d-flex align-items-center gap-4">
-                <button type="button" onclick="if (window.openCookieSettings) window.openCookieSettings();" 
-                        class="bg-transparent p-0 border-0 text-fluid-xs font-mono text-muted hover-text-brand cursor-pointer" 
-                        data-magnetic>
-                    Privacidad &amp; Cookies
-                </button>
-                <a href="#top" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" 
-                   class="text-fluid-xs font-mono text-muted hover-text-brand no-underline" 
-                   data-barba-prevent="self"
-                   data-magnetic>
-                    Volver arriba &uarr;
+        {{-- Enlace principal directo tipográfico monumental --}}
+        <div class="colophon-lead">
+            <span class="colophon-tag font-mono">Direct Inquiry &bull; {{ now()->year }}</span>
+            <div>
+                <a href="mailto:mjgaliciab@gmail.com" class="colophon-link" data-magnetic data-magnetic-strength="0.15">
+                    <span>mjgaliciab@gmail.com</span>
+                    <span class="arrow">&nearr;</span>
                 </a>
             </div>
         </div>
+
+        {{-- Grilla puramente tipográfica de metadatos (sin cajas ni cards) --}}
+        <div class="colophon-meta-grid">
+            
+            <div class="meta-group">
+                <span class="meta-label">Ubicación &bull; Horario</span>
+                <p class="meta-content">
+                    Ciudad de México<br>
+                    <span id="colophon-clock" data-live-clock class="font-mono text-fluid-xs">--:--:-- CST</span>
+                </p>
+            </div>
+
+            <div class="meta-group">
+                <span class="meta-label">Navegación</span>
+                <ul class="meta-list">
+                    <li><a href="{{ route('home') }}" data-magnetic>Inicio <span>&nearr;</span></a></li>
+                    <li><a href="{{ route('about') }}" data-magnetic>Sobre mí <span>&nearr;</span></a></li>
+                    @if (isset($navContentTypes) && count($navContentTypes) > 0)
+                        @foreach ($navContentTypes as $cpt)
+                            @php
+                                $cptSlug = is_object($cpt) ? ($cpt->public_route_slug ?? $cpt->slug ?? '') : (is_array($cpt) ? ($cpt['public_route_slug'] ?? $cpt['slug'] ?? '') : (string) $cpt);
+                                $cptName = is_object($cpt) ? ($cpt->name ?? ucfirst($cptSlug)) : (is_array($cpt) ? ($cpt['name'] ?? ucfirst($cptSlug)) : ucfirst($cptSlug));
+                            @endphp
+                            @if (! empty($cptSlug) && ! str_contains((string) $cptSlug, '\\'))
+                                <li>
+                                    <a href="{{ route('public.content.index', $cptSlug) }}" data-magnetic>
+                                        {{ $cptName }} <span>&nearr;</span>
+                                    </a>
+                                </li>
+                            @endif
+                        @endforeach
+                    @else
+                        <li><a href="{{ route('public.content.index', 'proyectos') }}" data-magnetic>Proyectos <span>&nearr;</span></a></li>
+                        <li><a href="{{ route('public.content.index', 'blog') }}" data-magnetic>Escritos <span>&nearr;</span></a></li>
+                    @endif
+                    <li><a href="{{ route('contact') }}" data-magnetic>Contacto <span>&nearr;</span></a></li>
+                </ul>
+            </div>
+
+            <div class="meta-group">
+                <span class="meta-label">Redes</span>
+                <ul class="meta-list">
+                    <li><a href="https://github.com/mariojoaquingalicia" target="_blank" rel="noopener noreferrer" data-magnetic>GitHub <span>&nearr;</span></a></li>
+                    <li><a href="https://www.linkedin.com/in/mario-joaquin-galicia/" target="_blank" rel="noopener noreferrer" data-magnetic>LinkedIn <span>&nearr;</span></a></li>
+                    <li><a href="https://www.awwwards.com" target="_blank" rel="noopener noreferrer" data-magnetic>Awwwards <span>&nearr;</span></a></li>
+                </ul>
+            </div>
+
+            <div class="meta-group">
+                <span class="meta-label">Estatus</span>
+                <p class="meta-content text-primary">
+                    Disponible para proyectos selectos, arquitectura WordPress y consultoría técnica.
+                </p>
+            </div>
+
+        </div>
+
+        {{-- Pie de página final --}}
+        <div class="colophon-baseline font-mono text-fluid-xs text-muted">
+            <span>&copy; {{ now()->year }} Mario Joaquín Galicia Blanco &bull; Diseñado y construido a medida</span>
+            <div class="d-flex align-items-center gap-3">
+                <button type="button" 
+                        onclick="if (window.openCookieSettings) window.openCookieSettings();" 
+                        class="scroll-top" 
+                        data-magnetic>
+                    Privacidad &amp; Cookies
+                </button>
+                <button type="button" 
+                        class="scroll-top" 
+                        onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
+                        data-barba-prevent="self" 
+                        data-magnetic>
+                    &uarr; Arriba
+                </button>
+            </div>
+        </div>
+
     </div>
 </footer>

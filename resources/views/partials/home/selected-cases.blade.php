@@ -10,21 +10,16 @@
         return ($c->contentType?->slug ?? '') === 'proyectos';
     })->values();
 
-    if ($dbProjects->count() < 4) {
+    if ($dbProjects->count() < 5) {
         $dbProjects = \App\Models\Content::query()
             ->whereHas('contentType', fn($q) => $q->where('slug', 'proyectos')->where('is_public', true))
             ->published()
             ->with(['contentType', 'categories', 'media'])
             ->orderBy('sort_order')
-            ->orderByDesc('created_at')
+            ->orderByDesc('published_at')
             ->take(5)
             ->get();
     }
-
-    $totalProjectsCount = \App\Models\Content::query()
-        ->whereHas('contentType', fn($q) => $q->where('slug', 'proyectos')->where('is_public', true))
-        ->published()
-        ->count();
 @endphp
 
 <section class="stodio-showcase-section position-relative w-100 overflow-hidden" id="proyectos" data-selected-cases-stodio>
@@ -314,18 +309,8 @@
             </div>
         @endif
 
-        {{-- Botón Final hacia el archivo de proyectos --}}
-        <div class="stodio-cta-wrap w-100">
-            <div class="container text-center">
-                <a href="{{ route('public.content.index', $cptSlug) }}" 
-                   class="stodio-all-cases-btn" 
-                   data-magnetic data-magnetic-strength="0.15">
-                    <span class="arrow">&rarr;</span>
-                    <span>Ver todos los proyectos</span>
-                    <span class="cases-count font-mono text-brand">({{ str_pad($totalProjectsCount, 2, '0', STR_PAD_LEFT) }})</span>
-                </a>
-            </div>
-        </div>
+        {{-- Botón Final hacia el archivo de proyectos (Componente Universal) --}}
+        <x-stodio-cta :type="$cptProyectos ?? 'proyectos'" label="Ver todos los proyectos" />
 
     </div>
 

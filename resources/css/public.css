@@ -2028,8 +2028,195 @@ html.light .hero-orbit-svg {
     max-width: 100%;
 }
 
+/* ─────────────────────────────────────────────────────────────
+   17. MINIMAL EDITORIAL COLOPHON (FOOTER)
+   ───────────────────────────────────────────────────────────── */
+.editorial-colophon {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    background-color: var(--bg-primary);
+    border-top: 1px solid var(--border-subtle);
+    padding: clamp(4rem, 8vw, 8rem) var(--fluid-gutter-x) clamp(2rem, 4vw, 3rem);
+    box-sizing: border-box;
+}
 
+.colophon-container {
+    width: 100%;
+    max-width: var(--fluid-max-width, 1360px);
+    margin: 0 auto;
+    box-sizing: border-box;
+}
 
+/* Enlace de contacto tipográfico monumental */
+.colophon-lead {
+    margin-bottom: clamp(3.5rem, 7vw, 6.5rem);
+}
 
+.colophon-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: var(--fluid-text-xs);
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 1.25rem;
+}
 
+.colophon-link {
+    display: inline-flex;
+    align-items: baseline;
+    gap: clamp(0.5rem, 1.5vw, 1.5rem);
+    color: var(--text-primary);
+    text-decoration: none;
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 5.5vw, 5.5rem);
+    font-weight: 700;
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    transition: color 0.3s ease;
+}
 
+.colophon-link .arrow {
+    display: inline-block;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: clamp(1.6rem, 3.8vw, 4rem);
+    line-height: 1;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    vertical-align: baseline;
+}
+
+.colophon-link:hover {
+    color: var(--text-secondary);
+}
+
+.colophon-link:hover .arrow {
+    transform: translate(6px, -6px);
+}
+
+/* Grilla limpia de columnas de datos (sin cajas ni cards) */
+.colophon-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: clamp(2rem, 4vw, 4rem);
+    padding-top: clamp(2.5rem, 5vw, 4rem);
+    border-top: 1px solid var(--border-subtle);
+}
+
+.meta-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.meta-label {
+    font-family: var(--font-mono);
+    font-size: var(--fluid-text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+}
+
+.meta-content {
+    font-size: var(--fluid-text-sm);
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.meta-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.meta-list a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: var(--fluid-text-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: color 0.2s ease;
+}
+
+.meta-list a:hover {
+    color: var(--text-primary);
+}
+
+.meta-list a span {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    opacity: 0.6;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.meta-list a:hover span {
+    opacity: 1;
+    transform: translate(2px, -2px);
+}
+
+/* Línea inferior final */
+.colophon-baseline {
+    margin-top: clamp(3.5rem, 7vw, 6rem);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--fluid-text-xs);
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.scroll-top {
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: inherit;
+    transition: color 0.2s ease;
+}
+
+.scroll-top:hover {
+    color: var(--text-primary);
+}
+
+@media (max-width: 640px) {
+    .colophon-link {
+        font-size: clamp(1.4rem, 6.8vw, 2.2rem);
+    }
+    
+    .colophon-link .arrow {
+        font-size: clamp(1.2rem, 5vw, 1.8rem);
+    }
+
+    .colophon-meta-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem 1.5rem;
+    }
+
+    .colophon-baseline {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .colophon-meta-grid {
+        grid-template-columns: 1fr;
+    }
+}

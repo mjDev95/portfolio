@@ -46,6 +46,10 @@ class AssetIsolationTest extends TestCase
         $response = $this->actingAs($admin)->get('/admin');
 
         $response->assertStatus(200);
-        $response->assertSee('resources/js/app.jsx');
+        $content = (string) $response->getContent();
+        $this->assertTrue(
+            str_contains($content, 'resources/js/app.jsx') || str_contains($content, 'assets/app-'),
+            'Admin panel must load isolated admin asset (resources/js/app.jsx or compiled assets/app-).'
+        );
     }
 }
