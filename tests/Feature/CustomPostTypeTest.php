@@ -703,7 +703,7 @@ class CustomPostTypeTest extends TestCase
         // 4. Público: Acceso con nuevo permalink directo (/proyectos/app-fintech-personalizado)
         $this->get('/proyectos/app-fintech-personalizado')
             ->assertOk()
-            ->assertViewIs('public.content.universal-show')
+            ->assertViewIs('public.content.proyectos.show')
             ->assertSee('App Fintech 2.0');
 
         // 5. Público: Compatibilidad con /c/ redirige 301 a la URL limpia

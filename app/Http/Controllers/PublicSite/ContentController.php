@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\PublicSite;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Content;
 use App\Models\ContentType;
 use App\Services\PortfolioCacheService;
@@ -25,16 +26,32 @@ class ContentController extends Controller
 
         $cpt = ContentType::findOrFail($cptId);
 
-        $contents = Content::where('content_type_id', $cpt->id)
+        $selectedCategory = request('categoria') ?: request('category');
+
+        $query = Content::where('content_type_id', $cpt->id)
             ->with([
                 'media' => fn ($q) => $q->where('content_media.collection', 'thumbnail'),
                 'categories',
                 'tags',
             ])
-            ->published()
-            ->orderBy('sort_order')
+            ->published();
+
+        if ($selectedCategory) {
+            $query->whereHas('categories', function ($q) use ($selectedCategory) {
+                $q->where('slug', $selectedCategory);
+            });
+        }
+
+        $contents = $query->orderBy('sort_order')
             ->orderByDesc('published_at')
-            ->paginate(9);
+            ->paginate(9)
+            ->withQueryString();
+
+        $categories = Category::whereHas('contents', function ($q) use ($cpt) {
+            $q->where('content_type_id', $cpt->id)->published();
+        })->withCount(['contents' => function ($q) use ($cpt) {
+            $q->where('content_type_id', $cpt->id)->published();
+        }])->get();
 
         $view = view()->exists("public.content.{$cpt->slug}.index")
             ? "public.content.{$cpt->slug}.index"
@@ -46,6 +63,8 @@ class ContentController extends Controller
             'cpt' => $cpt,
             'contentType' => $cpt,
             'contents' => $contents,
+            'categories' => $categories,
+            'selectedCategory' => $selectedCategory,
         ]);
     }
 
@@ -77,6 +96,16 @@ class ContentController extends Controller
             ->with(['media', 'categories', 'tags'])
             ->firstOrFail();
 
+        $nextPost = Content::where('content_type_id', $cpt->id)
+            ->published()
+            ->where('id', '!=', $content->id)
+            ->with([
+                'media' => fn ($q) => $q->where('content_media.collection', 'thumbnail'),
+                'categories',
+            ])
+            ->orderByDesc('published_at')
+            ->first();
+
         $view = view()->exists("public.content.{$cpt->slug}.show")
             ? "public.content.{$cpt->slug}.show"
             : (view()->exists('public.content.universal-show')
@@ -87,6 +116,7 @@ class ContentController extends Controller
             'cpt' => $cpt,
             'contentType' => $cpt,
             'content' => $content,
+            'nextPost' => $nextPost,
         ]);
     }
 }
