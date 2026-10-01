@@ -131,6 +131,8 @@ function watchImagesForScrollResize(container) {
     }
 }
 
+
+
 /**
  * Barba.js v2 lifecycle wiring with GSAP and Lenis.
  */
@@ -217,6 +219,8 @@ export function initBarba({ onAfterEnter } = {}) {
     if (typeof barba.hooks.error === 'function') {
         barba.hooks.error((data, error) => {
             console.error('[Barba] Error durante la transición de página:', error);
+            const colophon = document.querySelector('.editorial-colophon');
+            if (colophon) gsap.set(colophon, { clearProps: 'opacity' });
             startScroll();
             resizeScroll();
             ScrollTrigger.refresh();
@@ -243,6 +247,86 @@ export function initBarba({ onAfterEnter } = {}) {
             }
         },
         transitions: [
+            // ── Transición persistente entre categorías del blog (cero parpadeo ni destrucción de píldoras) ──
+            {
+                name: 'blog-category-filter',
+                custom({ current, next, trigger }) {
+                    const isPill = Boolean(
+                        trigger?.closest?.('.editorial-pill') || 
+                        trigger?.classList?.contains?.('editorial-pill')
+                    );
+                    const isFromBlog = ['blog-index', 'blog-category', 'blog-tag'].includes(current.namespace) ||
+                                       Boolean(current.url?.path && /^\/blog(\/(categoria|etiqueta|tag)\/[^/]+)?\/?$/.test(current.url.path));
+                    const isToBlog = Boolean(next.url?.path && /^\/blog(\/(categoria|etiqueta|tag)\/[^/]+)?\/?$/.test(next.url.path));
+
+                    return Boolean(isPill || (isFromBlog && isToBlog));
+                },
+                async leave(data) {
+                    stopScroll();
+                    const currentContainer = data.current.container;
+                    const currentGrid = currentContainer.querySelector('#blog-posts-grid');
+                    const currentEnd = currentContainer.querySelector('#blog-scroll-end');
+                    const currentLoader = currentContainer.querySelector('#blog-scroll-loader');
+                    const currentHeader = currentContainer.querySelector('#blog-header-block');
+
+                    // Desvanecemos suavemente el header y utilidades
+                    const othersToFade = [currentEnd, currentLoader, currentHeader].filter(Boolean);
+                    if (othersToFade.length) {
+                        gsap.to(othersToFade, {
+                            opacity: 0,
+                            duration: 0.16,
+                            ease: 'power2.in',
+                        });
+                    }
+
+                    // Salida escalonada y elegante de las tarjetas
+                    const cardsToFade = currentGrid ? Array.from(currentGrid.children) : [];
+                    if (cardsToFade.length) {
+                        return gsap.to(cardsToFade, {
+                            opacity: 0,
+                            y: -12,
+                            duration: 0.2,
+                            stagger: 0.02,
+                            ease: 'power2.in',
+                        });
+                    }
+                },
+                async enter(data) {
+                    resetScroll();
+                    const nextContainer = data.next.container;
+                    const nextGrid = nextContainer.querySelector('#blog-posts-grid');
+                    const nextHeader = nextContainer.querySelector('#blog-header-block');
+
+                    if (nextHeader) {
+                        gsap.fromTo(nextHeader,
+                            { opacity: 0 },
+                            { opacity: 1, duration: 0.25, ease: 'power2.out', clearProps: 'all' }
+                        );
+                    }
+
+                    if (nextGrid) {
+                        const newCards = Array.from(nextGrid.children);
+                        if (newCards.length > 0) {
+                            return gsap.fromTo(newCards,
+                                { opacity: 0, y: 24 },
+                                {
+                                    opacity: 1,
+                                    y: 0,
+                                    duration: 0.6,
+                                    stagger: 0.06,
+                                    ease: 'power3.out',
+                                    clearProps: 'transform',
+                                }
+                            );
+                        } else {
+                            return gsap.fromTo(nextGrid,
+                                { opacity: 0, y: 10 },
+                                { opacity: 1, y: 0, duration: 0.28, ease: 'power3.out', clearProps: 'all' }
+                            );
+                        }
+                    }
+                },
+            },
             // Shared-element (Flip) transitions between list <-> detail pages;
             // Barba picks these over the generic wipe below when the from/to
             // namespace pair matches (see flip-transitions.js).

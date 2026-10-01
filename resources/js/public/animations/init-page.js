@@ -3,6 +3,7 @@ import { ScrollTrigger } from '../lib/smooth-scroll';
 import { initHeroCurtain } from './hero-curtain';
 import { initSelectedCases } from './selected-cases';
 import { initVelixReveals } from './velix-reveal';
+import { initBlogArchive, initBlogSingle } from './blog';
 
 /**
  * Runs on every Barba `enter` step. Scoped to the incoming container so
@@ -13,6 +14,8 @@ export function initPageAnimations(container) {
     initHeroCurtain(container);
     initSelectedCases(container);
     initVelixReveals(container);
+    initBlogArchive(container);
+    initBlogSingle(container);
 
     const reveals = container.querySelectorAll('[data-reveal]');
 

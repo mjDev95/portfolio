@@ -2,7 +2,7 @@ import gsap from 'gsap';
 import { startScroll, resizeScroll, stopScroll, resetScroll, ScrollTrigger } from './smooth-scroll';
 import { syncDesktopIslandState, isDesktopIslandCompacted, markNavigated } from '../animations/dynamic-island';
 
-const DETAIL_NAMESPACES = ['project-show', 'content-show'];
+const DETAIL_NAMESPACES = ['project-show', 'content-show', 'blog-show'];
 
 // Snapshot handed off from transition's `leave()` to `enter()`.
 window.__activeFlight = null;
@@ -28,7 +28,9 @@ if (typeof window !== 'undefined') {
                 }
 
                 // Desvanecer INMEDIATAMENTE el texto de la tarjeta seleccionada para que solo quede la imagen
-                const cardBody = card.querySelector('.project-showcase-body') || card.querySelector('.stodio-meta-row');
+                const cardBody = card.querySelector('.project-showcase-body') || 
+                                 card.querySelector('.stodio-meta-row') || 
+                                 card.querySelector('.blog-editorial-card-body');
                 if (cardBody) {
                     gsap.to(cardBody, {
                         opacity: 0,
@@ -56,11 +58,10 @@ export function createFlipTransitions() {
         {
             name: 'flip-to-detail',
             custom({ current, next, trigger }) {
-                const isFromAllowed = current.namespace === 'projects-index' ||
-                                      current.namespace === 'home' ||
-                                      (current.url?.path && /^\/(proyectos)?\/?$/.test(current.url.path));
+                const isFromAllowed = ['projects-index', 'blog-index', 'blog-category', 'blog-tag', 'blog-show', 'home', 'content-index'].includes(current.namespace) ||
+                                      (current.url?.path && /^\/(proyectos|blog)(\/(categoria|etiqueta|tag)\/[^/]+)?\/?$/.test(current.url.path));
                 const isToDetail = DETAIL_NAMESPACES.includes(next.namespace) ||
-                                  (next.url?.path && /^\/proyectos\/[^/]+/.test(next.url.path));
+                                  (next.url?.path && /^\/(proyectos|blog)\/[^/]+/.test(next.url.path));
 
                 const candidate = (trigger instanceof Element ? trigger : null) || window.__lastClickedFlipCard;
                 const hasCard = Boolean(candidate?.closest?.('[data-flip-card]') || window.__lastClickedFlipCard);
@@ -224,12 +225,8 @@ export function createFlipTransitions() {
                         gsap.to(originCardTexts, { opacity: 0, y: -8, duration: 0.15, ease: 'power2.out' });
                     }
 
-                    // 6. Timeline de salida: el entorno del listado se desvanece mientras la tarjeta viaja hacia la cabecera
-                    const elementsToFade = Array.from(
-                        data.current.container.querySelectorAll(
-                            'h1, h2, h3, .breadcrumbs, [data-breadcrumbs], x-breadcrumbs, [data-flip-card], header, .page-header, .services-header-row, .mb-xl, .mb-sm, p, nav, .pagination, footer, [data-reveal]'
-                        )
-                    ).filter((el) => el !== originCard && !originCard.contains(el) && !el.contains(originCard));
+                    // 6. Timeline de salida: el entorno completo de la página vieja y el footer global se desvanecen
+                    const colophon = document.querySelector('.editorial-colophon');
 
                     const tl = gsap.timeline({
                         onComplete: () => {
@@ -245,11 +242,10 @@ export function createFlipTransitions() {
                         },
                     });
 
-                    // Desvanecer el resto de la página vieja
-                    tl.to(elementsToFade, {
+                    // Desvanecer rápidamente la página actual completa (autor, avatar, sidebar, texto) y el footer global
+                    tl.to([data.current.container, colophon].filter(Boolean), {
                         opacity: 0,
-                        y: -15,
-                        duration: 0.3,
+                        duration: 0.22,
                         ease: 'power2.inOut',
                     }, 0);
 
@@ -260,7 +256,7 @@ export function createFlipTransitions() {
                         width: targetWidth,
                         height: targetHeight,
                         borderRadius: '0px',
-                        duration: 0.9,
+                        duration: 0.85,
                         ease: 'expo.out',
                     }, 0);
                 });
@@ -389,6 +385,17 @@ export function createFlipTransitions() {
                         duration: 0.6,
                         ease: 'power2.out',
                         clearProps: 'all',
+                    });
+                }
+
+                // Restaurar la presencia del footer global en la nueva página
+                const colophon = document.querySelector('.editorial-colophon');
+                if (colophon) {
+                    gsap.to(colophon, {
+                        opacity: 1,
+                        duration: 0.35,
+                        ease: 'power2.out',
+                        clearProps: 'opacity',
                     });
                 }
 

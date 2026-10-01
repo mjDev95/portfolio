@@ -13,7 +13,8 @@
 @php
     $heroImage = $content->hero_image ?: $content->thumbnail;
     $readingTime = $content->custom_values['reading_time'] ?? (ceil(str_word_count(strip_tags($content->body ?? '')) / 200) ?: 5);
-    $categoryName = $content->categories->first()?->name ?? 'Ensayos';
+    $category = $content->categories->first();
+    $categoryName = $category?->name ?? 'Ensayos';
     $publishedDate = $content->published_at ? $content->published_at->toIso8601String() : $content->created_at->toIso8601String();
     $modifiedDate = $content->updated_at ? $content->updated_at->toIso8601String() : $publishedDate;
 @endphp
@@ -90,17 +91,21 @@
 
     {{-- Cabecera Monumental del Artículo --}}
     <header class="editorial-article-header mb-2xl" data-reveal data-detail-header>
-        <div class="d-flex align-items-center gap-2 mb-sm font-mono text-fluid-xs text-muted text-uppercase tracking-wider">
-            <span class="text-brand fw-semibold">{{ $categoryName }}</span>
-            <span>&bull;</span>
-            <span>{{ $content->published_at ? $content->published_at->format('d M Y') : 'Reciente' }}</span>
-            <span>&bull;</span>
-            <span class="text-primary">{{ $readingTime }} min de lectura</span>
-        </div>
-
-        <h1 class="h1 font-heading fw-bold text-primary text-break mb-md" data-flip-text style="letter-spacing: -0.035em;">
+        <h1 class="h1 font-heading fw-bold text-primary text-break mb-sm" data-flip-text style="letter-spacing: -0.035em;">
             {{ $content->title }}
         </h1>
+
+        <div class="d-flex align-items-center gap-2 mb-lg font-mono text-fluid-xs text-muted text-uppercase tracking-wider">
+            @if ($category)
+                <a href="{{ route('public.content.category', [$cpt->public_route_slug, $category->slug]) }}" class="text-brand fw-semibold text-decoration-none hover-opacity" data-magnetic>
+                    {{ $categoryName }}
+                </a>
+            @else
+                <span class="text-brand fw-semibold">{{ $categoryName }}</span>
+            @endif
+            <span>&bull;</span>
+            <span>{{ $content->published_at ? $content->published_at->format('d M Y') : 'Reciente' }}</span>
+        </div>
 
         @if ($content->excerpt)
             <p class="text-fluid-lg text-secondary text-break mb-xl" style="max-width: 66ch;" data-flip-text>
@@ -193,7 +198,11 @@
                             <span class="text-muted text-uppercase tracking-wider d-block mb-2">Temas clave</span>
                             <div class="d-flex flex-wrap gap-1">
                                 @foreach ($content->tags as $tag)
-                                    <span class="data-chip font-mono text-fluid-xs">#{{ $tag->name }}</span>
+                                    <a href="{{ route('public.content.tag', [$cpt->public_route_slug, $tag->slug]) }}" 
+                                       class="data-chip font-mono text-fluid-xs text-decoration-none transition-opacity hover:opacity-100" 
+                                       data-magnetic>
+                                        #{{ $tag->name }}
+                                    </a>
                                 @endforeach
                             </div>
                         </div>
@@ -268,7 +277,7 @@
                                     </div>
                                 </div>
                             @endif
-                            <div class="col-12 {{ $nextThumb ? 'col-md-8' : 'col-12' }} p-4 p-md-5">
+                            <div class="col-12 {{ $nextThumb ? 'col-md-8' : 'col-12' }} p-4 p-md-5 blog-editorial-card-body">
                                 <div class="d-flex align-items-center gap-2 mb-2 font-mono text-fluid-xs text-muted text-uppercase tracking-wider">
                                     <span class="text-brand fw-semibold">{{ $nextCat }}</span>
                                     <span>&bull;</span>
@@ -288,14 +297,6 @@
             @endif
         </main>
     </div>
-
-    {{-- Navegación de Cierre hacia el Catálogo --}}
-    <footer class="pt-xl border-top-subtle d-flex justify-content-between align-items-center font-mono text-fluid-xs text-muted" data-reveal>
-        <a href="{{ route('public.content.index', $cpt->public_route_slug) }}" class="text-primary text-decoration-none d-inline-flex align-items-center gap-2 hover-text-brand transition-colors" data-magnetic>
-            <span>&larr;</span> <span>Volver a todos los ensayos</span>
-        </a>
-        <span class="d-none d-sm-inline">{{ $content->title }}</span>
-    </footer>
 </article>
 @endsection
 

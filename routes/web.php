@@ -25,6 +25,19 @@ Route::middleware([EnsurePublicSiteIsActive::class])->group(function () {
         ->where('typeSlug', '(?!admin|contacto|sobre-mi|api|storage|login|register|logout|forgot-password|reset-password)[a-zA-Z0-9\-_]+')
         ->name('public.content.index');
 
+    // Rutas dedicadas para categorías estilo WordPress (ej: /blog/categoria/wordpress-architecture)
+    Route::get('/{typeSlug}/categoria/{categorySlug}', [PublicContentController::class, 'category'])
+        ->where('typeSlug', '(?!admin|contacto|sobre-mi|api|storage|login|register|logout|forgot-password|reset-password)[a-zA-Z0-9\-_]+')
+        ->name('public.content.category');
+
+    // Rutas dedicadas para etiquetas estilo WordPress (ej: /blog/etiqueta/laravel y alias /blog/tag/laravel)
+    Route::get('/{typeSlug}/etiqueta/{tagSlug}', [PublicContentController::class, 'tag'])
+        ->where('typeSlug', '(?!admin|contacto|sobre-mi|api|storage|login|register|logout|forgot-password|reset-password)[a-zA-Z0-9\-_]+')
+        ->name('public.content.tag');
+
+    Route::get('/{typeSlug}/tag/{tagSlug}', fn (string $typeSlug, string $tagSlug) => redirect("/{$typeSlug}/etiqueta/{$tagSlug}", 301))
+        ->where('typeSlug', '(?!admin|contacto|sobre-mi|api|storage|login|register|logout|forgot-password|reset-password)[a-zA-Z0-9\-_]+');
+
     Route::get('/{typeSlug}/{slug}', [PublicContentController::class, 'show'])
         ->where('typeSlug', '(?!admin|contacto|sobre-mi|api|storage|login|register|logout|forgot-password|reset-password)[a-zA-Z0-9\-_]+')
         ->name('public.content.show');
