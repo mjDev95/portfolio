@@ -61,7 +61,7 @@
     @endif
 
     {{-- Cabecera Editorial del Caso de Estudio --}}
-    <header class="mb-2xl" data-reveal data-detail-header>
+    <header class="mb-2xl" data-detail-header>
         <div class="d-flex align-items-center gap-2 mb-sm text-fluid-xs font-mono text-muted text-uppercase tracking-wider">
             @if ($client)
                 <span class="text-primary fw-semibold">{{ $client }}</span>
@@ -168,7 +168,7 @@
 
     {{-- Cuerpo Principal del Caso de Estudio --}}
     <div class="row g-4 g-lg-5 mb-3xl">
-        <div class="col-12 col-lg-8 mx-auto" data-reveal data-detail-body>
+        <div class="col-12 col-lg-8 mx-auto" data-detail-body>
             @if ($content->body)
                 <div class="prose text-primary leading-relaxed text-fluid-base text-break">
                     {!! $content->body_html !!}

@@ -278,7 +278,7 @@ export function createFlipTransitions() {
                 // 2. Encabezado y cuerpo del detalle preparados abajo con opacidad 0
                 const header = data.next.container.querySelector('[data-detail-header], header');
                 const meta = Array.from(
-                    data.next.container.querySelectorAll('[data-detail-body], [data-flip-text], .prose')
+                    data.next.container.querySelectorAll('[data-detail-body], [data-flip-text], .prose, .toc-sidebar-sticky')
                 ).filter((el) => el !== breadcrumbs && !breadcrumbs?.contains(el));
                 const detailTargets = [header, ...meta].filter(Boolean);
                 if (detailTargets.length > 0) {
@@ -333,7 +333,7 @@ export function createFlipTransitions() {
                 const breadcrumbs = data.next.container.querySelector('[data-detail-breadcrumbs], .public-breadcrumbs');
                 const header = data.next.container.querySelector('[data-detail-header], header');
                 const meta = Array.from(
-                    data.next.container.querySelectorAll('[data-detail-body], [data-flip-text], .prose')
+                    data.next.container.querySelectorAll('[data-detail-body], [data-flip-text], .prose, .toc-sidebar-sticky')
                 ).filter((el) => el !== targetHero && !targetHero?.contains(el) && el !== breadcrumbs && !breadcrumbs?.contains(el));
                 const detailTargets = [header, ...meta].filter(Boolean);
 

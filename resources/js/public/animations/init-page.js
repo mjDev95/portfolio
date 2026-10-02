@@ -17,7 +17,10 @@ export function initPageAnimations(container) {
     initBlogArchive(container);
     initBlogSingle(container);
 
-    const reveals = container.querySelectorAll('[data-reveal]');
+    const reveals = Array.from(container.querySelectorAll('[data-reveal]')).filter((el) => {
+        return !el.matches('[data-detail-header], [data-detail-body], [data-detail-breadcrumbs]') &&
+               !el.closest('[data-detail-header], [data-detail-body], [data-hero-curtain]');
+    });
 
     reveals.forEach((el) => {
         gsap.fromTo(
@@ -31,6 +34,7 @@ export function initPageAnimations(container) {
                 scrollTrigger: {
                     trigger: el,
                     start: 'top 85%',
+                    once: true,
                 },
             },
         );

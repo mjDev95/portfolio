@@ -90,7 +90,7 @@
     @endif
 
     {{-- Cabecera Monumental del Artículo --}}
-    <header class="editorial-article-header mb-2xl" data-reveal data-detail-header>
+    <header class="editorial-article-header mb-2xl" data-detail-header>
         <h1 class="h1 font-heading fw-bold text-primary text-break mb-sm" data-flip-text style="letter-spacing: -0.035em;">
             {{ $content->title }}
         </h1>
@@ -165,7 +165,7 @@
     <div class="row g-4 g-lg-5 mb-3xl">
         {{-- Columna Lateral: Table of Contents & Ficha Rápida (Desktop) --}}
         <aside class="col-12 col-lg-4 col-xl-3 d-none d-lg-block">
-            <div class="toc-sidebar-sticky" data-reveal>
+            <div class="toc-sidebar-sticky">
                 <div class="p-4 rounded-4 bg-surface-subtle border-subtle mb-4">
                     <span class="font-mono text-fluid-xs text-muted text-uppercase tracking-wider d-block mb-3">
                         Índice del Ensayo
@@ -212,7 +212,7 @@
         </aside>
 
         {{-- Columna Central: Contenido de Lectura (.prose-editorial) --}}
-        <main class="col-12 col-lg-8 col-xl-9" data-reveal data-detail-body>
+        <main class="col-12 col-lg-8 col-xl-9" data-detail-body>
             <div class="prose-editorial text-primary" id="article-prose-content">
                 @if ($content->body)
                     {!! $content->body_html !!}
@@ -222,7 +222,7 @@
             </div>
 
             {{-- Firma del Autor / Colophon Editorial --}}
-            <section class="mt-3xl pt-2xl border-top-subtle">
+            <section class="mt-3xl pt-2xl border-top-subtle" data-reveal>
                 <div class="p-4 p-md-5 rounded-4 bg-surface-subtle border-subtle d-flex flex-column flex-md-row gap-4 align-items-md-center">
                     <div class="author-avatar-wrap author-avatar-lg flex-shrink-0">
                         <img src="{{ asset('images/avatar.png') }}" 
