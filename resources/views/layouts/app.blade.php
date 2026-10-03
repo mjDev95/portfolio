@@ -68,7 +68,9 @@
         @yield('content')
     </main>
 
-    @include('partials.footer')
+    <div id="main-footer" class="footer-scroll-wrapper position-relative z-index-1 w-100 bg-footer will-change-transform">
+        @include('partials.footer')
+    </div>
 
     @include('partials.cookie-banner')
 

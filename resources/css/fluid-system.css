@@ -85,6 +85,7 @@ html.dark {
     --bg-surface: #12151a;
     --bg-surface-subtle: rgba(255, 255, 255, 0.03);
     --row-hover-bg: rgba(255, 255, 255, 0.025);
+    --footer-bg: #060708;
     
     /* Lectura y Tipografía Editorial */
     --text-primary: #ffffff;
@@ -141,6 +142,7 @@ html.light {
     --bg-surface: #ffffff;
     --bg-surface-subtle: rgba(0, 0, 0, 0.025);
     --row-hover-bg: rgba(0, 0, 0, 0.025);
+    --footer-bg: #edece6;
     
     /* Lectura y Tipografía Editorial */
     --text-primary: #16171a;        /* Carbón profundo */
@@ -242,6 +244,21 @@ html.light {
 .col-10   { grid-column: span 10; }
 .col-11   { grid-column: span 11; }
 .col-12   { grid-column: span 12; }
+
+@media (min-width: 576px) {
+    .col-sm-1  { grid-column: span 1; }
+    .col-sm-2  { grid-column: span 2; }
+    .col-sm-3  { grid-column: span 3; }
+    .col-sm-4  { grid-column: span 4; }
+    .col-sm-5  { grid-column: span 5; }
+    .col-sm-6  { grid-column: span 6; }
+    .col-sm-7  { grid-column: span 7; }
+    .col-sm-8  { grid-column: span 8; }
+    .col-sm-9  { grid-column: span 9; }
+    .col-sm-10 { grid-column: span 10; }
+    .col-sm-11 { grid-column: span 11; }
+    .col-sm-12 { grid-column: span 12; }
+}
 
 @media (min-width: 768px) {
     .col-md-1  { grid-column: span 1; }
@@ -488,12 +505,15 @@ html.light {
 .text-balance { text-wrap: balance; }
 .text-pretty  { text-wrap: pretty; }
 
+.lh-tight { line-height: 0.98 !important; }
 .lh-1    { line-height: 1 !important; }
 .lh-sm   { line-height: 1.25 !important; }
 .lh-base { line-height: 1.5 !important; }
 .lh-lg   { line-height: 2 !important; }
 
 .list-unstyled { list-style: none !important; padding-left: 0 !important; margin-bottom: 0; }
+
+.max-w-statement { max-width: 14ch !important; }
 
 /* ─────────────────────────────────────────
    7. ESCALA TIPOGRÁFICA FLUIDA (H1-H6 + prosa + hero)
@@ -572,6 +592,7 @@ html.light {
 .bg-secondary           { background-color: var(--bg-secondary) !important; }
 .bg-surface             { background-color: var(--bg-surface) !important; }
 .bg-surface-subtle      { background-color: var(--bg-surface-subtle) !important; }
+.bg-footer              { background-color: var(--footer-bg) !important; }
 .bg-transparent         { background-color: transparent !important; }
 
 /* 8.4 Bordes y Líneas Hairline */
@@ -790,6 +811,11 @@ html.light {
     height: auto;
     display: block;
 }
+
+.will-change-transform  { will-change: transform !important; }
+.icon-xl                { width: var(--fluid-s-xl) !important; height: var(--fluid-s-xl) !important; }
+.btn-unstyled           { background: transparent !important; border: 0 !important; padding: 0 !important; cursor: pointer; color: inherit; font-family: inherit; font-size: inherit; text-align: left; }
+.align-baseline         { vertical-align: baseline !important; }
 
 /* ─────────────────────────────────────────
    10. BORDER RADIUS & ROUNDED UTILITIES (Bootstrap 5.3 + Fluid)

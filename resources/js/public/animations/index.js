@@ -5,4 +5,5 @@ export { initHeroCurtain, cleanupHeroCurtain } from './hero-curtain';
 export { initSelectedCases, cleanupSelectedCases } from './selected-cases';
 export { initVelixReveals, cleanupVelixReveals } from './velix-reveal';
 export { initBlogSingle, initBlogArchive, cleanupBlogAnimations } from './blog';
+export { initFooterReveal, cleanupFooterReveal } from './footer';
 export { initPageAnimations } from './init-page';

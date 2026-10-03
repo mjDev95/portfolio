@@ -7,6 +7,7 @@ import { createFlipTransitions } from './flip-transitions';
 import { sendAnalyticsPing } from './tracker';
 import { cleanupDynamicIsland, syncDesktopIslandState, markNavigated } from '../animations/dynamic-island';
 import { closeShareModal } from './share-modal';
+import { cleanupFooterReveal, initFooterReveal } from '../animations/footer';
 
 function syncPageMetadata(html) {
     if (!html) return;
@@ -151,6 +152,7 @@ export function initBarba({ onAfterEnter } = {}) {
         stopScroll();
         markNavigated();
         cleanupDynamicIsland(true);
+        cleanupFooterReveal();
         ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     });
 
@@ -177,7 +179,11 @@ export function initBarba({ onAfterEnter } = {}) {
         // Recálculo continuo de altura al cargar imágenes del contenedor entrante
         watchImagesForScrollResize(data.next.container);
 
-        ScrollTrigger.refresh();
+        initFooterReveal();
+
+        requestAnimationFrame(() => {
+            ScrollTrigger.refresh();
+        });
 
         // Rastreo de Analíticas: Disparo de page_view para Google Analytics (gtag), Tag Manager (dataLayer) y telemetría
         const currentPath = window.location.pathname;
@@ -221,8 +227,8 @@ export function initBarba({ onAfterEnter } = {}) {
     if (typeof barba.hooks.error === 'function') {
         barba.hooks.error((data, error) => {
             console.error('[Barba] Error durante la transición de página:', error);
-            const colophon = document.querySelector('.editorial-colophon');
-            if (colophon) gsap.set(colophon, { clearProps: 'opacity' });
+            const siteFooter = document.querySelector('.site-footer, footer');
+            if (siteFooter) gsap.set(siteFooter, { clearProps: 'opacity' });
             startScroll();
             resizeScroll();
             ScrollTrigger.refresh();

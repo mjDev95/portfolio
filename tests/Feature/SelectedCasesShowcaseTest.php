@@ -54,18 +54,17 @@ class SelectedCasesShowcaseTest extends TestCase
             $response->assertSee("Proyecto Insignia {$i}");
         }
 
-        // Verifica la presencia de las 3 filas
-        $response->assertSee('row-01');
-        $response->assertSee('row-02');
-        $response->assertSee('row-03');
+        // Verifica la presencia del contenedor unificado y las tarjetas
+        $response->assertSee('showcase-cards-container');
+        $response->assertSee('project-card-wrap');
 
         // Verifica el componente universal CTA con el conteo de 5 proyectos
-        $response->assertSee('stodio-all-cases-btn');
+        $response->assertSee('archive-all-cases-btn');
         $response->assertSee('Ver todos los proyectos');
         $response->assertSee('(05)');
     }
 
-    public function test_universal_stodio_cta_component_counts_correctly_for_any_cpt(): void
+    public function test_universal_archive_cta_component_counts_correctly_for_any_cpt(): void
     {
         $adminRole = Role::firstOrCreate(['slug' => 'admin'], ['name' => 'Admin']);
         $admin = User::factory()->create(['role_id' => $adminRole->id]);
@@ -91,10 +90,10 @@ class SelectedCasesShowcaseTest extends TestCase
             ]);
         }
 
-        // Renderiza el componente directamente a Blade
-        $html = (string) $this->blade('<x-stodio-cta type="blog" label="Ver todos los artículos" />');
+        // Renderiza el componente universal de archivo directamente a Blade
+        $html = (string) $this->blade('<x-cpt-archive-cta type="blog" label="Ver todos los artículos" />');
 
-        $this->assertStringContainsString('stodio-cta-wrap', $html);
+        $this->assertStringContainsString('archive-cta-wrap', $html);
         $this->assertStringContainsString('Ver todos los artículos', $html);
         $this->assertStringContainsString('(03)', $html);
         $this->assertStringContainsString(route('public.content.index', 'blog'), $html);

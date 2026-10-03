@@ -29,7 +29,7 @@ if (typeof window !== 'undefined') {
 
                 // Desvanecer INMEDIATAMENTE el texto de la tarjeta seleccionada para que solo quede la imagen
                 const cardBody = card.querySelector('.project-showcase-body') || 
-                                 card.querySelector('.stodio-meta-row') || 
+                                 card.querySelector('.project-meta-row') || 
                                  card.querySelector('.blog-editorial-card-body');
                 if (cardBody) {
                     gsap.to(cardBody, {
@@ -82,7 +82,7 @@ export function createFlipTransitions() {
                                        window.__lastClickedFlipCard ||
                                        data.current.container.querySelector('[data-flip-card]');
                     const originWrapper = originCard?.querySelector?.('[data-flip-element="image"]') ||
-                                          originCard?.querySelector?.('.stodio-media-frame') ||
+                                          originCard?.querySelector?.('.project-media-frame') ||
                                           originCard?.querySelector?.('.card-media-wrapper') ||
                                           originCard?.querySelector?.('.project-showcase-media') ||
                                           originCard;
@@ -226,7 +226,7 @@ export function createFlipTransitions() {
                     }
 
                     // 6. Timeline de salida: el entorno completo de la página vieja y el footer global se desvanecen
-                    const colophon = document.querySelector('.editorial-colophon');
+                    const siteFooter = document.querySelector('.site-footer, footer');
 
                     const tl = gsap.timeline({
                         onComplete: () => {
@@ -243,7 +243,7 @@ export function createFlipTransitions() {
                     });
 
                     // Desvanecer rápidamente la página actual completa (autor, avatar, sidebar, texto) y el footer global
-                    tl.to([data.current.container, colophon].filter(Boolean), {
+                    tl.to([data.current.container, siteFooter].filter(Boolean), {
                         opacity: 0,
                         duration: 0.22,
                         ease: 'power2.inOut',
@@ -389,9 +389,9 @@ export function createFlipTransitions() {
                 }
 
                 // Restaurar la presencia del footer global en la nueva página
-                const colophon = document.querySelector('.editorial-colophon');
-                if (colophon) {
-                    gsap.to(colophon, {
+                const siteFooter = document.querySelector('.site-footer, footer');
+                if (siteFooter) {
+                    gsap.to(siteFooter, {
                         opacity: 1,
                         duration: 0.35,
                         ease: 'power2.out',

@@ -69,7 +69,13 @@ html.no-noise .bg-noise-overlay {
     display: none !important;
 }
 
-main[data-barba="container"],
+main[data-barba="container"] {
+    position: relative;
+    z-index: 2;
+    background-color: var(--bg-primary);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
 .hero-editorial-section,
 .services-editorial-section,
 .selected-cases-section,
@@ -783,19 +789,16 @@ html.light .island-theme-btn .icon-sun  { display: none; }
 }
 
 /* ─────────────────────────────────────────────────────────────
-   5.1 SELECTED CASES — STODIO SEQUENCE (PINNED HERO & ASYMMETRIC CARDS)
+   5.1 PROYECTOS DESTACADOS — SECUENCIA ASIMÉTRICA CONTINUA
    ───────────────────────────────────────────────────────────── */
-.stodio-showcase-section {
-    position: relative;
-    width: 100%;
+.showcase-section {
     background-color: var(--bg-primary);
-    padding-bottom: clamp(5rem, 10vw, 9rem);
+    padding-bottom: clamp(4rem, 8vw, 7rem);
+    overflow-x: clip;
 }
 
-/* 1. Header Centrado (Pinned Hero) */
-.stodio-pinned-hero {
-    position: relative;
-    width: 100%;
+/* 1. Encabezado Centrado (Pinned Hero) */
+.showcase-pinned-hero {
     height: 100vh;
     display: flex;
     align-items: center;
@@ -804,7 +807,7 @@ html.light .island-theme-btn .icon-sun  { display: none; }
     pointer-events: none;
 }
 
-.stodio-header-content {
+.showcase-header-content {
     max-width: 820px;
     margin: 0 auto;
     text-align: center;
@@ -812,34 +815,8 @@ html.light .island-theme-btn .icon-sun  { display: none; }
     will-change: opacity, transform, filter;
 }
 
-/* Badge pill superior */
-.stodio-badge-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.35rem 0.95rem;
-    border-radius: 9999px;
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    font-size: var(--fluid-text-xs);
-    font-family: var(--font-mono);
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-primary);
-    margin-bottom: 1.5rem;
-}
-
-.stodio-badge-pill .red-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: var(--accent);
-    display: inline-block;
-}
-
 /* Título Principal */
-.stodio-title {
+.showcase-title {
     font-family: var(--font-heading);
     font-size: clamp(2.4rem, 5.2vw, 4.4rem);
     font-weight: 700;
@@ -849,7 +826,7 @@ html.light .island-theme-btn .icon-sun  { display: none; }
     margin-bottom: 1.25rem;
 }
 
-.stodio-subtitle {
+.showcase-subtitle {
     font-size: var(--fluid-text-base);
     color: var(--text-secondary);
     line-height: 1.6;
@@ -859,54 +836,27 @@ html.light .island-theme-btn .icon-sun  { display: none; }
 }
 
 /* ─────────────────────────────────────────
-   2. REJILLA DE TARJETAS FLOTANTES
+   2. REJILLA CONTINUA DE TARJETAS FLOTANTES
    ───────────────────────────────────────── */
-.stodio-cards-container {
-    position: relative;
+.showcase-cards-container {
     z-index: 2;
-    width: 100%;
     margin-top: -14vh;
-}
-
-.stodio-card-row {
-    position: relative;
-    width: 100%;
-}
-
-/* Fila 1 (_01): Gradiente suave a ancho completo que cubre el header fijado */
-.stodio-card-row.row-01 {
     padding-top: clamp(2rem, 5vh, 4rem);
     padding-bottom: clamp(3rem, 6vw, 6rem);
-    background-image: linear-gradient(
-        to bottom,
-        transparent 0%,
-        color-mix(in srgb, var(--bg-primary) 80%, transparent) 22%,
-        var(--bg-primary) 60%,
-        var(--bg-primary) 100%
-    );
 }
 
-/* Fila 2 (_02): Fondo sólido con espaciado equilibrado */
-.stodio-card-row.row-02 {
-    padding-top: clamp(48px, 8vh, 100px);
-    padding-bottom: clamp(3rem, 6vw, 6rem);
-    background-color: var(--bg-primary);
+.showcase-cards-inner {
+    padding-inline: var(--fluid-gutter-x) !important;
 }
 
-/* Fila 3 (_03): Fondo sólido con espaciado equilibrado */
-.stodio-card-row.row-03 {
-    padding-top: clamp(48px, 8vh, 100px);
-    padding-bottom: clamp(3rem, 6vw, 6rem);
-    background-color: var(--bg-primary);
+.mt-card-flow {
+    margin-top: clamp(3rem, 6vw, 6rem);
 }
 
-.stodio-cta-wrap {
-    position: relative;
+/* Contenedor para tarjeta única centrada */
+.card-center-wrap {
     width: 100%;
-    z-index: 2;
-    padding-top: clamp(3rem, 6vh, 5rem);
-    padding-bottom: clamp(4rem, 8vh, 6rem);
-    background-color: var(--bg-primary);
+    max-width: clamp(520px, 50vw, 760px);
 }
 
 @media (min-width: 768px) {
@@ -915,68 +865,35 @@ html.light .island-theme-btn .icon-sun  { display: none; }
     }
 }
 
-/* Contenedor para tarjeta única centrada */
-.stodio-card-center-wrap {
-    width: 100%;
-    max-width: 100%;
-}
-
-@media (min-width: 768px) {
-    .stodio-card-center-wrap {
-        width: 100%;
-        max-width: clamp(520px, 50vw, 760px);
-        margin-inline: auto;
-    }
-}
-
-/* Optimizaciones de espaciado y legibilidad para móviles */
+/* Responsive móvil */
 @media (max-width: 767.98px) {
-    .stodio-showcase-section {
-        padding-bottom: 3.5rem;
+    .showcase-section {
+        padding-bottom: 3rem;
     }
 
-    .stodio-pinned-hero {
+    .showcase-pinned-hero {
         height: auto;
-        min-height: 48vh;
-        padding: 4.5rem var(--fluid-gutter-x) 1.5rem;
+        min-height: 44vh;
+        padding: 4rem var(--fluid-gutter-x) 1rem;
     }
 
-    .stodio-title {
+    .showcase-title {
         font-size: clamp(2rem, 8vw, 2.75rem);
         margin-bottom: 0.75rem;
     }
 
-    .stodio-subtitle {
+    .showcase-subtitle {
         font-size: var(--fluid-text-sm);
     }
 
-    .stodio-cards-container {
+    .showcase-cards-container {
         margin-top: 0;
+        padding-top: 1.5rem;
+        padding-bottom: 2rem;
     }
 
-    .stodio-card-row {
-        padding-top: 1rem !important;
-        padding-bottom: 1.5rem !important;
-    }
-
-    .stodio-card-row.row-01 {
-        padding-top: 1rem !important;
-        padding-bottom: 1.5rem !important;
-    }
-
-    .stodio-card-row.row-02 {
-        padding-top: 1.25rem !important;
-        padding-bottom: 1.5rem !important;
-    }
-
-    .stodio-card-row.row-03 {
-        padding-top: 1.25rem !important;
-        padding-bottom: 1.5rem !important;
-    }
-
-    .stodio-cta-wrap {
-        padding-top: 1.5rem !important;
-        padding-bottom: 2.5rem !important;
+    .mt-card-flow {
+        margin-top: 2rem;
     }
 
     .offset-top-col {
@@ -984,44 +901,23 @@ html.light .island-theme-btn .icon-sun  { display: none; }
     }
 }
 
-/* Estructura de la tarjeta — Cero Border Radius estricto */
-.stodio-card-wrap {
-    width: 100%;
-    max-width: 100%;
-    will-change: transform, filter, opacity;
-    border-radius: 0 !important;
-}
-
-.stodio-card {
-    width: 100%;
-    max-width: 100%;
-    text-decoration: none !important;
-    display: block;
-    color: inherit;
-    border-radius: 0 !important;
-}
-
-.stodio-media-frame {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-    border-radius: 0 !important;
+/* Estructura de Tarjetas */
+.project-media-frame {
     background-color: var(--bg-surface);
     border: 1px solid var(--border-subtle);
     margin-bottom: 0.9rem;
     will-change: transform;
 }
 
-.stodio-media-frame img {
+.project-media-frame img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
-    border-radius: 0 !important;
     transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.stodio-card:hover .stodio-media-frame img {
+.project-card:hover .project-media-frame img {
     transform: scale(1.035);
 }
 
@@ -1029,15 +925,15 @@ html.light .island-theme-btn .icon-sun  { display: none; }
 .aspect-16-10 { aspect-ratio: 16 / 10.5; }
 .aspect-portrait { aspect-ratio: 4 / 4.8; }
 
-/* Metadatos inferiores de la tarjeta */
-.stodio-meta-row {
+/* Metadatos de Tarjeta */
+.project-meta-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0.25rem 0;
 }
 
-.stodio-project-name {
+.project-name {
     font-family: var(--font-heading);
     font-size: var(--fluid-text-lg);
     font-weight: 700;
@@ -1046,7 +942,7 @@ html.light .island-theme-btn .icon-sun  { display: none; }
     margin: 0;
 }
 
-.stodio-project-category {
+.project-category {
     font-family: var(--font-mono);
     font-size: var(--fluid-text-xs);
     font-weight: 600;
@@ -1055,8 +951,13 @@ html.light .island-theme-btn .icon-sun  { display: none; }
     color: var(--text-muted);
 }
 
+/* Botón CTA Final */
+.archive-cta-wrap {
+    position: relative;
+    width: 100%;
+}
 
-.stodio-all-cases-btn {
+.archive-all-cases-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.65rem;
@@ -1069,16 +970,16 @@ html.light .island-theme-btn .icon-sun  { display: none; }
     transition: opacity 0.3s ease;
 }
 
-.stodio-all-cases-btn .arrow {
+.archive-all-cases-btn .arrow {
     display: inline-block;
     transition: transform 0.3s ease;
 }
 
-.stodio-all-cases-btn:hover .arrow {
+.archive-all-cases-btn:hover .arrow {
     transform: translateX(6px);
 }
 
-.stodio-all-cases-btn .cases-count {
+.archive-all-cases-btn .cases-count {
     color: var(--accent);
     font-size: 0.85rem;
     font-family: var(--font-mono);
@@ -2285,243 +2186,31 @@ html.light .btn-universal.is-active {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   17. MINIMAL EDITORIAL COLOPHON (FOOTER - GRANDES LETRAS)
+   17. SITE FOOTER (MICROINTERACCIONES DE ENLACE)
    ───────────────────────────────────────────────────────────── */
-.editorial-colophon {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    background-color: var(--bg-primary);
-    border-top: 1px solid var(--border-subtle);
-    padding-top: clamp(4.5rem, 8.5vw, 8.5rem);
-    padding-bottom: clamp(2rem, 4vw, 3.5rem);
-    padding-inline: var(--fluid-gutter-x);
-    box-sizing: border-box;
-}
-
-.colophon-container {
-    width: 100%;
-    max-width: var(--fluid-max-width, 1360px);
-    margin: 0 auto;
-    box-sizing: border-box;
-}
-
-.colophon-main-row {
-    display: grid;
-    grid-template-columns: 1.15fr 1.35fr;
-    gap: clamp(3rem, 6vw, 6.5rem);
-    align-items: start;
-    margin-bottom: clamp(4rem, 7vw, 7rem);
-}
-
-/* Columna Izquierda: Brand Sparkle + Monumental Statement */
-.colophon-statement-col {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.colophon-brand-sparkle {
-    width: clamp(2rem, 2.8vw, 3rem);
-    height: clamp(2rem, 2.8vw, 3rem);
-    color: var(--accent);
-    margin-bottom: clamp(1.8rem, 2.5vw, 2.8rem);
-    flex-shrink: 0;
-}
-
-.colophon-brand-sparkle svg {
-    width: 100%;
-    height: 100%;
-    display: block;
-}
-
-.colophon-statement-heading {
-    font-family: var(--font-heading);
-    font-size: clamp(2.35rem, 4.5vw, 4.4rem);
-    font-weight: 600;
-    line-height: 1.08;
-    letter-spacing: -0.035em;
-    color: var(--text-primary);
-    margin: 0;
-    max-width: 13ch;
-}
-
-/* Columna Derecha: Grilla 2x2 con Letras Grandes */
-.colophon-links-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    row-gap: clamp(2.5rem, 4.5vw, 4.5rem);
-    column-gap: clamp(2rem, 4vw, 4.5rem);
-}
-
-.colophon-group {
-    display: flex;
-    flex-direction: column;
-    gap: clamp(1rem, 1.4vw, 1.5rem);
-}
-
-.colophon-group-title {
-    font-family: var(--font-mono);
-    font-size: var(--fluid-text-xs);
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-}
-
-.colophon-dot-accent {
-    color: var(--accent);
-    font-size: 1.25rem;
-    line-height: 0;
-}
-
-.colophon-group-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: clamp(0.55rem, 0.85vw, 0.95rem);
-}
-
-/* Letras Grandes Editoriales */
-.colophon-big-link,
-.colophon-big-text {
-    font-family: var(--font-sans);
-    font-size: clamp(1.2rem, 1.5vw, 1.65rem);
-    font-weight: 400;
-    line-height: 1.25;
-    letter-spacing: -0.015em;
-    color: var(--text-primary);
-    text-decoration: none;
+.footer-nav-link {
     transition: color 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    display: inline-block;
 }
 
-.colophon-big-link:hover {
-    color: var(--text-secondary);
+.footer-nav-link:hover {
+    color: var(--text-secondary) !important;
     transform: translateX(3px);
 }
 
-.colophon-big-text {
-    color: var(--text-secondary);
-}
-
-.colophon-email-link {
-    word-break: break-all;
-}
-
-/* Grupo Contacto & Enlace Monumental de Correo */
-.colophon-group-contact {
-    grid-column: 1 / -1;
-    margin-top: clamp(0.5rem, 1vw, 1.25rem);
-}
-
-.colophon-email-monumental {
-    display: inline-flex;
-    align-items: baseline;
-    gap: clamp(0.5rem, 1.2vw, 1.25rem);
-    color: var(--text-primary);
-    text-decoration: none;
-    font-family: var(--font-heading);
-    font-size: clamp(1.85rem, 3.8vw, 3.8rem);
-    font-weight: 700;
-    line-height: 0.98;
-    letter-spacing: -0.04em;
-    word-break: break-word;
-    overflow-wrap: anywhere;
+.footer-contact-link {
     transition: color 0.3s ease;
 }
 
-.colophon-email-monumental:hover {
-    color: var(--text-secondary);
+.footer-contact-link:hover {
+    color: var(--text-secondary) !important;
 }
 
-.colophon-email-monumental .arrow {
-    display: inline-block;
-    color: var(--accent);
-    font-family: var(--font-mono);
-    font-weight: 400;
-    font-size: clamp(1.5rem, 3vw, 3.2rem);
-    line-height: 1;
+.footer-contact-link .arrow {
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    vertical-align: baseline;
 }
 
-.colophon-email-monumental:hover .arrow {
+.footer-contact-link:hover .arrow {
     transform: translate(6px, -6px);
-}
-
-.btn-unstyled-link {
-    background: transparent;
-    border: none;
-    padding: 0;
-    text-align: left;
-    cursor: pointer;
-}
-
-/* Línea Inferior Final */
-.colophon-baseline {
-    padding-top: clamp(1.8rem, 2.5vw, 2.8rem);
-    border-top: 1px solid var(--border-subtle);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-family: var(--font-mono);
-    font-size: var(--fluid-text-xs);
-    color: var(--text-muted);
-    letter-spacing: 0.04em;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.scroll-top {
-    background: none;
-    border: none;
-    padding: 0;
-    color: inherit;
-    font-family: inherit;
-    font-size: inherit;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: inherit;
-    transition: color 0.2s ease;
-}
-
-.scroll-top:hover {
-    color: var(--text-primary);
-}
-
-/* Responsive Breakpoints */
-@media (max-width: 991.98px) {
-    .colophon-main-row {
-        grid-template-columns: 1fr;
-        gap: clamp(3rem, 5vw, 4.5rem);
-    }
-
-    .colophon-statement-heading {
-        max-width: 18ch;
-    }
-}
-
-@media (max-width: 575.98px) {
-    .colophon-links-grid {
-        grid-template-columns: 1fr;
-        row-gap: 2.25rem;
-    }
-
-    .colophon-statement-heading {
-        font-size: clamp(2rem, 7.5vw, 2.8rem);
-    }
-
-    .colophon-baseline {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.75rem;
-    }
 }
 
 /* ─────────────────────────────────────────────────────────────

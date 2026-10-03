@@ -12,35 +12,35 @@ export function cleanupSelectedCases() {
 }
 
 /**
- * Initializes the Pinned Header & Floating Asymmetric Cards sequence for Selected Cases
- * on the homepage, based on the Webflow Stodio Sequence reference:
+ * Initializes the Pinned Header & Unified Floating Cards sequence for Selected Cases
+ * on the homepage:
  * - Header is vertically centered (100vh) and pins as the top of the section reaches top: 0.
- * - Title animates with Velix character-by-character blur reveal (identical to "hello I'm Mario").
- * - Cards rise over the pinned header.
- * - Row 1 features a soft gradient overlay (linear-gradient) that masks the centered text as it reaches it.
- * - Header text smoothly fades/blurs out, reaching opacity 0 as the row touches the top of the viewport.
- * - Subsequent rows feature solid background (var(--bg-primary)), ensuring zero text collision in forward or reverse.
+ * - Title animates with character-by-character blur reveal.
+ * - Single continuous cards container rises over the pinned header.
+ * - Header text smoothly fades out as the cards container rises.
+ * - Header unpins cleanly once covered by the cards container, freeing GPU resources.
+ * - All cards are in a single unified grid, animating into view with calibrated motion.
  *
  * @param {HTMLElement} container - Incoming Barba container (or document)
  */
 export function initSelectedCases(container) {
     cleanupSelectedCases();
 
-    const section = container.querySelector('[data-selected-cases-stodio]');
+    const section = container.querySelector('[data-selected-cases]');
     if (!section) return;
 
     selectedCasesCtx = gsap.context(() => {
-        const pinnedHeader = section.querySelector('.stodio-pinned-hero');
-        const headerContent = section.querySelector('.stodio-header-content');
-        const cardsContainer = section.querySelector('.stodio-cards-container');
-        const cards = Array.from(section.querySelectorAll('.stodio-card-wrap'));
+        const pinnedHeader = section.querySelector('.showcase-pinned-hero');
+        const headerContent = section.querySelector('.showcase-header-content');
+        const cardsContainer = section.querySelector('.showcase-cards-container');
+        const cards = Array.from(section.querySelectorAll('.project-card-wrap'));
 
         if (!pinnedHeader || !cardsContainer || !headerContent) return;
 
-        const titleEl = headerContent.querySelector('.stodio-title');
-        const subtitleEl = headerContent.querySelector('.stodio-subtitle');
+        const titleEl = headerContent.querySelector('.showcase-title');
+        const subtitleEl = headerContent.querySelector('.showcase-subtitle');
 
-        // Split text into individual characters for Velix blur reveal
+        // Split text into individual characters for blur reveal
         const titleChars = titleEl ? splitTextIntoFramerChars(titleEl) : [];
 
         const finalizeChars = (chars) => {
@@ -62,7 +62,7 @@ export function initSelectedCases(container) {
             return;
         }
 
-        // 1. Configuración de entrada con blur reveal letra por letra (estilo "hello I'm Mario")
+        // 1. Configuración de entrada de texto
         if (titleChars.length) {
             gsap.set(titleChars, {
                 opacity: 0,
@@ -116,19 +116,18 @@ export function initSelectedCases(container) {
             onEnterBack: () => entranceTl.play(),
         });
 
-        // 2. Anclaje (Pin) del encabezado en el centro del viewport cuando la sección toca el top
+        // 2. Anclaje (Pin) del encabezado: se ancla al tocar el top y se desancla
+        // cuando el contenedor de tarjetas (con fondo sólido) cubre la pantalla.
         ScrollTrigger.create({
             trigger: section,
             start: 'top top',
             endTrigger: cardsContainer,
-            end: 'bottom bottom',
+            end: 'top top',
             pin: pinnedHeader,
             pinSpacing: false,
         });
 
-        // 3. Desvanecimiento suave del texto coordinado con la primera fila:
-        // Inicia cuando la fila 1 sube al 55% y culmina cuando la fila toca el borde superior (10%).
-        // Acompañado del degradado de fondo en .row-01 y fondos sólidos en .row-02 y .row-03.
+        // 3. Desvanecimiento suave del texto mientras sube el contenedor de tarjetas
         gsap.to(headerContent, {
             opacity: 0,
             y: -30,
@@ -137,38 +136,61 @@ export function initSelectedCases(container) {
             immediateRender: false,
             scrollTrigger: {
                 trigger: cardsContainer,
-                start: 'top 55%',
-                end: 'top 10%',
+                start: 'top 60%',
+                end: 'top 15%',
                 scrub: 0.8,
             },
         });
 
-        // 4. Animación bidireccional de entrada y salida para cada tarjeta
+        // 4. Animación de entrada de cada tarjeta — patrón diferido:
+        // El estado inicial y willChange se aplican sólo en onEnter,
+        // evitando crear capas GPU para tarjetas que aún no son visibles.
+        // Las tarjetas en fila visual 3+ (index >= 2) no usan blur para
+        // no competir en el presupuesto del compositor con el scrub de headerContent.
         cards.forEach((card, index) => {
             const isInitialCard = index < 2;
+            const useBlur = index < 2;
+            const yOffset = isInitialCard ? 35 : 40;
 
-            const cardAnimation = gsap.fromTo(
-                card,
-                {
-                    filter: isInitialCard ? 'blur(8px)' : 'blur(16px)',
-                    y: isInitialCard ? 45 : 85,
-                    opacity: 0,
-                },
-                {
-                    filter: 'blur(0px)',
-                    y: 0,
-                    opacity: 1,
-                    duration: 0.9,
-                    ease: 'power3.out',
-                    paused: true,
-                }
-            );
+            // Estado oculto inicial sin willChange (sin GPU layer hasta que entre)
+            gsap.set(card, { opacity: 0, y: yOffset });
+
+            let cardTween = null;
 
             ScrollTrigger.create({
                 trigger: card,
-                start: isInitialCard ? 'top 85%' : 'top 78%',
-                onEnter: () => cardAnimation.play(),
-                onLeaveBack: () => cardAnimation.reverse(),
+                start: isInitialCard ? 'top 85%' : 'top 80%',
+                onEnter: () => {
+                    // Crear/reutilizar tween sólo cuando la tarjeta está a punto de entrar
+                    if (!cardTween) {
+                        const fromVars = { opacity: 0, y: yOffset, immediateRender: false };
+                        const toVars = {
+                            opacity: 1,
+                            y: 0,
+                            duration: 0.85,
+                            ease: 'power3.out',
+                            clearProps: 'willChange',
+                        };
+
+                        if (useBlur) {
+                            fromVars.filter = 'blur(6px)';
+                            fromVars.webkitFilter = 'blur(6px)';
+                            toVars.filter = 'blur(0px)';
+                            toVars.webkitFilter = 'blur(0px)';
+                            toVars.clearProps = 'filter,webkitFilter,willChange';
+                        }
+
+                        gsap.set(card, { willChange: 'transform, opacity' });
+                        cardTween = gsap.fromTo(card, fromVars, toVars);
+                    } else {
+                        cardTween.play();
+                    }
+                },
+                onLeaveBack: () => {
+                    if (cardTween) {
+                        cardTween.reverse();
+                    }
+                },
             });
         });
     }, section);

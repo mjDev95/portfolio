@@ -8,6 +8,7 @@ import { initCookieConsent } from './lib/cookie-consent';
 import { initThemeToggle } from './lib/theme-toggle';
 import { initDynamicIsland } from './animations/dynamic-island';
 import { initShareModal } from './lib/share-modal';
+import { initFooterReveal } from './animations/footer';
 
 document.addEventListener('DOMContentLoaded', () => {
     initThemeToggle();
@@ -37,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Inicializar Dynamic Island DESPUÉS de que el pin spacer del hero curtain (1600px) esté calculado
     initDynamicIsland();
+    initFooterReveal();
 
     initBarba({
         onAfterEnter: () => {
@@ -48,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 initContactForm(nextContainer);
             }
             initDynamicIsland();
+            initFooterReveal();
         },
     });
 });

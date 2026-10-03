@@ -132,7 +132,7 @@ export function initTextReveal(container = document) {
         // 1. Text elements with explicit Velix targets or typography headings/paragraphs with [data-reveal]
         const explicitTargets = container.querySelectorAll('[data-velix-target], [data-blur-reveal]');
         explicitTargets.forEach((target) => {
-            if (target.closest('[data-hero-curtain]') || target.closest('[data-selected-cases-stodio]')) return;
+            if (target.closest('[data-hero-curtain]') || target.closest('[data-selected-cases]')) return;
 
             const chars = splitTextIntoFramerChars(target);
             if (!chars.length) return;
@@ -152,7 +152,7 @@ export function initTextReveal(container = document) {
         const textTagNames = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P', 'SPAN'];
 
         revealElements.forEach((el) => {
-            if (el.closest('[data-hero-curtain]') || el.closest('[data-selected-cases-stodio]') || el.dataset.velixSplit === 'true') return;
+            if (el.closest('[data-hero-curtain]') || el.closest('[data-selected-cases]') || el.dataset.velixSplit === 'true') return;
 
             const isText = textTagNames.includes(el.tagName) && el.children.length === 0;
 

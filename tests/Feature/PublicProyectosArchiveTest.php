@@ -123,8 +123,8 @@ class PublicProyectosArchiveTest extends TestCase
         $response = $this->get(route('home'));
 
         $response->assertStatus(200);
-        $response->assertSee('data-selected-cases-stodio', false);
-        $response->assertSee('stodio-pinned-hero');
+        $response->assertSee('data-selected-cases', false);
+        $response->assertSee('showcase-pinned-hero');
         $response->assertSee('data-project-card', false);
         $response->assertSee('data-flip-card', false);
         $response->assertSee('data-flip-id="project-stodio-project-test"', false);
