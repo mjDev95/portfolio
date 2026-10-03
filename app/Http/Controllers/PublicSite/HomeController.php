@@ -4,6 +4,7 @@ namespace App\Http\Controllers\PublicSite;
 
 use App\Http\Controllers\Controller;
 use App\Models\Content;
+use App\Models\ContentType;
 use App\Services\PortfolioCacheService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -35,9 +36,28 @@ class HomeController extends Controller
                 ->get()
             : collect();
 
+        $blogCpt = ContentType::where('slug', 'blog')->where('is_public', true)->first();
+
+        $latestPosts = $blogCpt
+            ? Content::query()
+                ->where('content_type_id', $blogCpt->id)
+                ->published()
+                ->with([
+                    'media' => fn ($q) => $q->where('content_media.collection', 'thumbnail'),
+                    'categories',
+                    'contentType',
+                ])
+                ->orderByDesc('featured')
+                ->orderByDesc('published_at')
+                ->take(2)
+                ->get()
+            : collect();
+
         return view('home', [
             'featuredProjects' => $featuredContents,
             'featuredContents' => $featuredContents,
+            'latestPosts' => $latestPosts,
+            'blogCpt' => $blogCpt,
         ]);
     }
 }

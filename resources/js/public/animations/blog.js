@@ -15,7 +15,7 @@ export function cleanupBlogAnimations() {
     }
     const progressBar = document.getElementById('reading-progress-bar');
     if (progressBar) {
-        progressBar.style.width = '0%';
+        progressBar.style.transform = 'scaleX(0)';
     }
 }
 
@@ -114,35 +114,18 @@ export function initBlogSingle(container) {
             }
         }
 
-        // ── 2. Reading Progress Bar ──
+        // ── 2. Reading Progress Bar (Gradual & GPU-Accelerated) ──
         const progressBar = document.getElementById('reading-progress-bar') || container.querySelector('#reading-progress-bar');
-        if (progressBar) {
+        const article = container.querySelector('article') || prose;
+        if (progressBar && article) {
             ScrollTrigger.create({
-                trigger: prose,
-                start: 'top 120px',
+                trigger: article,
+                start: 'top top',
                 end: 'bottom bottom',
                 onUpdate: (self) => {
-                    const pct = Math.min(Math.max(self.progress * 100, 0), 100);
-                    progressBar.style.width = `${pct}%`;
+                    const progress = Math.min(Math.max(self.progress, 0), 1);
+                    progressBar.style.transform = `scaleX(${progress})`;
                 },
-            });
-        }
-
-        // ── 3. Botón de Copiado de Enlace con Micro-Feedback ──
-        const copyBtn = container.querySelector('#btn-copy-article-url');
-        if (copyBtn) {
-            copyBtn.addEventListener('click', async () => {
-                try {
-                    await navigator.clipboard.writeText(window.location.href);
-                    copyBtn.classList.add('is-copied');
-                    gsap.fromTo(copyBtn, { scale: 0.95 }, { scale: 1, duration: 0.25, ease: 'back.out(2)' });
-                    setTimeout(() => {
-                        copyBtn.classList.remove('is-copied');
-                    }, 2000);
-                } catch (e) {
-                    copyBtn.classList.add('is-copied');
-                    setTimeout(() => copyBtn.classList.remove('is-copied'), 2000);
-                }
             });
         }
     }, container);
@@ -216,19 +199,25 @@ export function initBlogArchive(container) {
                     postsGrid.appendChild(card);
                 });
 
-                // Animar suavemente las nuevas tarjetas agregadas
-                gsap.fromTo(
-                    newCards,
-                    { opacity: 0, y: 30 },
-                    {
-                        opacity: 1,
-                        y: 0,
-                        duration: 0.55,
-                        stagger: 0.06,
-                        ease: 'power2.out',
-                        clearProps: 'transform',
-                    }
-                );
+                // Animar suavemente las nuevas tarjetas agregadas con subida y blur escalonado
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    gsap.set(newCards, { opacity: 1, y: 0, filter: 'none', webkitFilter: 'none' });
+                } else {
+                    gsap.fromTo(
+                        newCards,
+                        { opacity: 0, y: 45, filter: 'blur(12px)', webkitFilter: 'blur(12px)' },
+                        {
+                            opacity: 1,
+                            y: 0,
+                            filter: 'blur(0px)',
+                            webkitFilter: 'blur(0px)',
+                            duration: 0.85,
+                            stagger: 0.18,
+                            ease: 'power3.out',
+                            clearProps: 'transform,filter,webkitFilter',
+                        }
+                    );
+                }
 
                 // Recalcular límites de scroll y refrescar ScrollTrigger
                 resizeScroll();
@@ -271,4 +260,61 @@ export function initBlogArchive(container) {
 
         blogObserver.observe(sentinel);
     }
+}
+
+/**
+ * Staggered upward reveal with blur for blog showcase cards.
+ * Used for both the Archive grid and Single "Otros artículos" section.
+ *
+ * @param {HTMLElement} container - Scoped Barba container
+ */
+export function initCardReveals(container) {
+    const cardElements = Array.from(container.querySelectorAll('[data-card-reveal]'));
+    if (!cardElements.length) return;
+
+    // Group cards by their immediate parent grid/row container
+    const parentGroups = new Map();
+    cardElements.forEach((card) => {
+        const parent = card.parentElement;
+        if (!parent) return;
+        if (!parentGroups.has(parent)) {
+            parentGroups.set(parent, []);
+        }
+        parentGroups.get(parent).push(card);
+    });
+
+    parentGroups.forEach((cards, parent) => {
+        if (!cards.length) return;
+
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            gsap.set(cards, { opacity: 1, y: 0, filter: 'none', webkitFilter: 'none' });
+            return;
+        }
+
+        // Set initial state: shifted down and blurred
+        gsap.set(cards, {
+            opacity: 0,
+            y: 45,
+            filter: 'blur(12px)',
+            webkitFilter: 'blur(12px)',
+        });
+
+        ScrollTrigger.create({
+            trigger: parent,
+            start: 'top 88%',
+            once: true,
+            onEnter: () => {
+                gsap.to(cards, {
+                    opacity: 1,
+                    y: 0,
+                    filter: 'blur(0px)',
+                    webkitFilter: 'blur(0px)',
+                    duration: 0.85,
+                    ease: 'power3.out',
+                    stagger: 0.18, // Ligero retraso entre tarjetas
+                    clearProps: 'transform,filter,webkitFilter',
+                });
+            },
+        });
+    });
 }

@@ -327,18 +327,22 @@ class ContentController extends Controller
         abort_unless($contentId, 404);
 
         $content = Content::where('id', $contentId)
-            ->with(['media', 'categories', 'tags'])
+            ->with(['media', 'categories', 'tags', 'user'])
             ->firstOrFail();
 
-        $nextPost = Content::where('content_type_id', $cpt->id)
+        $otherPosts = Content::where('content_type_id', $cpt->id)
             ->published()
             ->where('id', '!=', $content->id)
             ->with([
                 'media' => fn ($q) => $q->where('content_media.collection', 'thumbnail'),
                 'categories',
+                'tags',
             ])
             ->orderByDesc('published_at')
-            ->first();
+            ->take(2)
+            ->get();
+
+        $nextPost = $otherPosts->first();
 
         $view = view()->exists("public.content.{$cpt->slug}.show")
             ? "public.content.{$cpt->slug}.show"
@@ -350,6 +354,7 @@ class ContentController extends Controller
             'cpt' => $cpt,
             'contentType' => $cpt,
             'content' => $content,
+            'otherPosts' => $otherPosts,
             'nextPost' => $nextPost,
         ]);
     }

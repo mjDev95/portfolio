@@ -13,7 +13,7 @@ export function splitTextIntoFramerChars(element) {
 
     // Avoid double splitting
     if (element.dataset.velixSplit === 'true') {
-        return Array.from(element.querySelectorAll('.framer-char'));
+        return Array.from(element.querySelectorAll('.split-char, .framer-char'));
     }
 
     function processNode(node) {
@@ -28,11 +28,11 @@ export function splitTextIntoFramerChars(element) {
 
             words.forEach((word, wIdx) => {
                 const wordWrapper = document.createElement('span');
-                wordWrapper.className = 'framer-word';
+                wordWrapper.className = 'split-word';
 
                 for (const char of word) {
                     const charSpan = document.createElement('span');
-                    charSpan.className = 'framer-char';
+                    charSpan.className = 'split-char';
                     charSpan.textContent = char;
                     charSpan.style.filter = 'blur(12px)';
                     charSpan.style.webkitFilter = 'blur(12px)';
@@ -68,7 +68,7 @@ export function splitTextIntoFramerChars(element) {
     });
 
     element.dataset.velixSplit = 'true';
-    return Array.from(element.querySelectorAll('.framer-char'));
+    return Array.from(element.querySelectorAll('.split-char, .framer-char'));
 }
 
 /**

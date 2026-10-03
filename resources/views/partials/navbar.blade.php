@@ -1,3 +1,9 @@
+@php
+    $navAuthor = $primaryAuthor ?? \App\Models\User::getPrimaryClient();
+    $navAvatar = $navAuthor?->avatar_url ?? asset('images/avatar.png');
+    $navInitials = $navAuthor?->initials ?? 'MJ';
+    $navName = $navAuthor?->name ?? 'Mario Joaquín Galicia';
+@endphp
 <header class="site-header-fixed {{ request()->routeIs('home') ? 'navbar-curtain-hidden' : '' }}" id="site-header" data-magnetic-zone>
     {{-- ══════════════════════════════════════════════════════════════════════════
          1. ISLA DESKTOP (Exclusiva para Ordenador: min-width: 1024px)
@@ -5,13 +11,13 @@
     <div class="nav-desktop-island" id="desktop-island">
         {{-- Bloque Expandido Inicial (Avatar + Enlaces + Theme + Contact) --}}
         <div class="desktop-island-expanded" id="desktop-island-expanded">
-            <a href="{{ route('home') }}" class="island-avatar-btn" data-magnetic title="Mario Joaquín Galicia — Volver al inicio">
+            <a href="{{ route('home') }}" class="island-avatar-btn" data-magnetic title="{{ $navName }} — Volver al inicio">
                 <div class="island-avatar-wrap">
-                    <img src="{{ asset('images/avatar.png') }}" 
-                         alt="Mario J. Galicia" 
+                    <img src="{{ $navAvatar }}" 
+                         alt="{{ $navName }}" 
                          class="island-avatar-img"
                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <span class="island-avatar-fallback">MJ</span>
+                    <span class="island-avatar-fallback">{{ $navInitials }}</span>
                 </div>
             </a>
 
@@ -61,13 +67,13 @@
 
         {{-- Bloque Compacto Desktop (Avatar + Available for work 🟢) --}}
         <div class="desktop-island-compact" id="desktop-island-compact">
-            <a href="{{ route('home') }}" class="island-avatar-btn" data-magnetic title="Mario Joaquín Galicia">
+            <a href="{{ route('home') }}" class="island-avatar-btn" data-magnetic title="{{ $navName }}">
                 <div class="island-avatar-wrap">
-                    <img src="{{ asset('images/avatar.png') }}" 
-                         alt="Mario J. Galicia" 
+                    <img src="{{ $navAvatar }}" 
+                         alt="{{ $navName }}" 
                          class="island-avatar-img"
                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <span class="island-avatar-fallback">MJ</span>
+                    <span class="island-avatar-fallback">{{ $navInitials }}</span>
                 </div>
             </a>
             <span class="island-status-text">Available for work</span>
@@ -92,13 +98,13 @@
     <div class="nav-mobile-island" id="mobile-island">
         {{-- Cabecera fija de la píldora: Avatar + Available + Dot + Toggle --}}
         <div class="mobile-island-bar" id="mobile-island-bar">
-            <a href="{{ route('home') }}" class="island-avatar-btn" title="Mario Joaquín Galicia">
+            <a href="{{ route('home') }}" class="island-avatar-btn" title="{{ $navName }}">
                 <div class="island-avatar-wrap">
-                    <img src="{{ asset('images/avatar.png') }}" 
-                         alt="Mario J. Galicia" 
+                    <img src="{{ $navAvatar }}" 
+                         alt="{{ $navName }}" 
                          class="island-avatar-img"
                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <span class="island-avatar-fallback">MJ</span>
+                    <span class="island-avatar-fallback">{{ $navInitials }}</span>
                 </div>
             </a>
             <div class="mobile-island-status">

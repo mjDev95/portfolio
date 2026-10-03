@@ -2,7 +2,12 @@ import DynamicFieldInput from '@/Components/DynamicFieldInput';
 import { Layers } from 'lucide-react';
 
 export default function CustomFieldsSection({ contentType, data, onChange, errors = {} }) {
-    if (!contentType.custom_fields || contentType.custom_fields.length === 0) {
+    const isBlog = contentType.slug === 'blog';
+    const displayFields = (contentType.custom_fields || []).filter(
+        (field) => !isBlog || !field.name.startsWith('cta_')
+    );
+
+    if (displayFields.length === 0) {
         return null;
     }
 
@@ -23,7 +28,7 @@ export default function CustomFieldsSection({ contentType, data, onChange, error
             </div>
 
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                {contentType.custom_fields.map((field) => (
+                {displayFields.map((field) => (
                     <div
                         key={field.id}
                         className={field.type === 'textarea' ? 'sm:col-span-2' : ''}

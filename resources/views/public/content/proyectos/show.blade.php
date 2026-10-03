@@ -32,7 +32,8 @@
         $externalUrl = $custom['external_url'] ?? null;
         $githubUrl = $custom['github_url'] ?? null;
         $videoFacadeUrl = $custom['video_facade_url'] ?? null;
-        $categoryName = $content->categories->first()?->name ?? ($cpt->singular_name ?? 'Proyecto');
+        $category = $content->categories->first();
+        $categoryName = $category?->name ?? ($cpt->singular_name ?? 'Proyecto');
     @endphp
 
     {{-- Hero Media Principal (Shared Element Transition con Flip) --}}
@@ -71,7 +72,15 @@
                 <span>{{ $year }}</span>
                 <span class="text-muted">&bull;</span>
             @endif
-            <span class="text-brand">{{ $categoryName }}</span>
+            @if ($category)
+                <a href="{{ route('public.content.category', [$cpt->public_route_slug, $category->slug]) }}" 
+                   class="text-brand fw-semibold text-decoration-none transition-opacity hover:opacity-100" 
+                   data-magnetic>
+                    {{ $categoryName }}
+                </a>
+            @else
+                <span class="text-brand">{{ $categoryName }}</span>
+            @endif
         </div>
 
         <h1 class="h1 font-heading fw-bold text-primary text-break" data-flip-text>{{ $content->title }}</h1>
@@ -86,25 +95,31 @@
             </p>
         @endif
 
-        {{-- Taxonomías & Chips de Tecnologías --}}
-        <div class="d-flex flex-wrap gap-2 align-items-center mt-md">
-            @foreach ($content->categories as $category)
-                <span class="data-chip">
-                    {{ $category->name }}
-                </span>
-            @endforeach
-
-            @if (!empty($stack))
-                @foreach (array_filter(array_map('trim', explode(',', $stack))) as $tech)
-                    <span class="data-chip font-mono text-fluid-xs">
-                        {{ $tech }}
+        {{-- Taxonomías, Chips & Acción de Compartir --}}
+        <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between mt-md">
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                @foreach ($content->categories as $category)
+                    <span class="data-chip">
+                        {{ $category->name }}
                     </span>
                 @endforeach
-            @endif
 
-            @foreach ($content->tags as $tag)
-                <span class="text-fluid-xs text-muted font-mono">#{{ $tag->name }}</span>
-            @endforeach
+                @if (!empty($stack))
+                    @foreach (array_filter(array_map('trim', explode(',', $stack))) as $tech)
+                        <span class="data-chip font-mono text-fluid-xs">
+                            {{ $tech }}
+                        </span>
+                    @endforeach
+                @endif
+
+                @foreach ($content->tags as $tag)
+                    <span class="text-fluid-xs text-muted font-mono">#{{ $tag->name }}</span>
+                @endforeach
+            </div>
+
+            <div class="d-flex align-items-center">
+                <x-share-button :title="$content->title" :type="'Proyecto'" />
+            </div>
         </div>
     </header>
 

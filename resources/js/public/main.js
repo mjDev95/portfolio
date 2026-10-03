@@ -7,10 +7,12 @@ import { sendAnalyticsPing } from './lib/tracker';
 import { initCookieConsent } from './lib/cookie-consent';
 import { initThemeToggle } from './lib/theme-toggle';
 import { initDynamicIsland } from './animations/dynamic-island';
+import { initShareModal } from './lib/share-modal';
 
 document.addEventListener('DOMContentLoaded', () => {
     initThemeToggle();
     initCookieConsent();
+    initShareModal();
 
     // Initial visit tracking ping (cookieless / non-blocking)
     sendAnalyticsPing(window.location.pathname);

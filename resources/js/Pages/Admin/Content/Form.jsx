@@ -4,6 +4,7 @@ import SeoPreviewBox from '@/Components/SeoPreviewBox';
 import GalleryManager from '@/Components/GalleryManager';
 import ContentMainFields from '@/Components/ContentForm/ContentMainFields';
 import CustomFieldsSection from '@/Components/ContentForm/CustomFieldsSection';
+import CtaSection from '@/Components/ContentForm/CtaSection';
 import ContentImageField from '@/Components/ContentForm/ContentImageField';
 import PublishingSidebar from '@/Components/ContentForm/PublishingSidebar';
 import TaxonomySidebar from '@/Components/ContentForm/TaxonomySidebar';
@@ -18,6 +19,7 @@ export default function Form({
     tags = [],
 }) {
     const isEditing = Boolean(content?.id);
+    const isBlog = contentType?.slug === 'blog';
 
     // Listas de taxonomías y selección inicial
     const [categoryList, setCategoryList] = useState(categories);
@@ -263,6 +265,15 @@ export default function Form({
                                     errors={errors}
                                 />
 
+                                {/* Bloque 2.5: Llamada a la Acción (CTA) para Blog */}
+                                {isBlog && (
+                                    <CtaSection
+                                        data={data}
+                                        onChange={handleCustomFieldChange}
+                                        errors={errors}
+                                    />
+                                )}
+
                                 {/* Bloque 3: Optimización SEO & SERP Preview */}
                                 <div className="rounded-[28px] border border-slate-100/90 bg-white p-6 shadow-sm dark:border-slate-800/80 dark:bg-[#161b24] sm:p-8">
                                     <div className="flex items-center gap-2.5 mb-6">
@@ -331,7 +342,11 @@ export default function Form({
 
                                 {/* Sidebar 3: Imagen Destacada (Thumbnail) */}
                                 <ContentImageField
-                                    label="Imagen Destacada"
+                                    label={
+                                        isBlog
+                                            ? 'Imagen Destacada (Portada & Cabecera)'
+                                            : 'Imagen Destacada'
+                                    }
                                     currentImage={currentThumbnail}
                                     previewUrl={thumbnailPreview}
                                     fileInfo={thumbnailFileInfo}
@@ -342,15 +357,15 @@ export default function Form({
                                         openMediaPicker(
                                             'thumbnail',
                                             currentThumbnail || thumbnailPreview
-                                                ? 'Cambiar Miniatura desde Biblioteca'
-                                                : 'Seleccionar Miniatura de Biblioteca'
+                                                ? 'Cambiar Imagen Destacada desde Biblioteca'
+                                                : 'Seleccionar Imagen Destacada de Biblioteca'
                                         )
                                     }
                                     onMarkRemove={() => {
                                         setData((prev) => ({
-                                            ...prev,
-                                            thumbnail_media_id: null,
-                                            remove_thumbnail: Boolean(currentThumbnail),
+                                             ...prev,
+                                             thumbnail_media_id: null,
+                                             remove_thumbnail: Boolean(currentThumbnail),
                                         }));
                                         setThumbnailPreview(null);
                                         setThumbnailFileInfo(null);
@@ -360,36 +375,38 @@ export default function Form({
                                     }
                                 />
 
-                                {/* Sidebar 4: Banner Cabecera (Hero) */}
-                                <ContentImageField
-                                    label="Banner Cabecera (Hero)"
-                                    currentImage={currentHero}
-                                    previewUrl={heroPreview}
-                                    fileInfo={heroFileInfo}
-                                    isMarkedForRemoval={data.remove_hero_image}
-                                    heightClass="h-36"
-                                    emptyText="Sin banner seleccionado"
-                                    onOpenLibrary={() =>
-                                        openMediaPicker(
-                                            'hero',
-                                            currentHero || heroPreview
-                                                ? 'Cambiar Banner (Hero) desde Biblioteca'
-                                                : 'Seleccionar Banner (Hero) de Biblioteca'
-                                        )
-                                    }
-                                    onMarkRemove={() => {
-                                        setData((prev) => ({
-                                            ...prev,
-                                            hero_media_id: null,
-                                            remove_hero_image: Boolean(currentHero),
-                                        }));
-                                        setHeroPreview(null);
-                                        setHeroFileInfo(null);
-                                    }}
-                                    onUndoRemove={() =>
-                                        setData((prev) => ({ ...prev, remove_hero_image: false }))
-                                    }
-                                />
+                                {/* Sidebar 4: Banner Cabecera (Hero) - Oculto en Blog (sólo 1 foto destacada) */}
+                                {!isBlog && (
+                                    <ContentImageField
+                                        label="Banner Cabecera (Hero)"
+                                        currentImage={currentHero}
+                                        previewUrl={heroPreview}
+                                        fileInfo={heroFileInfo}
+                                        isMarkedForRemoval={data.remove_hero_image}
+                                        heightClass="h-36"
+                                        emptyText="Sin banner seleccionado"
+                                        onOpenLibrary={() =>
+                                            openMediaPicker(
+                                                'hero',
+                                                currentHero || heroPreview
+                                                    ? 'Cambiar Banner (Hero) desde Biblioteca'
+                                                    : 'Seleccionar Banner (Hero) de Biblioteca'
+                                            )
+                                        }
+                                        onMarkRemove={() => {
+                                            setData((prev) => ({
+                                                ...prev,
+                                                hero_media_id: null,
+                                                remove_hero_image: Boolean(currentHero),
+                                            }));
+                                            setHeroPreview(null);
+                                            setHeroFileInfo(null);
+                                        }}
+                                        onUndoRemove={() =>
+                                            setData((prev) => ({ ...prev, remove_hero_image: false }))
+                                        }
+                                    />
+                                )}
                             </div>
                         </div>
                     </form>

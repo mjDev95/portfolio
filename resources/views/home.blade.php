@@ -18,10 +18,13 @@
     {{-- 3. Casos Seleccionados (Editorial Rows & CMS CPTs) --}}
     @include('partials.home.selected-cases')
 
-    {{-- 3. Metodología & Trayectoria en 4 Pasos (Wabi-Sabi) --}}
+    {{-- 4. Metodología & Trayectoria en 4 Pasos (Wabi-Sabi) --}}
     @include('partials.home.methodology')
 
-    {{-- 4. Call To Action Editorial & Contacto Final --}}
+    {{-- 5. Artículos & Ensayos Técnicos (Blog Editorial) --}}
+    @include('partials.home.blog-editorial')
+
+    {{-- 6. Call To Action Editorial & Contacto Final --}}
     @include('partials.home.cta-contact')
 </div>
 @endsection

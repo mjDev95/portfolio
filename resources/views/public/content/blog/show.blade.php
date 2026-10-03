@@ -11,12 +11,35 @@
 @section('edit_label', 'Editar ' . ($cpt->singular_name ?? 'Artículo'))
 
 @php
-    $heroImage = $content->hero_image ?: $content->thumbnail;
+    $featuredImage = $content->thumbnail ?: $content->hero_image;
     $readingTime = $content->custom_values['reading_time'] ?? (ceil(str_word_count(strip_tags($content->body ?? '')) / 200) ?: 5);
     $category = $content->categories->first();
     $categoryName = $category?->name ?? 'Ensayos';
     $publishedDate = $content->published_at ? $content->published_at->toIso8601String() : $content->created_at->toIso8601String();
     $modifiedDate = $content->updated_at ? $content->updated_at->toIso8601String() : $publishedDate;
+
+    // Perfil dinámico del autor desde la base de datos
+    $author = $content->user ?? \App\Models\User::first();
+    $authorName = $author?->name ?? 'Mario Joaquín Galicia Blanco';
+    $authorAvatar = $author?->avatar_url ?? asset('images/avatar.png');
+    $authorInitials = $author?->initials ?? 'MJ';
+    $authorHeadline = $author?->headline ?? 'WordPress Architect • Creative Developer';
+    $authorBio = $author?->bio ?: 'Creative Developer & WordPress Architect enfocado en la construcción de plataformas web de alto rendimiento, sistemas de diseño fluidos y experiencias interactivas memorables.';
+
+    // Resolución de CTA Dinámico desde Base de Datos con Fallback Contextual Inteligente
+    $custom = $content->custom_values ?? [];
+    $ctaHeading = !empty($custom['cta_heading']) 
+        ? $custom['cta_heading'] 
+        : "¿Necesitas implementar una solución en {$categoryName} para tu marca?";
+    $ctaDescription = !empty($custom['cta_description']) 
+        ? $custom['cta_description'] 
+        : "Como Creative Developer & WordPress Architect, colaboro con marcas y agencias diseñando y construyendo plataformas web fluidas, seguras y de alto impacto técnico.";
+    $ctaButtonText = !empty($custom['cta_button_text']) 
+        ? $custom['cta_button_text'] 
+        : "Conversar sobre un proyecto";
+    $ctaButtonUrl = !empty($custom['cta_button_url']) 
+        ? $custom['cta_button_url'] 
+        : route('contact');
 @endphp
 
 @push('head')
@@ -36,16 +59,16 @@
         ],
         'author' => [
             '@type' => 'Person',
-            'name' => 'Mario Joaquín Galicia Blanco',
-            'jobTitle' => 'WordPress Architect & Creative Developer',
+            'name' => $authorName,
+            'jobTitle' => $authorHeadline,
             'url' => route('home'),
         ],
         'publisher' => [
             '@type' => 'Person',
-            'name' => 'Mario Joaquín Galicia Blanco',
+            'name' => $authorName,
             'url' => route('home'),
         ],
-        'image' => $heroImage ? $heroImage->url : null,
+        'image' => $featuredImage ? $featuredImage->url : null,
     ]);
 @endphp
 <script type="application/ld+json">
@@ -55,7 +78,7 @@
 
 @section('content')
 {{-- Barra de Progreso de Lectura Cinemática (2px fixed top) --}}
-<div class="reading-progress-bar" id="reading-progress-bar" aria-hidden="true"></div>
+<div class="reading-progress-bar position-fixed top-0 left-0 w-100" id="reading-progress-bar" aria-hidden="true"></div>
 
 <article class="container py-3xl" style="min-height: 100vh;">
     {{-- Breadcrumbs Estables (24px fijo para GSAP Flip) --}}
@@ -67,14 +90,14 @@
         ]" />
     </div>
 
-    {{-- Hero Media Principal (Shared Element Transition con Flip) --}}
-    @if ($heroImage)
+    {{-- Imagen Destacada Principal (Shared Element Transition con Flip) --}}
+    @if ($featuredImage)
         <div class="media-wrap hero-media-wrapper overflow-hidden mb-2xl"
              data-flip-id="post-{{ $content->slug }}"
              data-flip-element="image">
-            <img src="{{ $heroImage->url }}"
-                 alt="{{ $heroImage->alt ?: ($heroImage->caption ?: $content->title) }}"
-                 title="{{ $heroImage->title ?: $content->title }}"
+            <img src="{{ $featuredImage->url }}"
+                 alt="{{ $featuredImage->alt ?: ($featuredImage->caption ?: $content->title) }}"
+                 title="{{ $featuredImage->title ?: $content->title }}"
                  class="img-fluid object-fit-cover w-100 h-100 d-block"
                  loading="eager">
         </div>
@@ -95,70 +118,37 @@
             {{ $content->title }}
         </h1>
 
-        <div class="d-flex align-items-center gap-2 mb-lg font-mono text-fluid-xs text-muted text-uppercase tracking-wider">
-            @if ($category)
-                <a href="{{ route('public.content.category', [$cpt->public_route_slug, $category->slug]) }}" class="text-brand fw-semibold text-decoration-none hover-opacity" data-magnetic>
-                    {{ $categoryName }}
-                </a>
-            @else
-                <span class="text-brand fw-semibold">{{ $categoryName }}</span>
-            @endif
-            <span>&bull;</span>
-            <span>{{ $content->published_at ? $content->published_at->format('d M Y') : 'Reciente' }}</span>
+        <div class="d-flex flex-wrap align-items-center gap-3 mb-lg">
+            <div class="d-flex align-items-center gap-2 font-mono text-fluid-xs text-muted text-uppercase tracking-wider">
+                @if ($category)
+                    <a href="{{ route('public.content.category', [$cpt->public_route_slug, $category->slug]) }}" class="text-brand fw-semibold text-decoration-none transition-opacity hover:opacity-100" data-magnetic>
+                        {{ $categoryName }}
+                    </a>
+                @else
+                    <span class="text-brand fw-semibold">{{ $categoryName }}</span>
+                @endif
+                <span>&bull;</span>
+                <span>{{ $content->published_at ? $content->published_at->format('d M Y') : 'Reciente' }}</span>
+            </div>
+
+            <div class="d-flex align-items-center">
+                <x-btn id="btn-open-share-modal" 
+                       modal="share" 
+                       :share-title="$content->title" 
+                       :share-type="$cpt->singular_name ?? 'Ensayo'" 
+                       icon="share" 
+                       icon-position="left"
+                       size="sm">
+                    Compartir
+                </x-btn>
+            </div>
         </div>
 
         @if ($content->excerpt)
-            <p class="text-fluid-lg text-secondary text-break mb-xl" style="max-width: 66ch;" data-flip-text>
+            <p class="text-fluid-lg text-secondary text-break mb-xl" data-flip-text>
                 {{ $content->excerpt }}
             </p>
         @endif
-
-        {{-- Rail de Autor & Acciones Rápidas del Artículo --}}
-        <div class="author-actions-rail d-flex flex-wrap align-items-center justify-content-between gap-4 py-md border-top-subtle border-bottom-subtle">
-            <div class="d-flex align-items-center gap-3">
-                <div class="author-avatar-wrap">
-                    <img src="{{ asset('images/avatar.png') }}" 
-                         alt="Mario J. Galicia" 
-                         class="author-avatar-img"
-                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <span class="author-avatar-fallback font-mono">MJ</span>
-                </div>
-                <div>
-                    <span class="d-block font-sans text-fluid-sm fw-semibold text-primary">Mario Joaquín Galicia Blanco</span>
-                    <span class="d-block font-mono text-fluid-xs text-muted">WordPress Architect &bull; Creative Developer</span>
-                </div>
-            </div>
-
-            <div class="d-flex align-items-center gap-2">
-                <button type="button" 
-                        class="btn-social-share" 
-                        id="btn-copy-article-url"
-                        onclick="navigator.clipboard.writeText(window.location.href); const btn = this; btn.classList.add('is-copied'); setTimeout(() => btn.classList.remove('is-copied'), 2000);"
-                        data-magnetic 
-                        title="Copiar enlace del artículo">
-                    <span class="share-label font-mono text-fluid-xs">Copiar enlace</span>
-                    <span class="share-feedback font-mono text-fluid-xs">&check; Copiado</span>
-                </button>
-
-                <a href="https://twitter.com/intent/tweet?text={{ urlencode($content->title) }}&url={{ urlencode(url()->current()) }}" 
-                   target="_blank" 
-                   rel="noopener noreferrer" 
-                   class="btn-social-share" 
-                   data-magnetic 
-                   title="Compartir en X">
-                    <span class="font-mono text-fluid-xs">&nearr; X</span>
-                </a>
-
-                <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode(url()->current()) }}" 
-                   target="_blank" 
-                   rel="noopener noreferrer" 
-                   class="btn-social-share" 
-                   data-magnetic 
-                   title="Compartir en LinkedIn">
-                    <span class="font-mono text-fluid-xs">&nearr; LinkedIn</span>
-                </a>
-            </div>
-        </div>
     </header>
 
     {{-- Layout Editorial a Doble Columna (TOC Sticky + Cuerpo de Lectura) --}}
@@ -176,30 +166,14 @@
                             <li class="toc-placeholder text-muted font-mono text-fluid-xs">Generando índice...</li>
                         </ul>
                     </nav>
-                </div>
-
-                <div class="p-4 rounded-4 bg-surface-subtle border-subtle font-mono text-fluid-xs">
-                    <span class="text-muted text-uppercase tracking-wider d-block mb-2">Estructura &bull; Datos</span>
-                    <div class="d-flex justify-content-between py-1 border-bottom-subtle">
-                        <span class="text-muted">Tiempo lectura:</span>
-                        <span class="text-primary fw-semibold">{{ $readingTime }} minutos</span>
-                    </div>
-                    <div class="d-flex justify-content-between py-1 border-bottom-subtle">
-                        <span class="text-muted">Categoría:</span>
-                        <span class="text-brand fw-semibold">{{ $categoryName }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between py-1">
-                        <span class="text-muted">Formato:</span>
-                        <span class="text-primary">Ensayo Técnico</span>
-                    </div>
 
                     @if ($content->tags->isNotEmpty())
-                        <div class="mt-3 pt-3 border-top-subtle">
-                            <span class="text-muted text-uppercase tracking-wider d-block mb-2">Temas clave</span>
+                        <div class="mt-4 pt-3 border-top-subtle">
+                            <span class="font-mono text-fluid-xs text-muted text-uppercase tracking-wider d-block mb-2">Temas clave</span>
                             <div class="d-flex flex-wrap gap-1">
                                 @foreach ($content->tags as $tag)
                                     <a href="{{ route('public.content.tag', [$cpt->public_route_slug, $tag->slug]) }}" 
-                                       class="data-chip font-mono text-fluid-xs text-decoration-none transition-opacity hover:opacity-100" 
+                                       class="data-chip font-mono text-fluid-xs text-decoration-none transition-opacity hover-opacity" 
                                        data-magnetic>
                                         #{{ $tag->name }}
                                     </a>
@@ -221,82 +195,66 @@
                 @endif
             </div>
 
-            {{-- Firma del Autor / Colophon Editorial --}}
+            {{-- Bloque de Conversión Profesional (CTA Dinámico desde BD) --}}
+            {{-- Sección Editorial de Llamada a la Acción (CTA) -- Abierta y sin caja contenedora --}}
             <section class="mt-3xl pt-2xl border-top-subtle" data-reveal>
-                <div class="p-4 p-md-5 rounded-4 bg-surface-subtle border-subtle d-flex flex-column flex-md-row gap-4 align-items-md-center">
-                    <div class="author-avatar-wrap author-avatar-lg flex-shrink-0">
-                        <img src="{{ asset('images/avatar.png') }}" 
-                             alt="Mario J. Galicia" 
-                             class="author-avatar-img"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <span class="author-avatar-fallback font-mono">MJ</span>
+                <div>
+                    <span class="font-mono text-fluid-xs text-brand text-uppercase tracking-wider d-block mb-3">
+                        Colaboración Profesional &bull; {{ $categoryName }}
+                    </span>
+                    <h3 class="h3 font-heading fw-bold text-primary tracking-tight mb-3">
+                        {{ $ctaHeading }}
+                    </h3>
+                    <p class="text-fluid-base text-secondary mb-3" style="max-width: 62ch;">
+                        {{ $ctaDescription }}
+                    </p>
+
+                    {{-- Firma y Atribución del Autor en el CTA --}}
+                    <div class="mb-sm">
+                        <span class="d-block font-sans text-fluid-sm fw-semibold text-primary">{{ $authorName }}</span>
+                        <span class="d-block font-mono text-fluid-xs text-muted">{{ $authorHeadline }}</span>
                     </div>
-                    <div>
-                        <span class="font-mono text-fluid-xs text-brand text-uppercase tracking-wider d-block mb-1">
-                            Escrito por el Autor
-                        </span>
-                        <h4 class="h5 font-heading fw-bold text-primary mb-2">Mario Joaquín Galicia Blanco</h4>
-                        <p class="text-fluid-sm text-secondary mb-3">
-                            Especialista en arquitectura WordPress de alta escala, optimización de Core Web Vitals, sistemas de diseño fluidos y desarrollo web creativo. Disponible para consultoría y proyectos selectos.
-                        </p>
-                        <a href="{{ route('contact') }}" class="btn-pill-action text-decoration-none d-inline-flex" data-magnetic>
-                            <span>Conversar sobre un proyecto</span>
-                            <span class="btn-pill-arrow-circle">&nearr;</span>
-                        </a>
+
+                    <div class="pt-1">
+                        <x-btn href="{{ $ctaButtonUrl }}" 
+                               icon="nearr" 
+                               data-magnetic>
+                            {{ $ctaButtonText }}
+                        </x-btn>
                     </div>
                 </div>
             </section>
-
-            {{-- Cinematic Bridge al Siguiente Artículo ("Up Next") --}}
-            @if (isset($nextPost) && $nextPost)
-                @php
-                    $nextThumb = $nextPost->thumbnail;
-                    $nextCat = $nextPost->categories->first()?->name ?? 'Artículo';
-                    $nextReadTime = $nextPost->custom_values['reading_time'] ?? 5;
-                    $nextUrl = route('public.content.show', [$cpt->public_route_slug, $nextPost->slug]);
-                @endphp
-                <section class="mt-3xl pt-2xl border-top-subtle" data-reveal>
-                    <span class="font-mono text-fluid-xs text-muted text-uppercase tracking-wider d-block mb-3">
-                        Siguiente Ensayo en el Catálogo &rarr;
-                    </span>
-                    <a href="{{ $nextUrl }}" 
-                       class="blog-editorial-card d-block text-decoration-none border-subtle bg-surface-subtle overflow-hidden"
-                       data-flip-card
-                       data-flip-id="post-{{ $nextPost->slug }}"
-                       data-magnetic data-magnetic-strength="0.03">
-                        <div class="row g-0 align-items-center">
-                            @if ($nextThumb)
-                                <div class="col-12 col-md-4">
-                                    <div class="position-relative overflow-hidden" 
-                                         data-flip-id="post-{{ $nextPost->slug }}"
-                                         data-flip-element="image"
-                                         style="aspect-ratio: 16/10;">
-                                        <img src="{{ $nextThumb->url }}" 
-                                             alt="{{ $nextPost->title }}" 
-                                             class="w-100 h-100 object-fit-cover blog-zoom-img">
-                                    </div>
-                                </div>
-                            @endif
-                            <div class="col-12 {{ $nextThumb ? 'col-md-8' : 'col-12' }} p-4 p-md-5 blog-editorial-card-body">
-                                <div class="d-flex align-items-center gap-2 mb-2 font-mono text-fluid-xs text-muted text-uppercase tracking-wider">
-                                    <span class="text-brand fw-semibold">{{ $nextCat }}</span>
-                                    <span>&bull;</span>
-                                    <span>{{ $nextReadTime }} min de lectura</span>
-                                </div>
-                                <h3 class="h4 font-heading fw-bold text-primary mb-2">{{ $nextPost->title }}</h3>
-                                @if ($nextPost->excerpt)
-                                    <p class="text-fluid-sm text-secondary line-clamp-2 mb-3">{{ $nextPost->excerpt }}</p>
-                                @endif
-                                <span class="text-brand font-mono text-fluid-xs fw-semibold d-inline-flex align-items-center gap-1">
-                                    <span>Continuar leyendo</span> <span>&nearr;</span>
-                                </span>
-                            </div>
-                        </div>
-                    </a>
-                </section>
-            @endif
         </main>
     </div>
+
+    {{-- Sección "Otros artículos" con Cards del Archive --}}
+    @if (isset($otherPosts) && $otherPosts->isNotEmpty())
+        <section class="mt-3xl pt-xl">
+            <div class="d-flex align-items-center justify-content-between mb-xl" data-reveal>
+                <h2 class="h2 font-heading fw-bold text-primary m-0" style="letter-spacing: -0.03em;">
+                    Otros artículos
+                </h2>
+                <x-btn href="{{ route('public.content.index', $cpt->public_route_slug) }}" 
+                       icon="rarr" 
+                       size="md"
+                       data-magnetic>
+                    Ver todos
+                </x-btn>
+            </div>
+            <div class="row g-4 g-lg-5">
+                @include('public.content.blog.partials.card-item', ['contents' => $otherPosts, 'cpt' => $cpt])
+            </div>
+        </section>
+    @else
+        <div class="mt-3xl pt-xl border-top-subtle d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 font-mono text-fluid-xs text-muted" data-reveal>
+            <span>Fin de los ensayos recientes en esta serie</span>
+            <x-btn href="{{ route('public.content.index', $cpt->public_route_slug) }}" 
+                   icon="rarr" 
+                   data-magnetic>
+                Explorar catálogo completo de artículos
+            </x-btn>
+        </div>
+    @endif
 </article>
 @endsection
 

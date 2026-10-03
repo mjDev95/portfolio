@@ -76,23 +76,23 @@
         <h1 class="h2 mb-sm font-heading fw-bold" data-reveal>{{ $category->name }}</h1>
     </div>
 
-    {{-- Filtro Horizontal de Categorías (Pill Rail Voluminoso Persistente) --}}
+    {{-- Filtro Horizontal de Categorías (Pill Rail Voluminoso Persistente con x-btn) --}}
     @if ($categories->isNotEmpty())
-        <nav class="blog-pill-rail mb-xl" id="blog-pills-nav" aria-label="Filtro de categorías">
-            <a href="{{ route('public.content.index', $cpt->public_route_slug) }}" 
-               class="editorial-pill {{ empty($selectedCategory) ? 'is-active' : '' }}" 
-               data-magnetic>
+        <nav class="blog-pill-rail d-flex align-items-center flex-wrap mx-0 w-100 mb-xl" id="blog-pills-nav" aria-label="Filtro de categorías">
+            <x-btn :href="route('public.content.index', $cpt->public_route_slug)"
+                   :active="empty($selectedCategory)"
+                   size="sm">
                 <span>Todos</span>
                 <sup class="pill-count">{{ $categories->sum('contents_count') }}</sup>
-            </a>
+            </x-btn>
 
             @foreach ($categories as $cat)
-                <a href="{{ route('public.content.category', [$cpt->public_route_slug, $cat->slug]) }}" 
-                   class="editorial-pill {{ $selectedCategory === $cat->slug ? 'is-active' : '' }}" 
-                   data-magnetic>
+                <x-btn :href="route('public.content.category', [$cpt->public_route_slug, $cat->slug])"
+                       :active="$selectedCategory === $cat->slug"
+                       size="sm">
                     <span>{{ $cat->name }}</span>
                     <sup class="pill-count">{{ $cat->contents_count }}</sup>
-                </a>
+                </x-btn>
             @endforeach
         </nav>
     @endif

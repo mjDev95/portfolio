@@ -118,6 +118,14 @@ html.dark {
     --input-bg: rgba(255, 255, 255, 0.03);
     --input-border: rgba(255, 255, 255, 0.1);
     
+    /* Ruido / Grano Cinematográfico Escalable (Film Grain Tokens) */
+    --noise-opacity: 0.042;
+    --noise-blend-mode: screen;
+    --noise-filter: none;
+    --noise-size: 140px;
+    --noise-speed: 0.32s;
+    --z-noise-overlay: 40;
+
     /* Bootstrap / System Aliases */
     --bs-body-bg: var(--bg-primary);
     --bs-body-color: var(--text-primary);
@@ -166,6 +174,11 @@ html.light {
     --input-bg: rgba(0, 0, 0, 0.02);
     --input-border: rgba(0, 0, 0, 0.1);
     
+    /* Ruido / Grano Cinematográfico Escalable (Light Mode - Paper Texture) */
+    --noise-opacity: 0.032;
+    --noise-blend-mode: multiply;
+    --noise-filter: invert(1);
+
     /* Bootstrap / System Aliases */
     --bs-body-bg: var(--bg-primary);
     --bs-body-color: var(--text-primary);
@@ -566,8 +579,9 @@ html.light {
 .border-top-subtle      { border-top: 1px solid var(--border-subtle) !important; }
 .border-bottom-subtle   { border-bottom: 1px solid var(--border-subtle) !important; }
 .border-left-subtle     { border-left: 1px solid var(--border-subtle) !important; }
-.border-right-subtle    { border-right: 1px solid var(--border-subtle) !important; }
 .border-hover:hover     { border-color: var(--border-hover) !important; }
+.border-0,
+.border-none            { border: 0 !important; }
 
 .border-brand,
 .border-accent          { border-color: var(--accent) !important; }

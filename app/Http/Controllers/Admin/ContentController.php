@@ -405,7 +405,9 @@ class ContentController extends Controller
                     $fieldRules[] = 'date';
                     break;
                 case 'url':
-                    $fieldRules[] = 'url';
+                    $fieldRules[] = 'string';
+                    $fieldRules[] = 'max:2048';
+                    $fieldRules[] = 'regex:/^(\/|https?:\/\/|mailto:|tel:|#)/i';
                     break;
                 case 'boolean':
                     $fieldRules[] = 'boolean';

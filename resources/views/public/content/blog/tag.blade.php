@@ -82,23 +82,23 @@
         </p>
     </div>
 
-    {{-- Filtro Horizontal de Etiquetas (Pill Rail Voluminoso Persistente de Tags) --}}
+    {{-- Filtro Horizontal de Etiquetas (Pill Rail Voluminoso Persistente de Tags con x-btn) --}}
     @if ($tags->isNotEmpty())
-        <nav class="blog-pill-rail mb-xl" id="blog-pills-nav" aria-label="Filtro de etiquetas">
-            <a href="{{ route('public.content.index', $cpt->public_route_slug) }}" 
-               class="editorial-pill" 
-               data-magnetic>
+        <nav class="blog-pill-rail d-flex align-items-center flex-wrap mx-0 w-100 mb-xl" id="blog-pills-nav" aria-label="Filtro de etiquetas">
+            <x-btn :href="route('public.content.index', $cpt->public_route_slug)"
+                   :active="false"
+                   size="sm">
                 <span>Todos</span>
                 <sup class="pill-count">{{ $totalAll }}</sup>
-            </a>
+            </x-btn>
 
             @foreach ($tags as $t)
-                <a href="{{ route('public.content.tag', [$cpt->public_route_slug, $t->slug]) }}" 
-                   class="editorial-pill {{ $tag->id === $t->id ? 'is-active' : '' }}" 
-                   data-magnetic>
+                <x-btn :href="route('public.content.tag', [$cpt->public_route_slug, $t->slug])"
+                       :active="$tag->id === $t->id"
+                       size="sm">
                     <span>#{{ $t->name }}</span>
                     <sup class="pill-count">{{ $t->contents_count }}</sup>
-                </a>
+                </x-btn>
             @endforeach
         </nav>
     @endif

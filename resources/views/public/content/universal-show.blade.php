@@ -42,25 +42,33 @@
             </p>
         @endif
 
-        <div class="d-flex flex-wrap gap-3 align-items-center mt-md text-muted text-fluid-sm">
-            @if ($content->categories->isNotEmpty())
-                <div class="d-flex flex-wrap gap-1.5 align-items-center">
-                    <span class="text-fluid-xs text-muted">Categorías:</span>
-                    @foreach ($content->categories as $category)
-                        <span class="data-chip">
-                            {{ $category->name }}
-                        </span>
-                    @endforeach
-                </div>
-            @endif
+        <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between mt-md text-muted text-fluid-sm">
+            <div class="d-flex flex-wrap gap-3 align-items-center">
+                @if ($content->categories->isNotEmpty())
+                    <div class="d-flex flex-wrap gap-1.5 align-items-center">
+                        <span class="text-fluid-xs text-muted">Categorías:</span>
+                        @foreach ($content->categories as $category)
+                            <a href="{{ route('public.content.category', [$cpt->public_route_slug, $category->slug]) }}" 
+                               class="data-chip text-decoration-none transition-opacity hover:opacity-100" 
+                               data-magnetic>
+                                {{ $category->name }}
+                            </a>
+                        @endforeach
+                    </div>
+                @endif
 
-            @if ($content->tags->isNotEmpty())
-                <div class="d-flex flex-wrap gap-1 align-items-center">
-                    @foreach ($content->tags as $tag)
-                        <span class="text-fluid-xs text-muted item-tag">#{{ $tag->name }}</span>
-                    @endforeach
-                </div>
-            @endif
+                @if ($content->tags->isNotEmpty())
+                    <div class="d-flex flex-wrap gap-1 align-items-center">
+                        @foreach ($content->tags as $tag)
+                            <span class="text-fluid-xs text-muted item-tag">#{{ $tag->name }}</span>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+
+            <div class="d-flex align-items-center">
+                <x-share-button :title="$content->title" :type="$cpt->singular_name ?? 'Publicación'" />
+            </div>
         </div>
     </header>
 

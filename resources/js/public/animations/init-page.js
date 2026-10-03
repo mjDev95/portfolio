@@ -3,7 +3,7 @@ import { ScrollTrigger } from '../lib/smooth-scroll';
 import { initHeroCurtain } from './hero-curtain';
 import { initSelectedCases } from './selected-cases';
 import { initVelixReveals } from './velix-reveal';
-import { initBlogArchive, initBlogSingle } from './blog';
+import { initBlogArchive, initBlogSingle, initCardReveals } from './blog';
 
 /**
  * Runs on every Barba `enter` step. Scoped to the incoming container so
@@ -16,9 +16,10 @@ export function initPageAnimations(container) {
     initVelixReveals(container);
     initBlogArchive(container);
     initBlogSingle(container);
+    initCardReveals(container);
 
     const reveals = Array.from(container.querySelectorAll('[data-reveal]')).filter((el) => {
-        return !el.matches('[data-detail-header], [data-detail-body], [data-detail-breadcrumbs]') &&
+        return !el.matches('[data-detail-header], [data-detail-body], [data-detail-breadcrumbs], [data-card-reveal]') &&
                !el.closest('[data-detail-header], [data-detail-body], [data-hero-curtain]');
     });
 

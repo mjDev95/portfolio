@@ -6,6 +6,7 @@ import { initPageAnimations } from '../animations/init-page';
 import { createFlipTransitions } from './flip-transitions';
 import { sendAnalyticsPing } from './tracker';
 import { cleanupDynamicIsland, syncDesktopIslandState, markNavigated } from '../animations/dynamic-island';
+import { closeShareModal } from './share-modal';
 
 function syncPageMetadata(html) {
     if (!html) return;
@@ -146,6 +147,7 @@ export function initBarba({ onAfterEnter } = {}) {
     });
 
     barba.hooks.beforeLeave(() => {
+        closeShareModal();
         stopScroll();
         markNavigated();
         cleanupDynamicIsland(true);
@@ -252,6 +254,7 @@ export function initBarba({ onAfterEnter } = {}) {
                 name: 'blog-category-filter',
                 custom({ current, next, trigger }) {
                     const isPill = Boolean(
+                        trigger?.closest?.('.blog-pill-rail') ||
                         trigger?.closest?.('.editorial-pill') || 
                         trigger?.classList?.contains?.('editorial-pill')
                     );
@@ -308,14 +311,16 @@ export function initBarba({ onAfterEnter } = {}) {
                         const newCards = Array.from(nextGrid.children);
                         if (newCards.length > 0) {
                             return gsap.fromTo(newCards,
-                                { opacity: 0, y: 24 },
+                                { opacity: 0, y: 45, filter: 'blur(12px)', webkitFilter: 'blur(12px)' },
                                 {
                                     opacity: 1,
                                     y: 0,
-                                    duration: 0.6,
-                                    stagger: 0.06,
+                                    filter: 'blur(0px)',
+                                    webkitFilter: 'blur(0px)',
+                                    duration: 0.85,
+                                    stagger: 0.18,
                                     ease: 'power3.out',
-                                    clearProps: 'transform',
+                                    clearProps: 'transform,filter,webkitFilter',
                                 }
                             );
                         } else {

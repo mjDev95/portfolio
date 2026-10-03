@@ -72,6 +72,9 @@
 
     @include('partials.cookie-banner')
 
+    {{-- Modal Global y Reutilizable para Compartir Contenido --}}
+    @include('partials.share-modal')
+
 </body>
 </html>
 

@@ -13,8 +13,10 @@ export default function UpdateProfileInformation({
 
     const { data, setData, patch, errors, processing } =
         useForm({
-            name: user.name,
-            email: user.email,
+            name: user.name || '',
+            email: user.email || '',
+            headline: user.headline || '',
+            avatar: user.avatar || '',
         });
 
     const submit = (e) => {
@@ -34,7 +36,7 @@ export default function UpdateProfileInformation({
                 </h2>
 
                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                    Actualiza el nombre y dirección de correo de tu cuenta administrativa.
+                    Actualiza tu nombre, titular profesional, avatar y dirección de correo de tu cuenta.
                 </p>
             </header>
 
@@ -53,6 +55,52 @@ export default function UpdateProfileInformation({
                     />
 
                     <InputError className="mt-2" message={errors.name} />
+                </div>
+
+                <div>
+                    <InputLabel htmlFor="headline" value="Titular Profesional / Rol Público" />
+
+                    <TextInput
+                        id="headline"
+                        className="mt-1 block w-full"
+                        value={data.headline}
+                        onChange={(e) => setData('headline', e.target.value)}
+                        placeholder="ej: WordPress Architect • Creative Developer"
+                    />
+
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                        Se muestra como subtítulo del autor en el pie de los artículos del blog.
+                    </p>
+
+                    <InputError className="mt-2" message={errors.headline} />
+                </div>
+
+                <div>
+                    <InputLabel htmlFor="avatar" value="URL o Ruta del Avatar" />
+
+                    <div className="mt-1 flex items-center gap-3">
+                        {data.avatar && (
+                            <img
+                                src={data.avatar.startsWith('http') ? data.avatar : `/${data.avatar.replace(/^\//, '')}`}
+                                alt="Vista previa avatar"
+                                className="h-10 w-10 rounded-full object-cover border border-slate-200 dark:border-slate-700"
+                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                            />
+                        )}
+                        <TextInput
+                            id="avatar"
+                            className="block w-full"
+                            value={data.avatar}
+                            onChange={(e) => setData('avatar', e.target.value)}
+                            placeholder="ej: images/avatar.png o https://..."
+                        />
+                    </div>
+
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                        Imagen circular del autor visible en la cabecera y en cada ensayo del blog.
+                    </p>
+
+                    <InputError className="mt-2" message={errors.avatar} />
                 </div>
 
                 <div>

@@ -15,7 +15,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Schema;
 
-#[Fillable(['name', 'email', 'password', 'role', 'role_id', 'has_telemetry', 'is_active'])]
+#[Fillable(['name', 'email', 'avatar', 'headline', 'bio', 'password', 'role', 'role_id', 'has_telemetry', 'is_active'])]
 #[Hidden(['password', 'remember_token', 'two_factor_recovery_codes', 'two_factor_secret'])]
 class User extends Authenticatable
 {
@@ -164,5 +164,56 @@ class User extends Authenticatable
     public function getSetting(string $key, mixed $default = null): mixed
     {
         return $this->preference?->getSetting($key, $default) ?? $default;
+    }
+
+    /**
+     * Resuelve la URL pública del avatar del usuario.
+     */
+    public function getAvatarUrlAttribute(): string
+    {
+        if (! empty($this->avatar)) {
+            if (str_starts_with($this->avatar, 'http://') || str_starts_with($this->avatar, 'https://')) {
+                return $this->avatar;
+            }
+
+            if (str_starts_with($this->avatar, 'images/') || str_starts_with($this->avatar, '/images/')) {
+                return asset(ltrim($this->avatar, '/'));
+            }
+
+            if (str_starts_with($this->avatar, 'storage/') || str_starts_with($this->avatar, '/storage/')) {
+                return asset(ltrim($this->avatar, '/'));
+            }
+
+            return asset('storage/'.$this->avatar);
+        }
+
+        return asset('images/avatar.png');
+    }
+
+    /**
+     * Calcula las iniciales del usuario a partir de su nombre (ej: "Mario Galicia" -> "MG").
+     */
+    public function getInitialsAttribute(): string
+    {
+        $words = array_filter(explode(' ', trim($this->name ?? '')));
+        if (empty($words)) {
+            return 'MJ';
+        }
+
+        $initials = '';
+        foreach (array_slice($words, 0, 2) as $word) {
+            $initials .= mb_strtoupper(mb_substr($word, 0, 1));
+        }
+
+        return $initials ?: 'MJ';
+    }
+
+    /**
+     * Titular profesional / rol del autor.
+     */
+    public function getHeadlineAttribute(?string $value): string
+    {
+        return $value
+            ?: ($this->getSetting('headline') ?: 'WordPress Architect • Creative Developer');
     }
 }

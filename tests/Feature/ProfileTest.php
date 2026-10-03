@@ -43,6 +43,32 @@ class ProfileTest extends TestCase
         $this->assertNull($user->email_verified_at);
     }
 
+    public function test_profile_headline_and_avatar_can_be_updated(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->patch('/admin/profile', [
+                'name' => 'Mario Galicia',
+                'email' => $user->email,
+                'headline' => 'Senior WordPress Architect',
+                'avatar' => 'images/custom-avatar.png',
+                'bio' => 'Fullstack developer & creative engineer.',
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/admin/profile');
+
+        $user->refresh();
+
+        $this->assertSame('Senior WordPress Architect', $user->headline);
+        $this->assertSame('images/custom-avatar.png', $user->avatar);
+        $this->assertSame('Fullstack developer & creative engineer.', $user->bio);
+        $this->assertSame('MG', $user->initials);
+    }
+
     public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
     {
         $user = User::factory()->create();

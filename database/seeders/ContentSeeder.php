@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Content;
 use App\Models\ContentType;
 use App\Models\CustomField;
+use App\Models\Media;
 use App\Models\Tag;
 use App\Models\User;
 use App\Services\PortfolioCacheService;
@@ -102,6 +103,10 @@ class ContentSeeder extends Seeder
 
             $blogCustomFields = [
                 ['name' => 'reading_time', 'label' => 'Tiempo de Lectura (min)', 'type' => 'number', 'sort_order' => 1],
+                ['name' => 'cta_heading', 'label' => 'Titular del CTA', 'type' => 'text', 'sort_order' => 2],
+                ['name' => 'cta_description', 'label' => 'Descripción / Bloque de Texto del CTA', 'type' => 'textarea', 'sort_order' => 3],
+                ['name' => 'cta_button_text', 'label' => 'Texto del Botón CTA', 'type' => 'text', 'sort_order' => 4],
+                ['name' => 'cta_button_url', 'label' => 'URL de Destino del Botón (opcional)', 'type' => 'url', 'sort_order' => 5],
             ];
 
             foreach ($blogCustomFields as $f) {
@@ -495,6 +500,9 @@ MARKDOWN,
                     'slug' => 'declive-constructores-visuales-php-nativo-desarrollo-empresarial',
                     'category' => 'WordPress Architecture',
                     'reading_time' => 8,
+                    'cta_heading' => '¿Tu plataforma corporativa sufre de lentitud o deuda técnica por constructores visuales?',
+                    'cta_description' => 'Como WordPress Architect, migro sitios críticos a temas nativos limpios en PHP 8.4 y componentes Blade, reduciendo el TTFB y eliminando la deuda técnica.',
+                    'cta_button_text' => 'Solicitar diagnóstico de arquitectura',
                     'published_at' => Carbon::parse('2025-02-10 14:00:00'),
                     'featured' => true,
                     'sort_order' => 1,
@@ -584,6 +592,9 @@ MARKDOWN,
                     'slug' => 'core-web-vitals-produccion-estrategias-lcp-wordpress',
                     'category' => 'Web Performance',
                     'reading_time' => 10,
+                    'cta_heading' => '¿Necesitas optimizar los Core Web Vitals de tu portal para mejorar SEO y conversión?',
+                    'cta_description' => 'Especialista en alcanzar LCP inferior a 1.2s y erradicar bloqueos de hilo principal en infraestructuras web corporativas complejas.',
+                    'cta_button_text' => 'Consultar optimización de performance',
                     'published_at' => Carbon::parse('2025-02-05 11:30:00'),
                     'featured' => true,
                     'sort_order' => 2,
@@ -653,6 +664,9 @@ MARKDOWN,
                     'slug' => 'de-figma-a-tokens-css-matematicas-fluidas-clamp',
                     'category' => 'Design Systems',
                     'reading_time' => 7,
+                    'cta_heading' => '¿Deseas implementar un Design System fluido y escalable para tu marca?',
+                    'cta_description' => 'Diseño y desarrollo sistemas de diseño con tokens fluidos matemáticos, garantizando consistencia absoluta entre Figma y código de producción.',
+                    'cta_button_text' => 'Conversar sobre diseño y tokens',
                     'published_at' => Carbon::parse('2025-01-28 17:00:00'),
                     'featured' => false,
                     'sort_order' => 3,
@@ -715,6 +729,9 @@ MARKDOWN,
                     'slug' => 'transiciones-pagina-tipo-app-gsap-flip-barba-seo',
                     'category' => 'Creative Development',
                     'reading_time' => 9,
+                    'cta_heading' => '¿Buscas crear una experiencia web cinemática tipo App sin sacrificar SEO?',
+                    'cta_description' => 'Desarrollo transiciones de página fluidas con Barba.js y GSAP Flip en arquitecturas Blade y Laravel que deleitan al usuario y retienen visitas.',
+                    'cta_button_text' => 'Impulsar experiencia de usuario',
                     'published_at' => Carbon::parse('2025-01-20 10:15:00'),
                     'featured' => false,
                     'sort_order' => 4,
@@ -784,6 +801,9 @@ MARKDOWN,
                     'slug' => 'arquitectura-datos-wordpress-cpt-taxonomias-tablas-personalizadas',
                     'category' => 'Backend Architecture',
                     'reading_time' => 8,
+                    'cta_heading' => '¿Tu modelo de datos en WordPress requiere optimización o tablas personalizadas?',
+                    'cta_description' => 'Estructuro arquitecturas de contenido complejas, índices de búsqueda y modelos relacionales limpios para soportar catálogos de alto volumen.',
+                    'cta_button_text' => 'Consultar arquitectura de datos',
                     'published_at' => Carbon::parse('2025-01-12 15:45:00'),
                     'featured' => false,
                     'sort_order' => 5,
@@ -843,6 +863,9 @@ MARKDOWN,
                     'slug' => 'laravel-blade-dentro-ecosistema-wordpress',
                     'category' => 'Frontend Architecture',
                     'reading_time' => 7,
+                    'cta_heading' => '¿Quieres la elegancia y velocidad de Laravel Blade en tus temas de WordPress?',
+                    'cta_description' => 'Implemento componentes declarativos y motores de plantillas modernos para transformar temas heredados en código mantenible, robusto y veloz.',
+                    'cta_button_text' => 'Modernizar temas a Blade',
                     'published_at' => Carbon::parse('2025-01-05 08:20:00'),
                     'featured' => false,
                     'sort_order' => 6,
@@ -916,6 +939,9 @@ MARKDOWN,
                     'slug' => 'microinteracciones-que-convierten-animacion-fisica-elastica',
                     'category' => 'UI/UX & Motion Design',
                     'reading_time' => 6,
+                    'cta_heading' => '¿Quieres enriquecer la interfaz de tu producto con microinteracciones de alto impacto?',
+                    'cta_description' => 'Construyo animaciones basadas en física, feedback táctil y microinteracciones fluidas que elevan la percepción de calidad y aumentan la retención.',
+                    'cta_button_text' => 'Elevar interacción visual',
                     'published_at' => Carbon::parse('2024-12-18 13:00:00'),
                     'featured' => false,
                     'sort_order' => 7,
@@ -988,6 +1014,9 @@ MARKDOWN,
                     'slug' => 'seo-tecnico-avanzado-proyectos-creativos-schema-org',
                     'category' => 'Technical SEO',
                     'reading_time' => 8,
+                    'cta_heading' => '¿Necesitas una auditoría de SEO técnico y grafos de entidades Schema.org?',
+                    'cta_description' => 'Configuro esquemas JSON-LD avanzados, indexación semántica y optimización técnica para maximizar la visibilidad en Google y motores de IA.',
+                    'cta_button_text' => 'Auditar SEO y Schema.org',
                     'published_at' => Carbon::parse('2024-12-05 16:30:00'),
                     'featured' => false,
                     'sort_order' => 8,
@@ -1065,6 +1094,9 @@ MARKDOWN,
                     'slug' => 'accesibilidad-web-wcag-ventaja-competitiva-salud-educacion',
                     'category' => 'Accesibilidad Digital',
                     'reading_time' => 7,
+                    'cta_heading' => '¿Tu portal cumple con WCAG 2.2 y los estándares legales de accesibilidad?',
+                    'cta_description' => 'Audito y adapto aplicaciones web complejas para garantizar cumplimiento normativo internacional, inclusión universal y cero fricciones operativas.',
+                    'cta_button_text' => 'Solicitar auditoría WCAG',
                     'published_at' => Carbon::parse('2024-11-15 09:00:00'),
                     'featured' => false,
                     'sort_order' => 9,
@@ -1104,6 +1136,9 @@ MARKDOWN,
                     'slug' => 'auditoria-endurecimiento-seguridad-custom-themes-empresariales',
                     'category' => 'WordPress Security',
                     'reading_time' => 9,
+                    'cta_heading' => '¿Requieres una auditoría de seguridad y endurecimiento en temas a medida?',
+                    'cta_description' => 'Implemento defensas OWASP, sanitización profunda y políticas CSP estrictas para blindar portales corporativos ante cualquier intrusión.',
+                    'cta_button_text' => 'Auditar seguridad de mi plataforma',
                     'published_at' => Carbon::parse('2024-10-30 18:10:00'),
                     'featured' => false,
                     'sort_order' => 10,
@@ -1162,7 +1197,21 @@ MARKDOWN,
                 ],
             ];
 
-            foreach ($articulos as $art) {
+            // Limpiar cualquier imagen en colección 'hero' de contenidos tipo Blog (estricto: 1 sola foto destacada)
+            DB::table('content_media')
+                ->join('contents', 'contents.id', '=', 'content_media.content_id')
+                ->where('contents.content_type_id', $blogCpt->id)
+                ->where('content_media.collection', 'hero')
+                ->delete();
+
+            // Obtener imágenes de biblioteca disponibles en disco para asignar 1 foto destacada por post
+            $availableMediaIds = Media::query()
+                ->where('mime_type', 'like', 'image/%')
+                ->orderBy('id')
+                ->pluck('id')
+                ->all();
+
+            foreach ($articulos as $index => $art) {
                 $categoryObj = $categoryMap[$art['category']] ?? null;
                 $artTagIds = collect($art['tags'])
                     ->map(fn ($name) => $tagMap[$name]->id ?? null)
@@ -1188,9 +1237,13 @@ MARKDOWN,
                         'meta_title' => Str::limit($art['title'], 60),
                         'meta_description' => Str::limit($art['excerpt'], 155),
                         'meta_keywords' => implode(', ', $art['tags']),
-                        'custom_values' => [
+                        'custom_values' => array_filter([
                             'reading_time' => $art['reading_time'],
-                        ],
+                            'cta_heading' => $art['cta_heading'] ?? null,
+                            'cta_description' => $art['cta_description'] ?? null,
+                            'cta_button_text' => $art['cta_button_text'] ?? null,
+                            'cta_button_url' => $art['cta_button_url'] ?? null,
+                        ], fn ($v) => ! is_null($v)),
                     ]
                 );
 
@@ -1199,6 +1252,56 @@ MARKDOWN,
                 }
                 if (! empty($artTagIds)) {
                     $content->tags()->syncWithoutDetaching($artTagIds);
+                }
+
+                // Asignar exactamente 1 foto (Imagen Destacada / thumbnail)
+                $content->media()->wherePivot('collection', 'hero')->detach();
+                if (! empty($availableMediaIds)) {
+                    $mediaId = $availableMediaIds[$index % count($availableMediaIds)];
+                    $content->media()->syncWithoutDetaching([
+                        $mediaId => [
+                            'collection' => 'thumbnail',
+                            'order' => 0,
+                        ],
+                    ]);
+                }
+            }
+
+            // Garantizar que todos los posts del blog tengan exactamente 1 imagen destacada y CTA completo
+            $allBlogPosts = Content::where('content_type_id', $blogCpt->id)->get();
+            foreach ($allBlogPosts as $bIndex => $bPost) {
+                $bPost->media()->wherePivot('collection', 'hero')->detach();
+                if (! $bPost->media()->wherePivot('collection', 'thumbnail')->exists() && ! empty($availableMediaIds)) {
+                    $mId = $availableMediaIds[$bIndex % count($availableMediaIds)];
+                    $bPost->media()->sync([
+                        $mId => [
+                            'collection' => 'thumbnail',
+                            'order' => 0,
+                        ],
+                    ]);
+                }
+
+                $cv = $bPost->custom_values ?? [];
+                $dirty = false;
+                if (empty($cv['cta_heading'])) {
+                    $cv['cta_heading'] = '¿Interesado en llevar la tecnología y diseño de tu producto al siguiente nivel?';
+                    $dirty = true;
+                }
+                if (empty($cv['cta_description'])) {
+                    $cv['cta_description'] = 'Diseño y desarrollo soluciones web a medida con arquitectura moderna, rendimiento extremo y atención obsesiva al detalle interactivo.';
+                    $dirty = true;
+                }
+                if (empty($cv['cta_button_text'])) {
+                    $cv['cta_button_text'] = 'Hablemos de tu Proyecto';
+                    $dirty = true;
+                }
+                if (empty($cv['cta_button_url'])) {
+                    $cv['cta_button_url'] = '/contacto';
+                    $dirty = true;
+                }
+                if ($dirty) {
+                    $bPost->custom_values = $cv;
+                    $bPost->save();
                 }
             }
 

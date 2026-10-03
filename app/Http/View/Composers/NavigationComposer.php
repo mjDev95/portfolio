@@ -3,6 +3,7 @@
 namespace App\Http\View\Composers;
 
 use App\Models\ContentType;
+use App\Models\User;
 use App\Services\PortfolioCacheService;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
@@ -85,5 +86,6 @@ class NavigationComposer
         })->filter(fn ($item) => ! empty($item?->public_route_slug))->values();
 
         $view->with('navContentTypes', $navContentTypes);
+        $view->with('primaryAuthor', User::getPrimaryClient());
     }
 }

@@ -2,10 +2,9 @@
     @php
         $itemThumb = $item->thumbnail;
         $categoryName = $item->categories->first()?->name ?? 'Ensayo';
-        $readingTime = $item->custom_values['reading_time'] ?? (ceil(str_word_count(strip_tags($item->body ?? '')) / 200) ?: 5);
         $detailUrl = route('public.content.show', [$cpt->public_route_slug, $item->slug]);
     @endphp
-    <div class="col-12 col-md-6" data-reveal>
+    <div class="col-12 col-md-6" data-card-reveal>
         <a href="{{ $detailUrl }}" 
            class="blog-showcase-card project-showcase-card d-block text-decoration-none" 
            data-blog-card
@@ -32,8 +31,6 @@
                 <div class="project-category-subtitle project-card-sub-details-wrapper-v3 bottom">
                     <div class="d-flex align-items-center details h5">
                         <div class="text-brand fw-semibold">{{ $categoryName }}</div>
-                        <div class="text-divider project-card-v3 mx-2"></div>
-                        <div>{{ $readingTime }} min de lectura</div>
                         @if ($item->published_at)
                             <div class="text-divider project-card-v3 mx-2"></div>
                             <div>{{ $item->published_at->format('d M Y') }}</div>
