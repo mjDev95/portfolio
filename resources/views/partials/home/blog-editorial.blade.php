@@ -6,30 +6,16 @@
   - Desplazamiento horizontal por scroll en el eje X sincronizado con GSAP & Lenis (no es slider ni carrusel touch).
 --}}
 @php
-    $blogCpt = $blogCpt ?? \App\Models\ContentType::where('slug', 'blog')->where('is_public', true)->first();
-    $latestPosts = $latestPosts ?? ($blogCpt
-        ? \App\Models\Content::query()
-            ->where('content_type_id', $blogCpt->id)
-            ->published()
-            ->with([
-                'media' => fn ($q) => $q->where('content_media.collection', 'thumbnail'),
-                'categories',
-                'contentType',
-            ])
-            ->orderByDesc('featured')
-            ->orderByDesc('published_at')
-            ->take(6)
-            ->get()
-        : collect());
+    $posts = $latestPosts ?? collect();
     $blogRouteSlug = $blogCpt?->public_route_slug ?? 'blog';
 @endphp
 
-@if ($latestPosts->isNotEmpty())
-    <section class="home-blog-section position-relative w-100" id="blog" data-home-blog-section>
-        <div class="home-blog-pin-wrap w-100 min-vh-100 d-flex flex-column" data-home-blog-pin>
+@if ($posts->isNotEmpty())
+    <section class="home-blog-section position-relative w-100 bg-primary z-index-2" id="blog" data-home-blog-section>
+        <div class="home-blog-pin-wrap w-100 min-vh-100 d-flex flex-column justify-content-start" data-home-blog-pin>
             <div class="container-fluid">
                 {{-- Encabezado Editorial en una sola fila (Alineación horizontal limpia a la línea de base) --}}
-                <div class="d-flex align-items-baseline justify-content-between gap-3 mb-xl" data-reveal>
+                <div class="d-flex align-items-baseline justify-content-between gap-3 mb-lg" data-reveal>
                     <h2 class="font-heading h1 fw-bold text-primary lh-tight mb-0">
                         Our latest news
                     </h2>
@@ -49,7 +35,7 @@
                 {{-- Viewport y Riel Continuo de Desplazamiento Horizontal en Eje X --}}
                 <div class="home-blog-viewport w-100 overflow-hidden" data-home-blog-viewport>
                     <div class="home-blog-track" data-home-blog-track>
-                        @foreach ($latestPosts as $item)
+                        @foreach ($posts as $item)
                             @php
                                 $itemThumb = $item->thumbnail;
                                 $categoryName = $item->categories->first()?->name ?? 'Artículos';
@@ -98,7 +84,7 @@
                                         </h3>
 
                                         {{-- Enlace de Acción Read More Anclado al Fondo --}}
-                                        <div class="mt-auto mb-5">
+                                        <div class="mt-auto mb-0 pt-2xs">
                                             <span class="font-sans text-fluid-sm fw-medium text-brand">
                                                 Lee más
                                             </span>

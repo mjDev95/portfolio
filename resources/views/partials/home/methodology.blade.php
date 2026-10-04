@@ -32,8 +32,8 @@
                 {{-- Indicador deslizante activo: Badge de Estrella (✦) + Línea de unión + Nodo luminoso --}}
                 <div class="methodology-active-indicator position-absolute d-flex flex-column align-items-center will-change-transform" data-methodology-indicator>
                     <span class="methodology-star-badge d-inline-flex align-items-center justify-content-center" aria-hidden="true">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"/>
+                        <svg width="12" height="12" viewBox="0 0 100 100" fill="currentColor">
+                            <path d="M46 0 H54 V28 Q54 46 72 46 H100 V54 H72 Q54 54 54 72 V100 H46 V72 Q46 54 28 54 H0 V46 H28 Q46 46 46 28 Z"/>
                         </svg>
                     </span>
                     <span class="methodology-indicator-connector" aria-hidden="true"></span>

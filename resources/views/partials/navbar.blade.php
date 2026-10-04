@@ -78,14 +78,14 @@
             </a>
             <span class="island-status-text">Available for work</span>
             <span class="island-stars" aria-label="Available for work" title="Disponible para proyectos">
-                <svg class="island-star island-star-sm" viewBox="0 0 24 24">
-                    <path d="M12 0 C12 6.627 6.627 12 0 12 C6.627 12 12 17.373 12 24 C12 17.373 17.373 12 24 12 C17.373 12 12 6.627 12 0 Z"/>
+                <svg class="island-star island-star-sm" viewBox="0 0 100 100">
+                    <path d="M46 0 H54 V28 Q54 46 72 46 H100 V54 H72 Q54 54 54 72 V100 H46 V72 Q46 54 28 54 H0 V46 H28 Q46 46 46 28 Z"/>
                 </svg>
-                <svg class="island-star island-star-md" viewBox="0 0 24 24">
-                    <path d="M12 0 C12 6.627 6.627 12 0 12 C6.627 12 12 17.373 12 24 C12 17.373 17.373 12 24 12 C17.373 12 12 6.627 12 0 Z"/>
+                <svg class="island-star island-star-md" viewBox="0 0 100 100">
+                    <path d="M46 0 H54 V28 Q54 46 72 46 H100 V54 H72 Q54 54 54 72 V100 H46 V72 Q46 54 28 54 H0 V46 H28 Q46 46 46 28 Z"/>
                 </svg>
-                <svg class="island-star island-star-sm" viewBox="0 0 24 24">
-                    <path d="M12 0 C12 6.627 6.627 12 0 12 C6.627 12 12 17.373 12 24 C12 17.373 17.373 12 24 12 C17.373 12 12 6.627 12 0 Z"/>
+                <svg class="island-star island-star-sm" viewBox="0 0 100 100">
+                    <path d="M46 0 H54 V28 Q54 46 72 46 H100 V54 H72 Q54 54 54 72 V100 H46 V72 Q46 54 28 54 H0 V46 H28 Q46 46 46 28 Z"/>
                 </svg>
             </span>
         </div>
@@ -110,14 +110,14 @@
             <div class="mobile-island-status">
                 <span class="island-status-text">Available for work</span>
                 <span class="island-stars d-none" aria-label="Available for work" title="Disponible para proyectos">
-                    <svg class="island-star island-star-sm" viewBox="0 0 24 24">
-                        <path d="M12 0 C12 6.627 6.627 12 0 12 C6.627 12 12 17.373 12 24 C12 17.373 17.373 12 24 12 C17.373 12 12 6.627 12 0 Z"/>
+                    <svg class="island-star island-star-sm" viewBox="0 0 100 100">
+                        <path d="M46 0 H54 V28 Q54 46 72 46 H100 V54 H72 Q54 54 54 72 V100 H46 V72 Q46 54 28 54 H0 V46 H28 Q46 46 46 28 Z"/>
                     </svg>
-                    <svg class="island-star island-star-md" viewBox="0 0 24 24">
-                        <path d="M12 0 C12 6.627 6.627 12 0 12 C6.627 12 12 17.373 12 24 C12 17.373 17.373 12 24 12 C17.373 12 12 6.627 12 0 Z"/>
+                    <svg class="island-star island-star-md" viewBox="0 0 100 100">
+                        <path d="M46 0 H54 V28 Q54 46 72 46 H100 V54 H72 Q54 54 54 72 V100 H46 V72 Q46 54 28 54 H0 V46 H28 Q46 46 46 28 Z"/>
                     </svg>
-                    <svg class="island-star island-star-sm" viewBox="0 0 24 24">
-                        <path d="M12 0 C12 6.627 6.627 12 0 12 C6.627 12 12 17.373 12 24 C12 17.373 17.373 12 24 12 C17.373 12 12 6.627 12 0 Z"/>
+                    <svg class="island-star island-star-sm" viewBox="0 0 100 100">
+                        <path d="M46 0 H54 V28 Q54 46 72 46 H100 V54 H72 Q54 54 54 72 V100 H46 V72 Q46 54 28 54 H0 V46 H28 Q46 46 46 28 Z"/>
                     </svg>
                 </span>
             </div>

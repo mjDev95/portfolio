@@ -55,11 +55,6 @@ export function initHomeBlog(container) {
             return Math.max(0, track.scrollWidth - viewportWidth);
         };
 
-        const totalScrollable = getScrollAmount();
-        if (totalScrollable <= 10) {
-            return;
-        }
-
         // Calcula los puntos de anclaje (snap points) para que las tarjetas nunca queden cortadas a la mitad
         const calculateSnapPoints = () => {
             const maxScroll = getScrollAmount();
@@ -111,8 +106,14 @@ export function initHomeBlog(container) {
                     delay: 0.15,
                     ease: 'power2.out',
                 },
-                onRefresh: () => {
+                onRefresh: (self) => {
                     snapPoints = calculateSnapPoints();
+                    const amount = getScrollAmount();
+                    if (amount <= 10) {
+                        self.disable();
+                    } else {
+                        self.enable();
+                    }
                 },
             },
         });

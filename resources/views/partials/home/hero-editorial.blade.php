@@ -7,43 +7,12 @@
   - Clases atómicas dedicadas del sistema fluido (fluid-system.css).
 --}}
 <section id="hero-editorial-2" class="hero-editorial-section position-relative w-100">
-    {{-- Fondo sutil con arcos orbitales y estrellas de 4 puntas en SVG fluido a pantalla completa --}}
-    <div class="hero-orbit-wrap" aria-hidden="true">
-        <svg class="hero-orbit-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" fill="none" xmlns="http://www.w3.org/2000/svg">
-            {{-- Líneas orbitales elípticas finas y fluidas --}}
-            <ellipse cx="720" cy="450" rx="680" ry="380" stroke="currentColor" stroke-opacity="0.08" stroke-width="1.2" transform="rotate(-8 720 450)" />
-            <ellipse cx="760" cy="420" rx="580" ry="320" stroke="currentColor" stroke-opacity="0.06" stroke-width="1" transform="rotate(12 760 420)" />
-            <path d="M-100 620 C 350 480, 850 680, 1540 380" stroke="currentColor" stroke-opacity="0.07" stroke-width="1" stroke-dasharray="4 4" />
-            
-            {{-- Estrellas sutiles de 4 puntas (✦) --}}
-            <g transform="translate(540, 480)" fill="currentColor" opacity="0.35">
-                <path d="M0 -12 C0 -3, 3 0, 12 0 C 3 0, 0 3, 0 12 C 0 3, -3 0, -12 0 C 3 0, 0 -3, 0 -12 Z" />
-            </g>
-            <g transform="translate(1180, 220)" fill="currentColor" opacity="0.45">
-                <path d="M0 -16 C0 -4, 4 0, 16 0 C 4 0, 0 4, 0 16 C 0 4, -4 0, -16 0 C -4 0, 0 -4, 0 -16 Z" />
-            </g>
-            <g transform="translate(980, 360)" fill="currentColor" opacity="0.25">
-                <path d="M0 -8 C0 -2, 2 0, 8 0 C 2 0, 0 2, 0 8 C 0 2, -2 0, -8 0 C -2 0, 0 -2, 0 -8 Z" />
-            </g>
-        </svg>
-    </div>
-
     <div class="hero-editorial-content">
 
         {{-- Titular Monumental con ritmo editorial fluido a ancho completo --}}
         <h2 class="hero-statement" data-reveal>
             Hola<span class="emoji-wave">👋</span>, soy diseñador digital y desarrollador en Ciudad de México, creando experiencias digitales con impacto visual, movimiento expresivo e <span class="hero-statement-faded">interacción fluida.</span>
         </h2>
-
-        {{-- Botón Píldora con ícono circular [ (→) Más sobre mí ] --}}
-        <div class="mb-xl" data-reveal>
-            <a href="{{ route('about') }}" 
-               class="btn-pill-action"
-               data-magnetic data-magnetic-strength="0.3">
-                <span class="btn-pill-arrow-circle">&rarr;</span>
-                <span>Más sobre mí</span>
-            </a>
-        </div>
 
         {{-- Rejilla Horizontal de 3 Estadísticas Monumentales con hairline dividers y clases dedicadas del sistema fluido --}}
         <div class="hero-stats-row">

@@ -21,7 +21,7 @@ export function initFooterReveal() {
 
     footerTween = gsap.fromTo(
         footerWrapper,
-        { y: -250 },
+        { y: -100 },
         {
             y: 0,
             ease: 'none',

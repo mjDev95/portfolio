@@ -92,7 +92,7 @@
 
     {{-- Imagen Destacada Principal (Shared Element Transition con Flip) --}}
     @if ($featuredImage)
-        <div class="media-wrap hero-media-wrapper overflow-hidden mb-2xl"
+        <div class="media-wrap hero-media-wrapper w-100 position-relative overflow-hidden aspect-16-9 bg-surface border-subtle mb-2xl"
              data-flip-id="post-{{ $content->slug }}"
              data-flip-element="image">
             <img src="{{ $featuredImage->url }}"
@@ -102,7 +102,7 @@
                  loading="eager">
         </div>
     @else
-        <div class="media-wrap hero-media-wrapper overflow-hidden mb-2xl d-flex align-items-center justify-content-center bg-surface-subtle border-subtle"
+        <div class="media-wrap hero-media-wrapper w-100 position-relative overflow-hidden mb-2xl d-flex align-items-center justify-content-center bg-surface-subtle border-subtle"
              data-flip-id="post-{{ $content->slug }}"
              data-flip-element="image"
              style="aspect-ratio: 21/9; min-height: 200px;">

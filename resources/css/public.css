@@ -78,7 +78,6 @@ main[data-barba="container"] {
 
 .hero-editorial-section,
 .services-editorial-section,
-.selected-cases-section,
 .methodology-section,
 .cta-contact-section {
     position: relative;
@@ -792,18 +791,20 @@ html.light .island-theme-btn .icon-sun  { display: none; }
    ───────────────────────────────────────────────────────────── */
 .showcase-section {
     background-color: var(--bg-primary);
-    padding-bottom: var(--fluid-s-xl);
     overflow-x: clip;
 }
 
-/* 1. Encabezado Centrado (Pinned Hero) */
+/* 1. Encabezado Centrado (Pinned Hero con Altura Calibrada y Solapamiento Fluido) */
 .showcase-pinned-hero {
-    height: 100vh;
+    height: 54vh;
+    min-height: 420px;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1;
     pointer-events: none;
+    padding-top: var(--fluid-s-lg);
+    padding-bottom: var(--fluid-s-md);
 }
 
 .showcase-header-content {
@@ -839,8 +840,8 @@ html.light .island-theme-btn .icon-sun  { display: none; }
    ───────────────────────────────────────── */
 .showcase-cards-container {
     z-index: 2;
-    margin-top: -14vh;
-    padding-top: clamp(2rem, 5vh, 4rem);
+    margin-top: -6vh;
+    padding-top: clamp(1.5rem, 3.5vh, 3rem);
     padding-bottom: clamp(3rem, 6vw, 6rem);
 }
 
@@ -1762,145 +1763,51 @@ html.light .btn-universal.is-active {
 /* ─────────────────────────────────────────────────────────────
    12. SERVICES SECTION — Horizontal Ribbon / Marquee (Infinita)
    ───────────────────────────────────────────────────────────── */
-.services-ribbon-stage {
-    position: relative;
-    width: 100%;
-    padding: clamp(2.5rem, 5vw, 4.5rem) 0;
-    background-color: var(--bg-primary);
-    overflow: hidden;
-    user-select: none;
-    -webkit-user-select: none;
-    border-bottom: 1px solid var(--border-subtle);
-    box-sizing: border-box;
-    z-index: 2;
-}
-
 .marquee-horizontal-viewport {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
     mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
     -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
 }
 
 .infinite-strip-wrapper {
-    display: inline-flex;
-    align-items: center;
-    flex-shrink: 0;
-    white-space: nowrap;
-    will-change: transform;
     font-size: clamp(3.8rem, 9.5vw, 8.5rem);
-    line-height: 1;
-}
-
-.marquee-item-group {
-    display: inline-flex;
-    align-items: center;
 }
 
 .marquee-discipline {
-    font-family: var(--font-heading);
     font-weight: 200;
     letter-spacing: -0.04em;
-    padding: 0 clamp(0.8rem, 1.8vw, 2rem);
-    color: var(--text-primary);
-    opacity: 0.72;
+    padding-inline: clamp(0.8rem, 1.8vw, 2rem);
     cursor: default;
     transition: opacity 0.3s ease;
 }
 
-.marquee-discipline:hover {
-    opacity: 1;
-}
-
-html.light .marquee-discipline {
-    color: #4a4d54;
-    opacity: 0.85;
-}
-
-html.dark .marquee-discipline {
-    color: #C5C3BF;
-    opacity: 0.75;
-}
-
 /* Estrella SVG: Separador geométrico con escala relativa y alineación óptica */
 .marquee-star-icon {
-    display: inline-block;
     width: max(38px, 0.42em);
     height: max(38px, 0.42em);
     fill: var(--accent);
-    flex-shrink: 0;
-    margin: 0 clamp(0.8rem, 1.5vw, 1.8rem);
-    vertical-align: middle;
+    margin-inline: clamp(0.8rem, 1.5vw, 1.8rem);
     transform: translateY(0.02em);
 }
 
 /* ─────────────────────────────────────────────────────────────
    13. SELECTED CASES & PROJECTS — Fluid Editorial Baseline
    ───────────────────────────────────────────────────────────── */
-.selected-cases-section {
-    position: relative;
-    width: 100%;
-    padding-top: var(--fluid-s-3xl);
-    padding-bottom: var(--fluid-s-3xl);
-    box-sizing: border-box;
-}
-
-.selected-cases-content {
-    width: 100%;
-    padding-inline: var(--fluid-gutter-x);
-    box-sizing: border-box;
-}
-
-.editorial-cases-stack {
-    width: 100%;
-}
-
-/* 2-Column Showcase Cards */
 .project-showcase-card {
-    display: block;
-    text-decoration: none;
-    color: inherit;
     position: relative;
 }
+
 .text-divider.project-card-v3 {
     background-color: var(--text-muted);
     width: 15px;
     height: 1px;
 }
+
 .card-media-wrapper,
-.project-showcase-media {
-    /*border-radius: clamp(22px, 2.5vw, 32px);*/
-    overflow: hidden;
+.project-showcase-media,
+.hero-media-wrapper {
     aspect-ratio: 16 / 9;
-    background-color: var(--bg-surface, #14171c);
+    background-color: var(--bg-surface);
     border: 1px solid var(--border-subtle);
-    position: relative;
-    box-sizing: border-box;
-    width: 100%;
-}
-
-.hero-media-wrapper,
-.media-wrap.hero-media-wrapper {
-    /*border-radius: clamp(22px, 2.5vw, 32px);*/
-    overflow: hidden;
-    aspect-ratio: 16 / 9;
-    background-color: var(--bg-surface, #14171c);
-    border: 1px solid var(--border-subtle);
-    position: relative;
-    box-sizing: border-box;
-    width: 100%;
-}
-
-.card-media-wrapper img,
-.hero-media-wrapper img,
-.project-showcase-img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    display: block !important;
 }
 
 [data-flip-element="image"] img {
@@ -1915,91 +1822,16 @@ html.dark .marquee-discipline {
 }
 
 .project-placeholder-media {
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at 50% 50%, var(--bg-surface-elevated, #1a1e24) 0%, var(--bg-surface, #14171c) 100%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    background: radial-gradient(circle at 50% 50%, var(--bg-surface-elevated, #1a1e24) 0%, var(--bg-surface) 100%);
     border: 1px solid var(--border-subtle);
-    padding: var(--fluid-s-lg);
-    box-sizing: border-box;
-}
-
-.project-corner-badge {
-    position: absolute;
-    top: clamp(14px, 1.8vw, 24px);
-    right: clamp(14px, 1.8vw, 24px);
-    z-index: 3;
-    pointer-events: none;
-}
-
-.badge-circle-icon {
-    width: clamp(42px, 3.5vw, 50px);
-    height: clamp(42px, 3.5vw, 50px);
-    border-radius: 50%;
-    background-color: #2b59ff;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.project-showcase-card:hover .badge-circle-icon {
-    transform: rotate(-10deg) scale(1.08);
-}
-
-.project-showcase-body {
-    margin-top: var(--fluid-s-sm);
 }
 
 .project-category-subtitle {
-    font-size: var(--fluid-text-xs);
-    color: var(--text-muted);
-    font-family: var(--font-body);
     letter-spacing: 0.01em;
-    margin-bottom: var(--fluid-s-3xs);
 }
 
 .project-title-heading {
-    font-family: var(--font-heading);
-    font-size: var(--fluid-h3);
-    font-weight: 700;
-    line-height: 1.15;
     letter-spacing: -0.025em;
-    color: var(--text-primary);
-    margin-bottom: var(--fluid-s-2xs);
-    transition: color 0.25s ease;
-}
-
-.project-showcase-card:hover .project-title-heading {
-    color: var(--text-primary);
-}
-
-.project-view-link {
-    font-size: var(--fluid-text-sm);
-    color: var(--text-secondary);
-    font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    transition: color 0.25s ease;
-}
-
-.project-showcase-card:hover .project-view-link {
-    color: var(--text-primary);
-}
-
-.project-view-arrow {
-    display: inline-block;
-    font-size: 1.1em;
-    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.project-showcase-card:hover .project-view-arrow {
-    transform: translate(3px, -3px);
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -2255,27 +2087,24 @@ html.dark .marquee-discipline {
     }
 }
 
-/* ─────────────────────────────────────────────────────────────
-   14.5. HOME BLOG SECTION — Horizontal Pinned Track (ScrollTrigger)
-   ───────────────────────────────────────────────────────────── */
 .home-blog-section {
     position: relative;
     width: 100%;
+    background-color: var(--bg-primary);
+    z-index: 2;
     box-sizing: border-box;
 }
 
 .home-blog-pin-wrap {
-    position: relative;
+    position: relative; /* Base sin !important para que GSAP inyecte position: fixed */
     width: 100%;
     min-height: 100vh;
     height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    padding-top: clamp(4.5rem, 7.5vh, 6.5rem);
-    padding-bottom: clamp(2rem, 4vh, 3.5rem);
-    box-sizing: border-box;
     background-color: var(--bg-primary);
+    z-index: 2;
+    padding-top: clamp(3.5rem, 5.5vh, 4.5rem);
+    padding-bottom: clamp(2.5rem, 4vh, 3.5rem);
+    box-sizing: border-box;
 }
 
 .home-blog-viewport {

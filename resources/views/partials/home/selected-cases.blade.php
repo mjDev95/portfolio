@@ -7,27 +7,10 @@
   - 6 proyectos en producción con soporte Flip y cursor reactivo.
 --}}
 @php
-    $cptProyectos = \App\Models\ContentType::where('slug', 'proyectos')->first();
+    $items = $projects ?? $featuredProjects ?? $featuredContents ?? collect();
     $cptSlug = $cptProyectos?->public_route_slug ?? 'proyectos';
-
-    $dbProjects = $featuredContents->filter(function($c) {
-        return ($c->contentType?->slug ?? '') === 'proyectos';
-    })->values();
-
-    if ($dbProjects->count() < 6) {
-        $dbProjects = \App\Models\Content::query()
-            ->whereHas('contentType', fn($q) => $q->where('slug', 'proyectos')->where('is_public', true))
-            ->published()
-            ->with(['contentType', 'categories', 'media'])
-            ->orderByDesc('featured')
-            ->orderBy('sort_order')
-            ->orderByDesc('published_at')
-            ->take(6)
-            ->get();
-    }
-
-    $leftProjects = $dbProjects->filter(fn($p, $i) => $i % 2 === 0)->values();
-    $rightProjects = $dbProjects->filter(fn($p, $i) => $i % 2 === 1)->values();
+    $leftProjects = $items->filter(fn($p, $i) => $i % 2 === 0)->values();
+    $rightProjects = $items->filter(fn($p, $i) => $i % 2 === 1)->values();
 @endphp
 
 <section class="showcase-section position-relative w-100" id="proyectos" data-selected-cases>
@@ -36,17 +19,17 @@
     <div class="showcase-pinned-hero" id="showcase-pinned-header">
         <div class="showcase-header-content" id="showcase-header-text">
             <h2 class="showcase-title h1" data-showcase-title>
-                Proyectos en Producción
+                Casos de Estudio &amp; Trabajo
             </h2>
             <p class="showcase-subtitle">
-                Portales institucionales de alto tráfico, sistemas de diseño en Figma y plataformas con maquetación fluida y óptimos Core Web Vitals.
+                Plataformas web de alto impacto, arquitecturas a medida en WordPress y experiencias interactivas diseñadas para convertir, escalar y cargar en milisegundos.
             </p>
         </div>
     </div>
 
     {{-- 2. Contenedor Continuo Único de Todas las Tarjetas (Masonry de 2 Columnas Simétricas) --}}
     <div class="showcase-cards-container position-relative w-100">
-        <div class="container-fluid showcase-cards-inner">
+        <div class="container showcase-cards-inner">
             <div class="row g-4 g-lg-5 align-items-start">
 
                 {{-- Columna Izquierda: Proyectos 1, 3, 5 (Mismo Ancho 50% y Espaciado Constante) --}}
@@ -81,9 +64,9 @@
                                         </div>
                                     @endif
                                 </figure>
-                                <div class="project-meta-row d-flex align-items-baseline justify-content-between pt-3">
+                                <div class="project-meta-row d-flex align-items-baseline flex-column justify-content-between pt-3">
+                                    <span class="project-category  text-fluid-xs text-brand text-uppercase ms-3 flex-shrink-0">{{ $cat }}</span>
                                     <h3 class="project-name m-0">{{ $item->title }}</h3>
-                                    <span class="project-category font-mono text-fluid-xs text-muted text-uppercase ms-3 flex-shrink-0">{{ $cat }}</span>
                                 </div>
                             </a>
                         </article>
@@ -122,9 +105,9 @@
                                         </div>
                                     @endif
                                 </figure>
-                                <div class="project-meta-row d-flex align-items-baseline justify-content-between pt-3">
+                                <div class="project-meta-row d-flex align-items-baseline flex-column justify-content-between pt-3">
+                                    <span class="project-category text-fluid-xs text-brand text-uppercase ms-3 flex-shrink-0">{{ $cat }}</span>
                                     <h3 class="project-name m-0">{{ $item->title }}</h3>
-                                    <span class="project-category font-mono text-fluid-xs text-muted text-uppercase ms-3 flex-shrink-0">{{ $cat }}</span>
                                 </div>
                             </a>
                         </article>

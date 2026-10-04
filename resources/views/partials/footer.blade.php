@@ -9,9 +9,9 @@
             {{-- Columna Izquierda: Símbolo de Marca + Declaración Monumental --}}
             <div class="col-12 col-lg-5 d-flex flex-column align-items-start">
                 <div class="icon-xl text-accent flex-shrink-0 mb-md" aria-hidden="true">
-                    {{-- Estrella de 4 puntas cóncava editorial --}}
-                    <svg viewBox="0 0 24 24" fill="currentColor" class="w-100 h-100 d-block">
-                        <path d="M12 0 C12 6.627 6.627 12 0 12 C6.627 12 12 17.373 12 24 C12 17.373 17.373 12 24 12 C17.373 12 12 6.627 12 0 Z"/>
+                    {{-- Estrella de 4 puntas geométrica editorial --}}
+                    <svg viewBox="0 0 100 100" fill="currentColor" class="w-100 h-100 d-block">
+                        <path d="M46 0 H54 V28 Q54 46 72 46 H100 V54 H72 Q54 54 54 72 V100 H46 V72 Q46 54 28 54 H0 V46 H28 Q46 46 46 28 Z"/>
                     </svg>
                 </div>
                 <h2 class="h1 m-0 fw-semibold text-primary max-w-statement">

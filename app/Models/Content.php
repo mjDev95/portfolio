@@ -133,12 +133,12 @@ class Content extends Model
 
     public function categories(): BelongsToMany
     {
-        return $this->belongsToMany(Category::class, 'content_category');
+        return $this->belongsToMany(Category::class, 'content_category', 'content_id', 'category_id');
     }
 
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class, 'content_tag');
+        return $this->belongsToMany(Tag::class, 'content_tag', 'content_id', 'tag_id');
     }
 
     // ─────────────────────────────────────────────

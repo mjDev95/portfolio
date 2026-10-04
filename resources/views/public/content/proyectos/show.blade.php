@@ -38,7 +38,7 @@
 
     {{-- Hero Media Principal (Shared Element Transition con Flip) --}}
     @if ($videoFacadeUrl)
-        <div class="media-wrap hero-media-wrapper overflow-hidden mb-2xl position-relative"
+        <div class="media-wrap hero-media-wrapper w-100 position-relative overflow-hidden aspect-16-9 bg-surface border-subtle mb-2xl"
              data-video-facade="{{ $videoFacadeUrl }}"
              data-flip-id="project-{{ $content->slug }}"
              data-flip-element="image"
@@ -51,7 +51,7 @@
             @endif
         </div>
     @elseif ($heroImage)
-        <div class="media-wrap hero-media-wrapper overflow-hidden mb-2xl"
+        <div class="media-wrap hero-media-wrapper w-100 position-relative overflow-hidden aspect-16-9 bg-surface border-subtle mb-2xl"
              data-flip-id="project-{{ $content->slug }}"
              data-flip-element="image">
             <img src="{{ $heroImage->url }}"

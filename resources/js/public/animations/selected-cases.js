@@ -107,7 +107,7 @@ export function initSelectedCases(container) {
 
         ScrollTrigger.create({
             trigger: section,
-            start: 'top 80%',
+            start: 'top 85%',
             onEnter: () => entranceTl.play(),
             onLeaveBack: () => {
                 titleChars.forEach((c) => c.classList.remove('is-revealed'));
@@ -136,8 +136,8 @@ export function initSelectedCases(container) {
             immediateRender: false,
             scrollTrigger: {
                 trigger: cardsContainer,
-                start: 'top 60%',
-                end: 'top 15%',
+                start: 'top 52%',
+                end: 'top 12%',
                 scrub: 0.8,
             },
         });

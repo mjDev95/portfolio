@@ -12,7 +12,7 @@ trait HasMedia
      */
     public function media(): BelongsToMany
     {
-        return $this->belongsToMany(Media::class, 'content_media')
+        return $this->belongsToMany(Media::class, 'content_media', 'content_id', 'media_id')
             ->withPivot(['id', 'collection', 'order'])
             ->withTimestamps()
             ->orderBy('content_media.order');
