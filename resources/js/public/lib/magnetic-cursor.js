@@ -53,17 +53,37 @@ export function initMagneticCursor() {
         cursor.classList.add('is-active');
     }
 
-    // Delegated project and blog card hover detection for high performance and Barba transition persistence
+    // Delegated hover detection for project cards (arrow), blog cards (eye), and draggable track (< >)
     document.addEventListener('mouseover', (event) => {
-        if (event.target?.closest?.('[data-project-card], [data-blog-card]')) {
+        const target = event.target;
+        if (!target) return;
+
+        // 1. Tarjeta de proyecto -> Flecha hacia arriba
+        if (target.closest?.('[data-project-card]')) {
+            cursor.classList.remove('is-blog-hover', 'is-drag-hover');
             cursor.classList.add('is-project-hover');
-        } else {
-            cursor.classList.remove('is-project-hover');
+            return;
         }
+
+        // 2. Tarjeta de nota/blog -> Ojito de lectura
+        if (target.closest?.('[data-blog-card]')) {
+            cursor.classList.remove('is-project-hover', 'is-drag-hover');
+            cursor.classList.add('is-blog-hover');
+            return;
+        }
+
+        // 3. Zona dragueable del blog -> Flechas < >
+        if (target.closest?.('[data-home-blog-viewport], [data-home-blog-track]')) {
+            cursor.classList.remove('is-project-hover', 'is-blog-hover');
+            cursor.classList.add('is-drag-hover');
+            return;
+        }
+
+        cursor.classList.remove('is-project-hover', 'is-blog-hover', 'is-drag-hover');
     });
 
     document.addEventListener('mouseleave', () => {
-        cursor.classList.remove('is-active', 'is-project-hover');
+        cursor.classList.remove('is-active', 'is-project-hover', 'is-blog-hover', 'is-drag-hover');
     });
 
     function refreshMagneticTargets() {

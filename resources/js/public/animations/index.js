@@ -6,4 +6,6 @@ export { initSelectedCases, cleanupSelectedCases } from './selected-cases';
 export { initVelixReveals, cleanupVelixReveals } from './velix-reveal';
 export { initBlogSingle, initBlogArchive, cleanupBlogAnimations } from './blog';
 export { initFooterReveal, cleanupFooterReveal } from './footer';
+export { initMethodology, cleanupMethodology } from './methodology';
+export { initHomeBlog, cleanupHomeBlog } from './home-blog';
 export { initPageAnimations } from './init-page';

@@ -10,10 +10,44 @@ import { initDynamicIsland } from './animations/dynamic-island';
 import { initShareModal } from './lib/share-modal';
 import { initFooterReveal } from './animations/footer';
 
+function initCopyEmail() {
+    document.addEventListener('click', async (e) => {
+        const copyBtn = e.target.closest('[data-copy-email]');
+        if (!copyBtn) return;
+
+        const email = copyBtn.getAttribute('data-copy-email') || 'mjgaliciab@gmail.com';
+        const label = copyBtn.querySelector('[data-copy-label]') || copyBtn;
+        const originalText = label.textContent;
+
+        try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(email);
+            } else {
+                const input = document.createElement('input');
+                input.value = email;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                input.remove();
+            }
+
+            label.textContent = '¡Copiado! ✓';
+            copyBtn.classList.add('copied-success');
+            setTimeout(() => {
+                label.textContent = originalText;
+                copyBtn.classList.remove('copied-success');
+            }, 2000);
+        } catch (err) {
+            console.warn('[Clipboard] Fallback:', err);
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     initThemeToggle();
     initCookieConsent();
     initShareModal();
+    initCopyEmail();
 
     // Initial visit tracking ping (cookieless / non-blocking)
     sendAnalyticsPing(window.location.pathname);

@@ -4,6 +4,8 @@ import { initHeroCurtain } from './hero-curtain';
 import { initSelectedCases } from './selected-cases';
 import { initVelixReveals } from './velix-reveal';
 import { initBlogArchive, initBlogSingle, initCardReveals } from './blog';
+import { initMethodology } from './methodology';
+import { initHomeBlog } from './home-blog';
 
 /**
  * Runs on every Barba `enter` step. Scoped to the incoming container so
@@ -17,6 +19,8 @@ export function initPageAnimations(container) {
     initBlogArchive(container);
     initBlogSingle(container);
     initCardReveals(container);
+    initMethodology(container);
+    initHomeBlog(container);
 
     const reveals = Array.from(container.querySelectorAll('[data-reveal]')).filter((el) => {
         return !el.matches('[data-detail-header], [data-detail-body], [data-detail-breadcrumbs], [data-card-reveal]') &&

@@ -49,7 +49,7 @@ class HomeController extends Controller
                 ])
                 ->orderByDesc('featured')
                 ->orderByDesc('published_at')
-                ->take(2)
+                ->take(6)
                 ->get()
             : collect();
 

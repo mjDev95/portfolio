@@ -657,15 +657,37 @@ class PublicBlogEditorialTest extends TestCase
         ]);
         $post2->categories()->attach($category);
 
+        for ($i = 3; $i <= 6; $i++) {
+            $p = Content::create([
+                'user_id' => $this->admin->id,
+                'content_type_id' => $this->blogCpt->id,
+                'title' => "Ensayo {$i} en Home",
+                'slug' => "ensayo-{$i}-en-home",
+                'body' => "Contenido del ensayo {$i}.",
+                'status' => 'published',
+                'featured' => false,
+                'published_at' => now()->subHours($i + 2),
+            ]);
+            $p->categories()->attach($category);
+        }
+
         $response = $this->get('/');
 
         $response->assertOk()
             ->assertSee('id="blog"', false)
             ->assertSee('home-blog-section', false)
-            ->assertSee('Artículos Recientes')
+            ->assertSee('data-home-blog-track', false)
+            ->assertSee('data-home-blog-pin', false)
+            ->assertSee('Our latest news')
+            ->assertDontSee('Read the blog')
+            ->assertDontSee('badge-floating-glass')
             ->assertSee('Primer Ensayo en Home')
             ->assertSee('Segundo Ensayo en Home')
-            ->assertSee('Ver todos los artículos')
+            ->assertSee('Ensayo 3 en Home')
+            ->assertSee('Ensayo 4 en Home')
+            ->assertSee('Ensayo 5 en Home')
+            ->assertSee('Ensayo 6 en Home')
+            ->assertSee('All News')
             ->assertSee('href="'.route('public.content.index', 'blog').'"', false)
             ->assertSee('data-card-reveal', false)
             ->assertSee('data-flip-card', false);

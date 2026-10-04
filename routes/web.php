@@ -44,10 +44,8 @@ Route::middleware([EnsurePublicSiteIsActive::class])->group(function () {
 
     Route::get('/sobre-mi', AboutController::class)->name('about');
 
-    Route::get('/contacto', [ContactController::class, 'index'])->name('contact');
-    Route::post('/contacto', [ContactController::class, 'store'])
-        ->middleware('throttle:5,1')
-        ->name('contact.store');
+    Route::get('/contacto', ContactController::class)->name('contact');
+    Route::post('/contacto', fn () => redirect()->route('contact'))->name('contact.store');
 });
 
 Route::post('/api/track-visit', VisitTrackingController::class)

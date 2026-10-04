@@ -7,8 +7,9 @@ const DETAIL_NAMESPACES = ['project-show', 'content-show', 'blog-show'];
 // Snapshot handed off from transition's `leave()` to `enter()`.
 window.__activeFlight = null;
 window.__lastClickedFlipCard = null;
+window.__lastCapturedFlip = null;
 
-// Global capture-phase click listener: cleans hover/magnetic interference immediately on click
+// Global capture-phase click listener: cleans hover/magnetic interference and captures exact viewport geometry immediately on click
 if (typeof window !== 'undefined') {
     document.addEventListener(
         'click',
@@ -21,10 +22,40 @@ if (typeof window !== 'undefined') {
                 // Matar tweens residuales de imán sin bloquear el despacho de eventos de Barba
                 card.removeAttribute('data-magnetic');
                 gsap.killTweensOf(card);
-                const img = card.querySelector('[data-flip-element="image"]') || card.querySelector('img');
+
+                const wrapper = card.querySelector('[data-flip-element="image"]') ||
+                                card.querySelector('.project-media-frame') ||
+                                card.querySelector('.card-media-wrapper') ||
+                                card.querySelector('.project-showcase-media') ||
+                                card;
+                const img = wrapper?.querySelector?.('img') || (wrapper instanceof HTMLImageElement ? wrapper : card.querySelector('img'));
                 if (img) {
                     img.style.transition = 'none';
                     gsap.killTweensOf(img);
+                }
+
+                // Captura síncrona inmediata en el instante físico del click:
+                // Guarda las coordenadas exactas en viewport antes de que cualquier hook
+                // de ciclo de vida altere el scroll o mute el DOM.
+                try {
+                    const rect = wrapper ? wrapper.getBoundingClientRect() : null;
+                    if (rect && rect.width > 0 && rect.height > 0) {
+                        window.__lastCapturedFlip = {
+                            card,
+                            wrapper,
+                            rect: {
+                                top: rect.top,
+                                left: rect.left,
+                                width: rect.width,
+                                height: rect.height,
+                            },
+                            imgSrc: img?.currentSrc || img?.src || '',
+                            imgAlt: img?.alt || '',
+                            timestamp: Date.now(),
+                        };
+                    }
+                } catch (err) {
+                    window.__lastCapturedFlip = null;
                 }
 
                 // Desvanecer INMEDIATAMENTE el texto de la tarjeta seleccionada para que solo quede la imagen
@@ -59,12 +90,12 @@ export function createFlipTransitions() {
             name: 'flip-to-detail',
             custom({ current, next, trigger }) {
                 const isFromAllowed = ['projects-index', 'blog-index', 'blog-category', 'blog-tag', 'blog-show', 'home', 'content-index'].includes(current.namespace) ||
-                                      (current.url?.path && /^\/(proyectos|blog)(\/(categoria|etiqueta|tag)\/[^/]+)?\/?$/.test(current.url.path));
+                                      (current.url?.path && (/^\/(proyectos|blog)(\/(categoria|etiqueta|tag)\/[^/]+)?\/?$/.test(current.url.path) || current.url.path === '/' || current.url.path === ''));
                 const isToDetail = DETAIL_NAMESPACES.includes(next.namespace) ||
                                   (next.url?.path && /^\/(proyectos|blog)\/[^/]+/.test(next.url.path));
 
-                const candidate = (trigger instanceof Element ? trigger : null) || window.__lastClickedFlipCard;
-                const hasCard = Boolean(candidate?.closest?.('[data-flip-card]') || window.__lastClickedFlipCard);
+                const candidate = (trigger instanceof Element ? trigger : null) || window.__lastClickedFlipCard || window.__lastCapturedFlip?.card;
+                const hasCard = Boolean(candidate?.closest?.('[data-flip-card]') || window.__lastClickedFlipCard || window.__lastCapturedFlip?.card);
 
                 return Boolean(isFromAllowed && isToDetail && hasCard);
             },
@@ -75,13 +106,17 @@ export function createFlipTransitions() {
                     // 1. Registrar navegación en la memoria de sesión
                     markNavigated();
 
-                    // 2. Identificar tarjeta y wrapper de origen
+                    // 2. Identificar tarjeta y wrapper de origen con prioridad en datos precapturados
+                    const captured = window.__lastCapturedFlip;
+                    const isCapturedValid = captured && (Date.now() - captured.timestamp < 3000);
                     const candidateTrigger = data.trigger instanceof Element ? data.trigger : null;
-                    const originCard = candidateTrigger?.closest?.('[data-flip-card]') ||
+                    const originCard = (isCapturedValid && captured.card) ||
+                                       candidateTrigger?.closest?.('[data-flip-card]') ||
                                        candidateTrigger ||
                                        window.__lastClickedFlipCard ||
                                        data.current.container.querySelector('[data-flip-card]');
-                    const originWrapper = originCard?.querySelector?.('[data-flip-element="image"]') ||
+                    const originWrapper = (isCapturedValid && captured.wrapper) ||
+                                          originCard?.querySelector?.('[data-flip-element="image"]') ||
                                           originCard?.querySelector?.('.project-media-frame') ||
                                           originCard?.querySelector?.('.card-media-wrapper') ||
                                           originCard?.querySelector?.('.project-showcase-media') ||
@@ -103,10 +138,14 @@ export function createFlipTransitions() {
                     gsap.killTweensOf([originCard, originWrapper, originImage].filter(Boolean));
                     gsap.set([originCard, originWrapper, originImage].filter(Boolean), { clearProps: 'transform' });
 
-                    // 3. Medir coordenadas iniciales de la tarjeta (4:3)
-                    const originRect = originWrapper.getBoundingClientRect();
-                    const imgSrc = originImage?.currentSrc || originImage?.src || '';
-                    const imgAlt = originImage?.alt || '';
+                    // 3. Medir coordenadas iniciales de la tarjeta:
+                    // Prioriza la captura síncrona tomada en el momento del click para blindar
+                    // contra colapsos de scroll o spacers del Home.
+                    const originRect = (isCapturedValid && captured.rect && captured.rect.width > 0)
+                        ? captured.rect
+                        : originWrapper.getBoundingClientRect();
+                    const imgSrc = (isCapturedValid && captured.imgSrc) || originImage?.currentSrc || originImage?.src || '';
+                    const imgAlt = (isCapturedValid && captured.imgAlt) || originImage?.alt || '';
 
                     // 4. Medir coordenadas EXACTAS de destino del Hero en la nueva vista (scroll = 0)
                     let targetTop = null;
@@ -219,14 +258,14 @@ export function createFlipTransitions() {
 
                     // Desvanecer cualquier texto de la tarjeta seleccionada para que SOLO quede la imagen
                     const originCardTexts = originCard.querySelectorAll(
-                        '.project-showcase-body, .project-category-subtitle, .project-title-heading, .project-view-link'
+                        '.project-showcase-body, .project-category-subtitle, .project-title-heading, .project-view-link, .project-meta-row'
                     );
                     if (originCardTexts.length > 0) {
                         gsap.to(originCardTexts, { opacity: 0, y: -8, duration: 0.15, ease: 'power2.out' });
                     }
 
                     // 6. Timeline de salida: el entorno completo de la página vieja y el footer global se desvanecen
-                    const siteFooter = document.querySelector('.site-footer, footer');
+                    const mainFooter = document.getElementById('main-footer') || document.querySelector('.footer-scroll-wrapper') || document.querySelector('.site-footer, footer');
 
                     const tl = gsap.timeline({
                         onComplete: () => {
@@ -238,12 +277,15 @@ export function createFlipTransitions() {
                                 targetHeight,
                             };
                             data.current.container.style.display = 'none';
+                            if (mainFooter) {
+                                mainFooter.style.visibility = 'hidden';
+                            }
                             resolve();
                         },
                     });
 
-                    // Desvanecer rápidamente la página actual completa (autor, avatar, sidebar, texto) y el footer global
-                    tl.to([data.current.container, siteFooter].filter(Boolean), {
+                    // Desvanecer rápidamente la página actual completa (autor, avatar, sidebar, texto) y el footer global (#main-footer)
+                    tl.to([data.current.container, mainFooter].filter(Boolean), {
                         opacity: 0,
                         duration: 0.22,
                         ease: 'power2.inOut',
@@ -302,110 +344,135 @@ export function createFlipTransitions() {
                 const flight = window.__activeFlight;
                 window.__activeFlight = null;
                 window.__lastClickedFlipCard = null;
+                window.__lastCapturedFlip = null;
 
                 const proxy = flight?.proxy || document.getElementById('active-flight-proxy');
 
-                const targetHero = data.next.container.querySelector('.hero-media-wrapper') ||
-                                   data.next.container.querySelector('[data-flip-id]') ||
-                                   data.next.container.querySelector('[data-flip-element="image"]');
+                try {
+                    const targetHero = data.next.container.querySelector('.hero-media-wrapper') ||
+                                       data.next.container.querySelector('[data-flip-id]') ||
+                                       data.next.container.querySelector('[data-flip-element="image"]');
 
-                const targetImage = targetHero?.querySelector?.('img') || (targetHero instanceof HTMLImageElement ? targetHero : null);
+                    const targetImage = targetHero?.querySelector?.('img') || (targetHero instanceof HTMLImageElement ? targetHero : null);
 
-                // Esperar decodificación de la imagen hero si es necesario
-                if (targetImage instanceof HTMLImageElement && !targetImage.complete) {
-                    try {
-                        await targetImage.decode();
-                    } catch (e) {
-                        await new Promise((res) => {
-                            targetImage.onload = res;
-                            targetImage.onerror = res;
+                    // Esperar decodificación de la imagen hero si es necesario con timeout defensivo
+                    if (targetImage instanceof HTMLImageElement && !targetImage.complete) {
+                        try {
+                            await Promise.race([
+                                targetImage.decode(),
+                                new Promise((resolve) => {
+                                    targetImage.onload = resolve;
+                                    targetImage.onerror = resolve;
+                                    setTimeout(resolve, 400);
+                                }),
+                            ]);
+                        } catch (e) {
+                            // Fallback silencioso si no soporta decode o falla la red
+                        }
+                    }
+
+                    // Mostrar nuevo contenedor en flujo natural
+                    data.next.container.style.visibility = 'visible';
+                    data.next.container.style.opacity = '1';
+                    data.next.container.style.position = 'relative';
+
+                    resetScroll();
+
+                    const breadcrumbs = data.next.container.querySelector('[data-detail-breadcrumbs], .public-breadcrumbs');
+                    const header = data.next.container.querySelector('[data-detail-header], header');
+                    const meta = Array.from(
+                        data.next.container.querySelectorAll('[data-detail-body], [data-flip-text], .prose, .toc-sidebar-sticky')
+                    ).filter((el) => el !== targetHero && !targetHero?.contains(el) && el !== breadcrumbs && !breadcrumbs?.contains(el));
+                    const detailTargets = [header, ...meta].filter(Boolean);
+
+                    // Animar la entrada de las breadcrumbs con un elegante descenso desde arriba
+                    if (breadcrumbs) {
+                        gsap.to(breadcrumbs, {
+                            opacity: 1,
+                            y: 0,
+                            duration: 0.65,
+                            ease: 'power2.out',
+                            delay: 0.05,
+                            clearProps: 'all',
                         });
                     }
+
+                    if (proxy && targetHero) {
+                        // Medir las coordenadas reales del hero en la nueva vista montada en scroll = 0
+                        const realRect = targetHero.getBoundingClientRect();
+
+                        // Micro-alineación suave si hay cualquier diferencia subpixel
+                        await gsap.to(proxy, {
+                            top: realRect.top,
+                            left: realRect.left,
+                            width: realRect.width,
+                            height: realRect.height,
+                            borderRadius: '0px',
+                            duration: 0.15,
+                            ease: 'power2.out',
+                        });
+
+                        // Intercambio sin salto asegurando bordes rectos
+                        targetHero.style.borderRadius = '0px';
+                        gsap.set(targetHero, { opacity: 1, visibility: 'visible', borderRadius: '0px', clearProps: 'opacity,visibility' });
+                        proxy.remove();
+                    } else if (targetHero) {
+                        targetHero.style.borderRadius = '0px';
+                        gsap.set(targetHero, { opacity: 1, visibility: 'visible', borderRadius: '0px', clearProps: 'opacity,visibility' });
+                        if (proxy) proxy.remove();
+                    } else if (proxy) {
+                        proxy.remove();
+                    }
+
+                    // Revelar textos del detalle alrededor del hero
+                    if (detailTargets.length > 0) {
+                        await gsap.to(detailTargets, {
+                            opacity: 1,
+                            y: 0,
+                            stagger: 0.08,
+                            duration: 0.6,
+                            ease: 'power2.out',
+                            clearProps: 'all',
+                        });
+                    }
+
+                    // Restaurar la presencia del footer global en la nueva página
+                    const mainFooter = document.getElementById('main-footer') || document.querySelector('.footer-scroll-wrapper') || document.querySelector('.site-footer, footer');
+                    if (mainFooter) {
+                        mainFooter.style.visibility = 'visible';
+                        gsap.to(mainFooter, {
+                            opacity: 1,
+                            duration: 0.35,
+                            ease: 'power2.out',
+                            clearProps: 'opacity,visibility',
+                        });
+                    }
+                } finally {
+                    // Salvaguarda defensiva incondicional:
+                    // Bajo cualquier contingencia o error de red, el nuevo contenedor
+                    // y los elementos interactivos siempre quedan plenamente visibles.
+                    if (data.next?.container) {
+                        data.next.container.style.visibility = 'visible';
+                        data.next.container.style.opacity = '1';
+                        data.next.container.style.position = 'relative';
+                    }
+                    const strayProxy = document.getElementById('active-flight-proxy');
+                    if (strayProxy) strayProxy.remove();
+
+                    const mainFooter = document.getElementById('main-footer') || document.querySelector('.footer-scroll-wrapper') || document.querySelector('.site-footer, footer');
+                    if (mainFooter) {
+                        mainFooter.style.visibility = 'visible';
+                        gsap.set(mainFooter, { clearProps: 'opacity,visibility' });
+                    }
+
+                    // Confirmar que la píldora se mantenga compacta tras la animación
+                    syncDesktopIslandState(true);
+
+                    startScroll();
+                    resizeScroll();
+                    ScrollTrigger.refresh();
+                    document.body.style.pointerEvents = 'all';
                 }
-
-                // Mostrar nuevo contenedor en flujo natural
-                data.next.container.style.visibility = 'visible';
-                data.next.container.style.opacity = '1';
-                data.next.container.style.position = 'relative';
-
-                resetScroll();
-
-                const breadcrumbs = data.next.container.querySelector('[data-detail-breadcrumbs], .public-breadcrumbs');
-                const header = data.next.container.querySelector('[data-detail-header], header');
-                const meta = Array.from(
-                    data.next.container.querySelectorAll('[data-detail-body], [data-flip-text], .prose, .toc-sidebar-sticky')
-                ).filter((el) => el !== targetHero && !targetHero?.contains(el) && el !== breadcrumbs && !breadcrumbs?.contains(el));
-                const detailTargets = [header, ...meta].filter(Boolean);
-
-                // Animar la entrada de las breadcrumbs con un elegante descenso desde arriba
-                if (breadcrumbs) {
-                    gsap.to(breadcrumbs, {
-                        opacity: 1,
-                        y: 0,
-                        duration: 0.65,
-                        ease: 'power2.out',
-                        delay: 0.05,
-                        clearProps: 'all',
-                    });
-                }
-
-                if (proxy && targetHero) {
-                    // Medir las coordenadas reales del hero en la nueva vista montada en scroll = 0
-                    const realRect = targetHero.getBoundingClientRect();
-
-                    // Micro-alineación suave si hay cualquier diferencia subpixel
-                    await gsap.to(proxy, {
-                        top: realRect.top,
-                        left: realRect.left,
-                        width: realRect.width,
-                        height: realRect.height,
-                        borderRadius: '0px',
-                        duration: 0.15,
-                        ease: 'power2.out',
-                    });
-
-                    // Intercambio sin salto asegurando bordes rectos
-                    targetHero.style.borderRadius = '0px';
-                    gsap.set(targetHero, { opacity: 1, visibility: 'visible', borderRadius: '0px', clearProps: 'opacity,visibility' });
-                    proxy.remove();
-                } else if (targetHero) {
-                    targetHero.style.borderRadius = '0px';
-                    gsap.set(targetHero, { opacity: 1, visibility: 'visible', borderRadius: '0px', clearProps: 'opacity,visibility' });
-                    if (proxy) proxy.remove();
-                } else if (proxy) {
-                    proxy.remove();
-                }
-
-                // Revelar textos del detalle alrededor del hero
-                if (detailTargets.length > 0) {
-                    await gsap.to(detailTargets, {
-                        opacity: 1,
-                        y: 0,
-                        stagger: 0.08,
-                        duration: 0.6,
-                        ease: 'power2.out',
-                        clearProps: 'all',
-                    });
-                }
-
-                // Restaurar la presencia del footer global en la nueva página
-                const siteFooter = document.querySelector('.site-footer, footer');
-                if (siteFooter) {
-                    gsap.to(siteFooter, {
-                        opacity: 1,
-                        duration: 0.35,
-                        ease: 'power2.out',
-                        clearProps: 'opacity',
-                    });
-                }
-
-                // Confirmar que la píldora se mantenga compacta tras la animación
-                syncDesktopIslandState(true);
-
-                startScroll();
-                resizeScroll();
-                ScrollTrigger.refresh();
-                document.body.style.pointerEvents = 'all';
             },
         },
     ];

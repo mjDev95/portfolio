@@ -23,8 +23,5 @@
 
     {{-- 5. Artículos & Ensayos Técnicos (Blog Editorial) --}}
     @include('partials.home.blog-editorial')
-
-    {{-- 6. Call To Action Editorial & Contacto Final --}}
-    @include('partials.home.cta-contact')
 </div>
 @endsection

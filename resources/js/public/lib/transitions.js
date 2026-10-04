@@ -8,6 +8,8 @@ import { sendAnalyticsPing } from './tracker';
 import { cleanupDynamicIsland, syncDesktopIslandState, markNavigated } from '../animations/dynamic-island';
 import { closeShareModal } from './share-modal';
 import { cleanupFooterReveal, initFooterReveal } from '../animations/footer';
+import { cleanupMethodology } from '../animations/methodology';
+import { cleanupHomeBlog } from '../animations/home-blog';
 
 function syncPageMetadata(html) {
     if (!html) return;
@@ -153,6 +155,12 @@ export function initBarba({ onAfterEnter } = {}) {
         markNavigated();
         cleanupDynamicIsland(true);
         cleanupFooterReveal();
+        cleanupMethodology();
+        cleanupHomeBlog();
+        const mainFooter = document.getElementById('main-footer') || document.querySelector('.footer-scroll-wrapper') || document.querySelector('.site-footer, footer');
+        if (mainFooter) {
+            gsap.set(mainFooter, { opacity: 0 });
+        }
         ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     });
 
@@ -178,6 +186,17 @@ export function initBarba({ onAfterEnter } = {}) {
 
         // Recálculo continuo de altura al cargar imágenes del contenedor entrante
         watchImagesForScrollResize(data.next.container);
+
+        const mainFooter = document.getElementById('main-footer') || document.querySelector('.footer-scroll-wrapper') || document.querySelector('.site-footer, footer');
+        if (mainFooter) {
+            mainFooter.style.visibility = 'visible';
+            gsap.to(mainFooter, {
+                opacity: 1,
+                duration: 0.35,
+                ease: 'power2.out',
+                clearProps: 'opacity,visibility',
+            });
+        }
 
         initFooterReveal();
 
@@ -227,8 +246,11 @@ export function initBarba({ onAfterEnter } = {}) {
     if (typeof barba.hooks.error === 'function') {
         barba.hooks.error((data, error) => {
             console.error('[Barba] Error durante la transición de página:', error);
-            const siteFooter = document.querySelector('.site-footer, footer');
-            if (siteFooter) gsap.set(siteFooter, { clearProps: 'opacity' });
+            const mainFooter = document.getElementById('main-footer') || document.querySelector('.footer-scroll-wrapper') || document.querySelector('.site-footer, footer');
+            if (mainFooter) {
+                mainFooter.style.visibility = 'visible';
+                gsap.set(mainFooter, { clearProps: 'opacity,visibility' });
+            }
             startScroll();
             resizeScroll();
             ScrollTrigger.refresh();
@@ -345,7 +367,8 @@ export function initBarba({ onAfterEnter } = {}) {
             {
                 name: 'smooth-editorial-transition',
                 async leave(data) {
-                    return gsap.to(data.current.container, {
+                    const mainFooter = document.getElementById('main-footer') || document.querySelector('.footer-scroll-wrapper') || document.querySelector('.site-footer, footer');
+                    return gsap.to([data.current.container, mainFooter].filter(Boolean), {
                         opacity: 0,
                         y: -15,
                         duration: 0.45,
