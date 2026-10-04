@@ -98,9 +98,9 @@
                                         </h3>
 
                                         {{-- Enlace de Acción Read More Anclado al Fondo --}}
-                                        <div class="mt-auto">
+                                        <div class="mt-auto mb-5">
                                             <span class="font-sans text-fluid-sm fw-medium text-brand">
-                                                Read More
+                                                Lee más
                                             </span>
                                         </div>
                                     </div>

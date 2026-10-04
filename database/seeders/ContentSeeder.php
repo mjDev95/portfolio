@@ -1295,13 +1295,45 @@ MARKDOWN,
                     $cv['cta_button_text'] = 'Hablemos de tu Proyecto';
                     $dirty = true;
                 }
-                if (empty($cv['cta_button_url'])) {
-                    $cv['cta_button_url'] = '/contacto';
-                    $dirty = true;
-                }
                 if ($dirty) {
                     $bPost->custom_values = $cv;
                     $bPost->save();
+                }
+            }
+
+            // Garantizar que todos los proyectos de la base de datos tengan al menos 1 imagen asignada
+            $allProjects = Content::where('content_type_id', $proyectosCpt->id)->get();
+            $availableImages = Media::where('mime_type', 'like', 'image/%')
+                ->whereNotNull('file_path')
+                ->orderBy('id')
+                ->pluck('id')
+                ->all();
+
+            $projectMediaMap = [
+                'centro-medico-abc-portal-institucional' => 71,
+                'next-in-line-management-plataforma-editorial' => 64,
+                'flacso-mexico-repositorio-academico' => 160,
+                'accesate-ecommerce-b2b-accesibilidad' => 85,
+                'saavi-energia-portal-corporativo-esg' => 189,
+                'plataforma-ecommerce-headless' => 82,
+                'design-system-dashboard-financiero' => 55,
+                'motor-automatizacion-flujos-legales' => 81,
+                'alta-moda-vs-alta-costura' => 86,
+                '010101' => 23,
+            ];
+
+            foreach ($allProjects as $pIndex => $pContent) {
+                if (! $pContent->media()->wherePivot('collection', 'thumbnail')->exists() && ! empty($availableImages)) {
+                    $mediaId = $projectMediaMap[$pContent->slug] ?? null;
+                    if (! $mediaId || ! in_array($mediaId, $availableImages, true)) {
+                        $mediaId = $availableImages[$pIndex % count($availableImages)];
+                    }
+                    $pContent->media()->syncWithoutDetaching([
+                        $mediaId => [
+                            'collection' => 'thumbnail',
+                            'order' => 0,
+                        ],
+                    ]);
                 }
             }
 

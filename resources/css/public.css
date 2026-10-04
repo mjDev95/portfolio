@@ -1493,50 +1493,15 @@ html.light .btn-universal.is-active {
     transform: translate(3px, -3px);
 }
 
-/* Rejilla de 4 Estadísticas Monumentales */
+/* Rejilla de Estadísticas Monumentales */
 .hero-stats-row {
-    margin-top: var(--fluid-s-2xl);
+    margin-top: var(--fluid-s-xl);
     width: 100%;
 }
 
 .hero-stat-col {
     display: flex;
     flex-direction: column;
-}
-
-.hero-stat-num {
-    font-family: var(--font-heading);
-    font-size: var(--fluid-stat-number);
-    font-weight: 600;
-    line-height: 0.95;
-    letter-spacing: -0.035em;
-    color: var(--text-primary);
-    margin-bottom: var(--fluid-s-sm);
-}
-
-.hero-stat-hairline {
-    border-top: 1px solid var(--border-subtle);
-    padding-top: var(--fluid-s-sm);
-    display: flex;
-    flex-direction: column;
-    gap: var(--fluid-s-2xs);
-}
-
-.hero-stat-title {
-    font-family: var(--font-sans);
-    font-size: var(--fluid-text-base);
-    font-weight: 600;
-    color: var(--text-primary);
-    letter-spacing: -0.015em;
-    margin: 0;
-}
-
-.hero-stat-desc {
-    font-family: var(--font-sans);
-    font-size: var(--fluid-text-xs);
-    color: var(--text-secondary);
-    line-height: 1.55;
-    margin: 0;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -1795,276 +1760,81 @@ html.light .btn-universal.is-active {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   12. SERVICES SECTION (What I do?) — Fluid Editorial Baseline
+   12. SERVICES SECTION — Horizontal Ribbon / Marquee (Infinita)
    ───────────────────────────────────────────────────────────── */
-.services-editorial-section {
+.services-ribbon-stage {
     position: relative;
     width: 100%;
-    padding-top: var(--fluid-s-xl);
-    padding-bottom: var(--fluid-s-xl);
-    box-sizing: border-box;
-}
-
-.services-editorial-content {
-    width: 100%;
-    padding-inline: var(--fluid-gutter-x);
-    box-sizing: border-box;
-}
-
-.services-header-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: var(--fluid-s-lg);
-    flex-wrap: wrap;
-    margin-bottom: var(--fluid-s-2xl);
-}
-
-.services-header-left {
-    display: flex;
-    flex-direction: column;
-}
-
-.services-main-title {
-    font-family: var(--font-heading);
-    font-size: var(--fluid-h1);
-    font-weight: 700;
-    letter-spacing: -0.035em;
-    line-height: 1.1;
-    color: var(--text-primary);
-    margin: 0;
-}
-
-.services-lead-text {
-    font-family: var(--font-sans);
-    font-size: var(--fluid-text-base);
-    color: var(--text-secondary);
-    line-height: 1.6;
-    max-width: 48ch;
-    margin: 0;
-}
-
-/* Lista Editorial de Servicios a Filas Continuas (Inspiración Wabi-Sabi & Reference Design) */
-.service-editorial-list {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    border-bottom: 1px solid var(--border-subtle);
-}
-
-.service-editorial-item {
-    border-top: 1px solid var(--border-subtle);
-    padding-top: var(--fluid-s-lg);
-    padding-bottom: var(--fluid-s-lg);
-    padding-inline: var(--fluid-s-xs);
-    display: grid;
-    grid-template-columns: clamp(2.5rem, 4vw, 4.5rem) clamp(16rem, 26vw, 24rem) 1fr auto;
-    align-items: center;
-    gap: var(--fluid-s-lg);
-    text-decoration: none;
-    color: inherit;
-    transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-                border-color 0.25s ease;
-    box-sizing: border-box;
-    width: 100%;
-}
-
-.service-editorial-item:hover {
-    background-color: var(--row-hover-bg);
-}
-
-.service-item-index {
-    font-family: var(--font-mono);
-    font-size: var(--fluid-text-xs);
-    font-weight: 500;
-    color: var(--text-muted);
-    letter-spacing: 0.05em;
+    padding: clamp(2.5rem, 5vw, 4.5rem) 0;
+    background-color: var(--bg-primary);
+    overflow: hidden;
     user-select: none;
+    -webkit-user-select: none;
+    border-bottom: 1px solid var(--border-subtle);
+    box-sizing: border-box;
+    z-index: 2;
 }
 
-.service-item-title {
-    font-family: var(--font-heading);
-    font-size: clamp(1.4rem, 2.2vw, 2.1rem);
-    font-weight: 700;
-    letter-spacing: -0.025em;
-    line-height: 1.2;
-    color: var(--text-primary);
-    margin: 0;
-    transition: color 0.25s ease;
+.marquee-horizontal-viewport {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
 }
 
-.service-editorial-item:hover .service-item-title {
-    color: var(--accent);
-}
-
-.service-item-desc {
-    font-family: var(--font-sans);
-    font-size: var(--fluid-text-sm);
-    color: var(--text-secondary);
-    line-height: 1.65;
-    margin: 0;
-    max-width: 64ch;
-}
-
-.service-item-arrow {
-    color: var(--accent);
+.infinite-strip-wrapper {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    font-size: clamp(1.1rem, 1.4vw, 1.35rem);
+    flex-shrink: 0;
+    white-space: nowrap;
+    will-change: transform;
+    font-size: clamp(3.8rem, 9.5vw, 8.5rem);
     line-height: 1;
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.service-editorial-item:hover .service-item-arrow {
-    transform: translate(3px, -3px);
-}
-
-@media (max-width: 991px) {
-    .service-editorial-item {
-        grid-template-columns: auto 1fr auto;
-        grid-template-areas:
-            "index title arrow"
-            ". desc desc";
-        gap: var(--fluid-s-2xs) var(--fluid-s-md);
-        align-items: baseline;
-        padding-top: var(--fluid-s-md);
-        padding-bottom: var(--fluid-s-md);
-    }
-
-    .service-item-index {
-        grid-area: index;
-    }
-
-    .service-item-title {
-        grid-area: title;
-    }
-
-    .service-item-arrow {
-        grid-area: arrow;
-    }
-
-    .service-item-desc {
-        grid-area: desc;
-        margin-top: var(--fluid-s-2xs);
-    }
-}
-
-@media (max-width: 575px) {
-    .service-editorial-item {
-        grid-template-columns: auto 1fr auto;
-        grid-template-areas:
-            "index title arrow"
-            "desc desc desc";
-        gap: var(--fluid-s-2xs) var(--fluid-s-sm);
-        padding-top: var(--fluid-s-sm);
-        padding-bottom: var(--fluid-s-sm);
-    }
-
-    .service-item-desc {
-        margin-top: var(--fluid-s-xs);
-    }
-}
-
-.services-cards-stack {
-    display: flex;
-    flex-direction: column;
-    gap: var(--fluid-s-sm);
-    width: 100%;
-}
-
-.service-card {
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--fluid-s-md);
-    padding: var(--fluid-s-lg) var(--fluid-s-xl);
-    display: grid;
-    grid-template-columns: auto 1.3fr 1.1fr 1.6fr;
+.marquee-item-group {
+    display: inline-flex;
     align-items: center;
-    gap: var(--fluid-s-lg);
-    transition: border-color 0.3s ease, background-color 0.3s ease;
-    box-sizing: border-box;
-    width: 100%;
 }
 
-.service-card:hover {
-    border-color: var(--border-hover);
-}
-
-.service-card-index {
-    font-family: var(--font-mono);
-    font-size: var(--fluid-text-sm);
-    font-weight: 500;
-    color: var(--text-muted);
-    min-width: var(--fluid-s-2xl);
-}
-
-.service-card-title h3 {
+.marquee-discipline {
     font-family: var(--font-heading);
-    font-size: var(--fluid-h3);
-    font-weight: 700;
-    letter-spacing: -0.025em;
+    font-weight: 200;
+    letter-spacing: -0.04em;
+    padding: 0 clamp(0.8rem, 1.8vw, 2rem);
     color: var(--text-primary);
-    margin: 0;
+    opacity: 0.72;
+    cursor: default;
+    transition: opacity 0.3s ease;
 }
 
-.service-card-tags ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--fluid-s-2xs);
+.marquee-discipline:hover {
+    opacity: 1;
 }
 
-.service-card-tags li {
-    font-family: var(--font-sans);
-    font-size: var(--fluid-text-xs);
-    color: var(--text-secondary);
-    line-height: 1.7;
+html.light .marquee-discipline {
+    color: #4a4d54;
+    opacity: 0.85;
 }
 
-.service-card-tags .tag-plus {
-    color: var(--text-muted);
-    margin-right: var(--fluid-s-2xs);
-    font-weight: 500;
+html.dark .marquee-discipline {
+    color: #C5C3BF;
+    opacity: 0.75;
 }
 
-.service-card-desc p {
-    font-family: var(--font-sans);
-    font-size: var(--fluid-text-sm);
-    color: var(--text-secondary);
-    line-height: 1.6;
-    max-width: 44ch;
-    margin: 0;
-}
-
-@media (max-width: 991px) {
-    .service-card {
-        grid-template-columns: auto 1fr;
-        gap: var(--fluid-s-md);
-    }
-    .service-card-tags,
-    .service-card-desc {
-        grid-column: 2 / 3;
-    }
-}
-
-@media (max-width: 767px) {
-    .service-card {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--fluid-s-sm);
-        padding: var(--fluid-s-md) var(--fluid-s-md);
-    }
-    .service-card-index {
-        margin-bottom: var(--fluid-s-2xs);
-    }
-    .service-card-tags,
-    .service-card-desc {
-        margin-top: var(--fluid-s-2xs);
-    }
+/* Estrella SVG: Separador geométrico con escala relativa y alineación óptica */
+.marquee-star-icon {
+    display: inline-block;
+    width: max(38px, 0.42em);
+    height: max(38px, 0.42em);
+    fill: var(--accent);
+    flex-shrink: 0;
+    margin: 0 clamp(0.8rem, 1.5vw, 1.8rem);
+    vertical-align: middle;
+    transform: translateY(0.02em);
 }
 
 /* ─────────────────────────────────────────────────────────────

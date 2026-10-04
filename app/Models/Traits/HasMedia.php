@@ -25,20 +25,39 @@ trait HasMedia
     {
         if ($this->relationLoaded('media')) {
             $thumb = $this->media->firstWhere('collection', 'thumbnail')
-                ?? $this->media->firstWhere('pivot.collection', 'thumbnail');
+                ?? $this->media->firstWhere('pivot.collection', 'thumbnail')
+                ?? $this->media->firstWhere('collection', 'hero')
+                ?? $this->media->firstWhere('pivot.collection', 'hero')
+                ?? $this->media->first();
             if ($thumb) {
                 $thumb->collection = 'thumbnail';
+
+                return $thumb;
             }
+        } else {
+            $thumb = $this->media()->where('content_media.collection', 'thumbnail')->first()
+                ?? $this->media()->where('content_media.collection', 'hero')->first()
+                ?? $this->media()->first();
+            if ($thumb) {
+                $thumb->collection = 'thumbnail';
 
-            return $thumb;
+                return $thumb;
+            }
         }
 
-        $thumb = $this->media()->where('content_media.collection', 'thumbnail')->first();
-        if ($thumb) {
-            $thumb->collection = 'thumbnail';
+        // Resilient fallback: ensure project always has an image if media exists in database
+        $fallback = Media::where('mime_type', 'like', 'image/%')
+            ->whereNotNull('file_path')
+            ->orderBy('id')
+            ->first();
+
+        if ($fallback) {
+            $fallback->collection = 'thumbnail';
+
+            return $fallback;
         }
 
-        return $thumb;
+        return null;
     }
 
     /**

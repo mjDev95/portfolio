@@ -6,6 +6,8 @@ import { initVelixReveals } from './velix-reveal';
 import { initBlogArchive, initBlogSingle, initCardReveals } from './blog';
 import { initMethodology } from './methodology';
 import { initHomeBlog } from './home-blog';
+import { initHeroEditorial } from './hero-editorial';
+import { initServicesMarquee } from './services-marquee';
 
 /**
  * Runs on every Barba `enter` step. Scoped to the incoming container so
@@ -14,6 +16,8 @@ import { initHomeBlog } from './home-blog';
  */
 export function initPageAnimations(container) {
     initHeroCurtain(container);
+    initHeroEditorial(container);
+    initServicesMarquee(container);
     initSelectedCases(container);
     initVelixReveals(container);
     initBlogArchive(container);

@@ -1,6 +1,10 @@
 {{-- 
-  Hero 02: Declaración Editorial & Rejilla de 4 Estadísticas Monumentales
+  Hero 02: Declaración Editorial & Rejilla de Estadísticas Monumentales
   (Inspiración Wabi-Sabi & Framer About Section a Ancho Completo)
+  - Textos 100% en español.
+  - Conteo incremental de 0 al valor objetivo vía GSAP ScrollTrigger.
+  - Columna de 99% removida, cuadrícula balanceada simétricamente a 3 columnas.
+  - Clases atómicas dedicadas del sistema fluido (fluid-system.css).
 --}}
 <section id="hero-editorial-2" class="hero-editorial-section position-relative w-100">
     {{-- Fondo sutil con arcos orbitales y estrellas de 4 puntas en SVG fluido a pantalla completa --}}
@@ -13,7 +17,7 @@
             
             {{-- Estrellas sutiles de 4 puntas (✦) --}}
             <g transform="translate(540, 480)" fill="currentColor" opacity="0.35">
-                <path d="M0 -12 C0 -3, 3 0, 12 0 C 3 0, 0 3, 0 12 C 0 3, -3 0, -12 0 C -3 0, 0 -3, 0 -12 Z" />
+                <path d="M0 -12 C0 -3, 3 0, 12 0 C 3 0, 0 3, 0 12 C 0 3, -3 0, -12 0 C 3 0, 0 -3, 0 -12 Z" />
             </g>
             <g transform="translate(1180, 220)" fill="currentColor" opacity="0.45">
                 <path d="M0 -16 C0 -4, 4 0, 16 0 C 4 0, 0 4, 0 16 C 0 4, -4 0, -16 0 C -4 0, 0 -4, 0 -16 Z" />
@@ -28,62 +32,60 @@
 
         {{-- Titular Monumental con ritmo editorial fluido a ancho completo --}}
         <h2 class="hero-statement" data-reveal>
-            Hey<span class="emoji-wave">👋</span>, I'm a digital designer in Mexico City, bringing digital experiences to life with striking visuals, expressive motion, and <span class="hero-statement-faded">effortless interaction.</span>
+            Hola<span class="emoji-wave">👋</span>, soy diseñador digital y desarrollador en Ciudad de México, creando experiencias digitales con impacto visual, movimiento expresivo e <span class="hero-statement-faded">interacción fluida.</span>
         </h2>
 
-        {{-- Botón Píldora con ícono circular [ (→) More About Me ] --}}
+        {{-- Botón Píldora con ícono circular [ (→) Más sobre mí ] --}}
         <div class="mb-xl" data-reveal>
             <a href="{{ route('about') }}" 
                class="btn-pill-action"
                data-magnetic data-magnetic-strength="0.3">
                 <span class="btn-pill-arrow-circle">&rarr;</span>
-                <span>More About Me</span>
+                <span>Más sobre mí</span>
             </a>
         </div>
 
-        {{-- Rejilla Horizontal de 4 Estadísticas Monumentales con hairline dividers (Framer Widget Stack) --}}
+        {{-- Rejilla Horizontal de 3 Estadísticas Monumentales con hairline dividers y clases dedicadas del sistema fluido --}}
         <div class="hero-stats-row">
-            <div class="row g-4" data-reveal>
-                {{-- Métrica 01: Website launched --}}
-                <div class="col-12 col-md-6 col-lg-3 hero-stat-col">
-                    <div class="hero-stat-num">21+</div>
-                    <div class="hero-stat-hairline">
-                        <h3 class="hero-stat-title">Website launched</h3>
-                        <p class="hero-stat-desc">
-                            We empower brands to confidently build and strengthen online presence.
+            <div class="row g-4 g-lg-5" data-reveal>
+                {{-- Métrica 01: Sitios web lanzados --}}
+                <div class="col-12 col-md-4 hero-stat-col">
+                    <div class="font-fluid-stat-number text-primary mb-sm will-change-transform" 
+                         data-stat-counter 
+                         data-stat-target="21" 
+                         data-stat-suffix="+">21+</div>
+                    <div class="border-top-subtle pt-sm d-flex flex-column gap-1">
+                        <h3 class="font-sans text-fluid-base fw-semibold text-primary m-0">Sitios web lanzados</h3>
+                        <p class="font-sans text-fluid-xs text-secondary lh-base m-0">
+                            Impulsando marcas para consolidar y fortalecer su presencia digital con alto rendimiento.
                         </p>
                     </div>
                 </div>
 
-                {{-- Métrica 02: Users engaged --}}
-                <div class="col-12 col-md-6 col-lg-3 hero-stat-col">
-                    <div class="hero-stat-num">2M+</div>
-                    <div class="hero-stat-hairline">
-                        <h3 class="hero-stat-title">Users engaged</h3>
-                        <p class="hero-stat-desc">
-                            Our designs bridge cultures, inspiring and connecting people globally.
+                {{-- Métrica 02: Usuarios impactados --}}
+                <div class="col-12 col-md-4 hero-stat-col">
+                    <div class="font-fluid-stat-number text-primary mb-sm will-change-transform" 
+                         data-stat-counter 
+                         data-stat-target="2" 
+                         data-stat-suffix="M+">2M+</div>
+                    <div class="border-top-subtle pt-sm d-flex flex-column gap-1">
+                        <h3 class="font-sans text-fluid-base fw-semibold text-primary m-0">Usuarios impactados</h3>
+                        <p class="font-sans text-fluid-xs text-secondary lh-base m-0">
+                            Diseños que conectan audiencias a nivel global con fluidez, velocidad y estabilidad técnica.
                         </p>
                     </div>
                 </div>
 
-                {{-- Métrica 03: Client satisfaction rate --}}
-                <div class="col-12 col-md-6 col-lg-3 hero-stat-col">
-                    <div class="hero-stat-num">99%</div>
-                    <div class="hero-stat-hairline">
-                        <h3 class="hero-stat-title">Client satisfaction rate</h3>
-                        <p class="hero-stat-desc">
-                            Building lasting connections through trust, collaboration, and creativity.
-                        </p>
-                    </div>
-                </div>
-
-                {{-- Métrica 04: Years of experience --}}
-                <div class="col-12 col-md-6 col-lg-3 hero-stat-col">
-                    <div class="hero-stat-num">5+</div>
-                    <div class="hero-stat-hairline">
-                        <h3 class="hero-stat-title">Years of experience</h3>
-                        <p class="hero-stat-desc">
-                            Innovative solutions crafted over decades for industry-leading brands.
+                {{-- Métrica 03: Años de experiencia (columna 99% removida según solicitud del usuario) --}}
+                <div class="col-12 col-md-4 hero-stat-col">
+                    <div class="font-fluid-stat-number text-primary mb-sm will-change-transform" 
+                         data-stat-counter 
+                         data-stat-target="5" 
+                         data-stat-suffix="+">5+</div>
+                    <div class="border-top-subtle pt-sm d-flex flex-column gap-1">
+                        <h3 class="font-sans text-fluid-base fw-semibold text-primary m-0">Años de experiencia</h3>
+                        <p class="font-sans text-fluid-xs text-secondary lh-base m-0">
+                            Soluciones técnicas e interfaces diseñadas con precisión para proyectos de alto rendimiento.
                         </p>
                     </div>
                 </div>
@@ -91,3 +93,4 @@
         </div>
     </div>
 </section>
+
