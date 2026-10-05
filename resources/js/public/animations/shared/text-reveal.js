@@ -25,10 +25,17 @@ export function splitTextIntoFramerChars(element) {
                 return [node];
             }
 
+            const leadingSpace = /^\s+/.test(rawText);
+            const trailingSpace = /\s+$/.test(rawText);
             const words = rawText.trim().split(/\s+/);
             const frag = document.createDocumentFragment();
 
+            if (leadingSpace) {
+                frag.appendChild(document.createTextNode('\u00A0'));
+            }
+
             words.forEach((word, wIdx) => {
+                if (!word) return;
                 const wordWrapper = document.createElement('span');
                 wordWrapper.className = 'split-word';
 
@@ -44,14 +51,20 @@ export function splitTextIntoFramerChars(element) {
                 frag.appendChild(wordWrapper);
 
                 if (wIdx < words.length - 1) {
-                    const space = document.createTextNode('\u00A0');
-                    frag.appendChild(space);
+                    frag.appendChild(document.createTextNode('\u00A0'));
                 }
             });
+
+            if (trailingSpace) {
+                frag.appendChild(document.createTextNode('\u00A0'));
+            }
 
             return [frag];
         } else if (node.nodeType === Node.ELEMENT_NODE) {
             if (node.hasAttribute('data-no-split') || node.tagName.toLowerCase() === 'svg') {
+                node.classList.add('split-char');
+                node.style.filter = 'blur(12px)';
+                node.style.webkitFilter = 'blur(12px)';
                 return [node];
             }
 
@@ -103,15 +116,24 @@ export function animateVelixChars(chars, options = {}) {
         return null;
     }
 
+    gsap.set(chars, {
+        opacity: 0,
+        y: 16,
+        filter: 'blur(12px)',
+        webkitFilter: 'blur(12px)',
+    });
+
+    const staggerAmount = Math.min(chars.length * 0.035, 1.1);
+
     return gsap.to(chars, {
         opacity: 1,
         y: 0,
         filter: 'blur(0px)',
         webkitFilter: 'blur(0px)',
-        duration: options.duration ?? 0.7,
+        duration: options.duration ?? 0.75,
         ease: options.ease ?? 'power2.out',
-        stagger: options.stagger ?? { each: 0.045, from: 'start' },
-        delay: options.delay ?? 0.1,
+        stagger: options.stagger ?? { amount: staggerAmount, from: 'start' },
+        delay: options.delay ?? 0.05,
         onComplete: finalize,
     });
 }
@@ -129,22 +151,74 @@ export function initTextReveal(container = document) {
     cleanupTextReveal();
 
     textRevealCtx = gsap.context(() => {
-        // 1. Text elements with explicit Velix targets or typography headings/paragraphs with [data-reveal]
-        const explicitTargets = container.querySelectorAll('[data-velix-target], [data-blur-reveal]');
+        // 1. Text elements with explicit Velix targets, [data-blur-reveal], or section H2s
+        const explicitTargets = container.querySelectorAll('[data-velix-target], [data-blur-reveal], h2.hero-statement, h2.services-main-title');
         explicitTargets.forEach((target) => {
             if (target.closest('[data-hero-curtain]') || target.closest('[data-selected-cases]')) return;
+            if (target.dataset.velixSplit === 'true') return;
 
             const chars = splitTextIntoFramerChars(target);
             if (!chars.length) return;
 
-            ScrollTrigger.create({
-                trigger: target,
-                start: 'top 85%',
-                once: true,
-                onEnter: () => {
-                    animateVelixChars(chars, { delay: 0.05 });
+            const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (isReduced) {
+                chars.forEach((c) => {
+                    c.classList.add('is-revealed');
+                    c.style.filter = 'none';
+                    c.style.webkitFilter = 'none';
+                    c.style.transform = 'none';
+                    c.style.opacity = '1';
+                });
+                return;
+            }
+
+            gsap.set(chars, {
+                opacity: 0,
+                y: 16,
+                filter: 'blur(12px)',
+                webkitFilter: 'blur(12px)',
+            });
+
+            const tl = gsap.timeline({ paused: true });
+            const staggerAmount = Math.min(chars.length * 0.035, 1.1);
+
+            tl.to(chars, {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                webkitFilter: 'blur(0px)',
+                duration: 0.75,
+                ease: 'power2.out',
+                stagger: { amount: staggerAmount, from: 'start' },
+                onComplete: () => {
+                    chars.forEach((c) => {
+                        c.classList.add('is-revealed');
+                        c.style.filter = 'none';
+                        c.style.webkitFilter = 'none';
+                        c.style.transform = 'none';
+                        c.style.opacity = '1';
+                    });
                 },
             });
+
+            const triggerEl = target.closest('#main-footer') ? target.closest('#main-footer') : target;
+
+            ScrollTrigger.create({
+                trigger: triggerEl,
+                start: target.closest('#main-footer') ? 'top 90%' : 'top 85%',
+                onEnter: () => tl.play(),
+                onLeaveBack: () => {
+                    chars.forEach((c) => c.classList.remove('is-revealed'));
+                    tl.reverse();
+                },
+                onEnterBack: () => tl.play(),
+            });
+
+            // Si el elemento ya está dentro del viewport visible al inicializarse, disparar inmediatamente
+            const rect = triggerEl.getBoundingClientRect();
+            if (rect.top < window.innerHeight * 0.85 && rect.bottom > 0) {
+                tl.play();
+            }
         });
 
         // 2. Elements with [data-reveal]
@@ -160,14 +234,19 @@ export function initTextReveal(container = document) {
                 // Apply Velix Blur Reveal to standalone text elements with [data-reveal]
                 const chars = splitTextIntoFramerChars(el);
                 if (chars.length) {
-                    ScrollTrigger.create({
-                        trigger: el,
-                        start: 'top 85%',
-                        once: true,
-                        onEnter: () => {
-                            animateVelixChars(chars, { delay: 0.05 });
-                        },
-                    });
+                    const elRect = el.getBoundingClientRect();
+                    if (elRect.top < window.innerHeight * 0.85 && elRect.bottom > 0) {
+                        animateVelixChars(chars, { delay: 0.05 });
+                    } else {
+                        ScrollTrigger.create({
+                            trigger: el,
+                            start: 'top 85%',
+                            once: true,
+                            onEnter: () => {
+                                animateVelixChars(chars, { delay: 0.05 });
+                            },
+                        });
+                    }
                     return;
                 }
             }

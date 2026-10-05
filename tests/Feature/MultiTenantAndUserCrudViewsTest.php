@@ -86,7 +86,7 @@ class MultiTenantAndUserCrudViewsTest extends TestCase
 
     public function test_super_admin_api_search_endpoint(): void
     {
-        $admin = User::factory()->admin()->create();
+        $admin = User::factory()->admin()->create(['name' => 'Super Admin', 'email' => 'superadmin@portfolio.test']);
         User::factory()->create(['name' => 'Roberto Sánchez', 'email' => 'roberto@empresa.com']);
         User::factory()->create(['name' => 'Carlos López', 'email' => 'carlos@empresa.com']);
 

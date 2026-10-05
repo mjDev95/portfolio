@@ -1,6 +1,6 @@
 import barba from '@barba/core';
 import gsap from 'gsap';
-import { ScrollTrigger, resetScroll, stopScroll, startScroll, resizeScroll } from './smooth-scroll';
+import { ScrollTrigger, resetScroll, stopScroll, startScroll, resizeScroll, getLenis } from './smooth-scroll';
 import { updateCsrfTokenFrom } from './csrf';
 import { initPageAnimations } from '../animations/init-page';
 import { createFlipTransitions } from './flip-transitions';
@@ -10,6 +10,9 @@ import { closeShareModal } from './share-modal';
 import { cleanupFooterReveal, initFooterReveal } from '../animations/footer';
 import { cleanupMethodology } from '../animations/methodology';
 import { cleanupHomeBlog } from '../animations/home-blog';
+import { splitTextIntoFramerChars, animateVelixChars } from '../animations/velix-reveal';
+
+let isBlogFilterTransition = false;
 
 function syncPageMetadata(html) {
     if (!html) return;
@@ -166,7 +169,14 @@ export function initBarba({ onAfterEnter } = {}) {
 
     barba.hooks.beforeEnter((data) => {
         updateCsrfTokenFrom(data.next.html);
-        resetScroll();
+        if (!isBlogFilterTransition) {
+            resetScroll();
+            try {
+                if (data.next?.url?.path) {
+                    sessionStorage.removeItem('portfolio_scroll_' + data.next.url.path);
+                }
+            } catch (e) {}
+        }
         syncPageMetadata(data.next.html);
         markNavigated();
         syncDesktopIslandState(true);
@@ -175,7 +185,10 @@ export function initBarba({ onAfterEnter } = {}) {
     barba.hooks.after((data) => {
         // Prioridad máxima: desbloquear scroll y posicionar en el tope inmediatamente
         startScroll();
-        resetScroll();
+        if (!isBlogFilterTransition) {
+            resetScroll();
+        }
+        isBlogFilterTransition = false;
         resizeScroll();
         ScrollTrigger.refresh();
 
@@ -290,71 +303,176 @@ export function initBarba({ onAfterEnter } = {}) {
                                        Boolean(current.url?.path && /^\/blog(\/(categoria|etiqueta|tag)\/[^/]+)?\/?$/.test(current.url.path));
                     const isToBlog = Boolean(next.url?.path && /^\/blog(\/(categoria|etiqueta|tag)\/[^/]+)?\/?$/.test(next.url.path));
 
-                    return Boolean(isPill || (isFromBlog && isToBlog));
+                    const match = Boolean(isPill || (isFromBlog && isToBlog));
+                    if (match) {
+                        isBlogFilterTransition = true;
+                    }
+                    return match;
                 },
                 async leave(data) {
+                    isBlogFilterTransition = true;
                     stopScroll();
+
+                    // Feedback visual inmediato en la píldora clickeada para cero latencia percibida
+                    if (data.trigger) {
+                        const pillRail = data.trigger.closest('.blog-pill-rail');
+                        if (pillRail) {
+                            const clickedPill = data.trigger.closest('.btn-universal') || data.trigger;
+                            pillRail.querySelectorAll('.btn-universal').forEach((btn) => {
+                                btn.classList.remove('is-active', 'btn-solid');
+                                btn.classList.add('btn-surface');
+                            });
+                            clickedPill.classList.add('is-active', 'btn-solid');
+                            clickedPill.classList.remove('btn-surface');
+                        }
+                    }
+
                     const currentContainer = data.current.container;
                     const currentGrid = currentContainer.querySelector('#blog-posts-grid');
                     const currentEnd = currentContainer.querySelector('#blog-scroll-end');
                     const currentLoader = currentContainer.querySelector('#blog-scroll-loader');
                     const currentHeader = currentContainer.querySelector('#blog-header-block');
 
-                    // Desvanecemos suavemente el header y utilidades
-                    const othersToFade = [currentEnd, currentLoader, currentHeader].filter(Boolean);
-                    if (othersToFade.length) {
-                        gsap.to(othersToFade, {
-                            opacity: 0,
-                            duration: 0.16,
-                            ease: 'power2.in',
-                        });
+                    // Salida cinemática carácter por carácter del título actual
+                    let titleExitTween = null;
+                    if (currentHeader) {
+                        const currentTitleEl = currentHeader.querySelector('h1');
+                        if (currentTitleEl) {
+                            // Si ya fue dividido en chars por la entrada, usarlos; si no, dividir ahora
+                            const currentChars = currentTitleEl.dataset.velixSplit === 'true'
+                                ? Array.from(currentTitleEl.querySelectorAll('.split-char, .framer-char'))
+                                : splitTextIntoFramerChars(currentTitleEl);
+
+                            if (currentChars && currentChars.length) {
+                                // Quitar is-revealed y estilos inline con !important que bloquean a GSAP
+                                currentChars.forEach((c) => {
+                                    c.classList.remove('is-revealed');
+                                    c.style.removeProperty('opacity');
+                                    c.style.removeProperty('filter');
+                                    c.style.removeProperty('-webkit-filter');
+                                    c.style.removeProperty('transform');
+                                    c.style.removeProperty('will-change');
+                                });
+
+                                // Transformación de letras: scramble de glifos + dispersión orgánica
+                                const glyphs = '!<>-_\\/[]{}=+*^?#%&01';
+                                const order = gsap.utils.shuffle(currentChars.map((_, i) => i));
+                                const step = Math.min(0.3 / currentChars.length, 0.03);
+                                const tl = gsap.timeline();
+
+                                currentChars.forEach((c, i) => {
+                                    // Congelar el ancho para que el cambio de glifo no provoque saltos de layout
+                                    c.style.width = `${c.getBoundingClientRect().width}px`;
+                                    c.style.textAlign = 'center';
+
+                                    tl.to(c, {
+                                        opacity: 0,
+                                        x: gsap.utils.random(-14, 14),
+                                        y: gsap.utils.random(-30, 30),
+                                        rotation: gsap.utils.random(-35, 35),
+                                        scale: gsap.utils.random(0.5, 1.4),
+                                        filter: 'blur(10px)',
+                                        webkitFilter: 'blur(10px)',
+                                        duration: 0.45,
+                                        ease: 'power3.in',
+                                        onUpdate() {
+                                            if (this.progress() < 0.85 && Math.random() < 0.6) {
+                                                c.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+                                            }
+                                        },
+                                    }, order.indexOf(i) * step);
+                                });
+
+                                titleExitTween = tl;
+                            }
+                        }
+
+                        // Desvanecemos el resto del header (breadcrumbs, etc.) sin tocar el h1 que ya anima
+                        const headerChildren = Array.from(currentHeader.children).filter(
+                            (el) => el.tagName !== 'H1',
+                        );
+                        if (headerChildren.length) {
+                            gsap.to(headerChildren, { opacity: 0, duration: 0.16, ease: 'power2.in' });
+                        }
                     }
 
-                    // Salida escalonada y elegante de las tarjetas
+                    // Desvanecemos utilidades de scroll
+                    const utilsToFade = [currentEnd, currentLoader].filter(Boolean);
+                    if (utilsToFade.length) {
+                        gsap.to(utilsToFade, { opacity: 0, duration: 0.12, ease: 'power2.in' });
+                    }
+
+                    // Salida escalonada y elegante de las tarjetas (paralela a la del título)
                     const cardsToFade = currentGrid ? Array.from(currentGrid.children) : [];
-                    if (cardsToFade.length) {
-                        return gsap.to(cardsToFade, {
+                    const cardsExitTween = cardsToFade.length
+                        ? gsap.to(cardsToFade, {
                             opacity: 0,
-                            y: -12,
-                            duration: 0.2,
+                            y: -10,
+                            duration: 0.18,
                             stagger: 0.02,
                             ease: 'power2.in',
-                        });
-                    }
+                        })
+                        : null;
+
+                    // Esperar a que terminen tanto las tarjetas como la transformación del título
+                    return Promise.all([cardsExitTween, titleExitTween].filter(Boolean));
                 },
                 async enter(data) {
-                    resetScroll();
                     const nextContainer = data.next.container;
                     const nextGrid = nextContainer.querySelector('#blog-posts-grid');
                     const nextHeader = nextContainer.querySelector('#blog-header-block');
 
+                    // Scroll contextual suave: si el usuario está muy abajo en el feed (>320px),
+                    // reubicar suavemente hacia el rail de categorías; si ya está en la zona superior,
+                    // preservar la estabilidad del viewport sin ningún salto brusco.
+                    const lenis = getLenis();
+                    const currentScroll = lenis ? lenis.scroll : window.scrollY;
+                    const pillNav = nextContainer.querySelector('#blog-pills-nav');
+                    if (currentScroll > 320 && pillNav) {
+                        const targetOffset = pillNav.getBoundingClientRect().top + currentScroll - 90;
+                        if (lenis) {
+                            lenis.scrollTo(targetOffset, { duration: 0.45, immediate: false });
+                        } else {
+                            window.scrollTo({ top: targetOffset, behavior: 'smooth' });
+                        }
+                    }
+
                     if (nextHeader) {
                         gsap.fromTo(nextHeader,
                             { opacity: 0 },
-                            { opacity: 1, duration: 0.25, ease: 'power2.out', clearProps: 'all' }
+                            { opacity: 1, duration: 0.22, ease: 'power2.out', clearProps: 'opacity,visibility' }
                         );
+
+                        // Animación cinemática del título de categoría/etiqueta (Velix Character Blur Reveal)
+                        const titleEl = nextHeader.querySelector('h1');
+                        if (titleEl) {
+                            const chars = splitTextIntoFramerChars(titleEl);
+                            if (chars && chars.length) {
+                                animateVelixChars(chars, { duration: 0.65, delay: 0.05 });
+                            }
+                        }
                     }
 
                     if (nextGrid) {
                         const newCards = Array.from(nextGrid.children);
                         if (newCards.length > 0) {
                             return gsap.fromTo(newCards,
-                                { opacity: 0, y: 45, filter: 'blur(12px)', webkitFilter: 'blur(12px)' },
+                                { opacity: 0, y: 30, filter: 'blur(8px)', webkitFilter: 'blur(8px)' },
                                 {
                                     opacity: 1,
                                     y: 0,
                                     filter: 'blur(0px)',
                                     webkitFilter: 'blur(0px)',
-                                    duration: 0.85,
-                                    stagger: 0.18,
-                                    ease: 'power3.out',
+                                    duration: 0.45,
+                                    stagger: 0.04,
+                                    ease: 'power2.out',
                                     clearProps: 'transform,filter,webkitFilter',
                                 }
                             );
                         } else {
                             return gsap.fromTo(nextGrid,
                                 { opacity: 0, y: 10 },
-                                { opacity: 1, y: 0, duration: 0.28, ease: 'power3.out', clearProps: 'all' }
+                                { opacity: 1, y: 0, duration: 0.25, ease: 'power2.out', clearProps: 'all' }
                             );
                         }
                     }

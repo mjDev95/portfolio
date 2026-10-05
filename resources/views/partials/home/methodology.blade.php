@@ -13,9 +13,9 @@
             <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-lg">
                 <div>
                     <span class="font-mono text-fluid-xs text-muted text-uppercase tracking-widest d-block mb-xs">
-                        /// Methodology ///
+                        /// Metodología ///
                     </span>
-                    <h2 class="services-main-title">
+                    <h2 class="services-main-title" data-blur-reveal>
                         Proceso de Ingeniería
                     </h2>
                 </div>

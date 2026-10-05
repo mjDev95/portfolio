@@ -9,9 +9,9 @@
 <section id="hero-editorial-2" class="hero-editorial-section position-relative w-100">
     <div class="hero-editorial-content">
 
-        {{-- Titular Monumental con ritmo editorial fluido a ancho completo --}}
-        <h2 class="hero-statement" data-reveal>
-            Hola<span class="emoji-wave">👋</span>, soy diseñador digital y desarrollador en Ciudad de México, creando experiencias digitales con impacto visual, movimiento expresivo e <span class="hero-statement-faded">interacción fluida.</span>
+        {{-- Titular Monumental con ritmo editorial fluido a ancho completo con Velix Character Blur Reveal --}}
+        <h2 class="hero-statement" data-blur-reveal>
+            Hola<span class="emoji-wave" data-no-split>👋</span>, soy diseñador digital y desarrollador en Ciudad de México, creando experiencias digitales con impacto visual, movimiento expresivo e <span class="hero-statement-faded">interacción fluida.</span>
         </h2>
 
         {{-- Rejilla Horizontal de 3 Estadísticas Monumentales con hairline dividers y clases dedicadas del sistema fluido --}}

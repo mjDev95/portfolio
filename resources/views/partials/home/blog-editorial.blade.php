@@ -15,16 +15,16 @@
         <div class="home-blog-pin-wrap w-100 min-vh-100 d-flex flex-column justify-content-start" data-home-blog-pin>
             <div class="container-fluid">
                 {{-- Encabezado Editorial en una sola fila (Alineación horizontal limpia a la línea de base) --}}
-                <div class="d-flex align-items-baseline justify-content-between gap-3 mb-lg" data-reveal>
-                    <h2 class="font-heading h1 fw-bold text-primary lh-tight mb-0">
-                        Our latest news
+                <div class="d-flex align-items-baseline justify-content-between gap-3 mb-lg">
+                    <h2 class="font-heading h1 fw-bold text-primary lh-tight mb-0" data-blur-reveal>
+                        Artículos y publicaciones recientes
                     </h2>
 
-                    <div class="flex-shrink-0">
+                    <div class="flex-shrink-0" data-reveal>
                         <a href="{{ route('public.content.index', $blogRouteSlug) }}" 
                            class="text-brand font-sans text-fluid-base fw-medium text-decoration-none d-inline-flex align-items-center gap-2"
                            data-magnetic>
-                            <span>All News</span>
+                            <span>Ver todas las publicaciones</span>
                             <svg width="18" height="14" viewBox="0 0 18 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                 <path d="M1 7H16.5M16.5 7L10.5 1M16.5 7L10.5 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>

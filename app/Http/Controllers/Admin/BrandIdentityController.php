@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ColorPalette;
+use App\Models\CustomFont;
 use Database\Seeders\ColorPaletteSeeder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -26,9 +27,14 @@ class BrandIdentityController extends Controller
 
         $activePaletteId = auth()->user()?->preference?->color_palette_id;
 
+        $customFonts = CustomFont::where('is_active', true)
+            ->get()
+            ->keyBy('role');
+
         return Inertia::render('Admin/Brand/Index', [
             'palettes' => $palettes,
             'activePaletteId' => $activePaletteId,
+            'customFonts' => $customFonts,
         ]);
     }
 }

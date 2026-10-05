@@ -27,8 +27,9 @@ export function initPageAnimations(container) {
     initHomeBlog(container);
 
     const reveals = Array.from(container.querySelectorAll('[data-reveal]')).filter((el) => {
-        return !el.matches('[data-detail-header], [data-detail-body], [data-detail-breadcrumbs], [data-card-reveal]') &&
-               !el.closest('[data-detail-header], [data-detail-body], [data-hero-curtain]');
+        return !el.matches('[data-detail-header], [data-detail-body], [data-detail-breadcrumbs], [data-card-reveal], [data-blur-reveal], [data-velix-target]') &&
+               el.dataset.velixSplit !== 'true' &&
+               !el.closest('[data-detail-header], [data-detail-body], [data-hero-curtain], #blog-header-block');
     });
 
     reveals.forEach((el) => {

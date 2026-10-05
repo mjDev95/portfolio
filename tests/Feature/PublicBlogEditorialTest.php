@@ -678,7 +678,7 @@ class PublicBlogEditorialTest extends TestCase
             ->assertSee('home-blog-section', false)
             ->assertSee('data-home-blog-track', false)
             ->assertSee('data-home-blog-pin', false)
-            ->assertSee('Our latest news')
+            ->assertSee('Artículos y publicaciones recientes')
             ->assertDontSee('Read the blog')
             ->assertDontSee('badge-floating-glass')
             ->assertSee('Primer Ensayo en Home')
@@ -687,7 +687,7 @@ class PublicBlogEditorialTest extends TestCase
             ->assertSee('Ensayo 4 en Home')
             ->assertSee('Ensayo 5 en Home')
             ->assertSee('Ensayo 6 en Home')
-            ->assertSee('All News')
+            ->assertSee('Ver todas las publicaciones')
             ->assertSee('href="'.route('public.content.index', 'blog').'"', false)
             ->assertSee('data-card-reveal', false)
             ->assertSee('data-flip-card', false);

@@ -80,9 +80,9 @@
 {{-- Barra de Progreso de Lectura Cinemática (2px fixed top) --}}
 <div class="reading-progress-bar position-fixed top-0 left-0 w-100" id="reading-progress-bar" aria-hidden="true"></div>
 
-<article class="container py-3xl" style="min-height: 100vh;">
+<article class="py-3xl" style="min-height: 100vh;">
     {{-- Breadcrumbs Estables (24px fijo para GSAP Flip) --}}
-    <div class="mb-lg" data-detail-breadcrumbs>
+    <div class="container mb-lg" data-detail-breadcrumbs>
         <x-breadcrumbs :items="[
             ['label' => 'Inicio', 'url' => route('home')],
             ['label' => 'Blog', 'url' => route('public.content.index', $cpt->public_route_slug)],
@@ -90,30 +90,34 @@
         ]" />
     </div>
 
-    {{-- Imagen Destacada Principal (Shared Element Transition con Flip) --}}
-    @if ($featuredImage)
-        <div class="media-wrap hero-media-wrapper w-100 position-relative overflow-hidden aspect-16-9 bg-surface border-subtle mb-2xl"
-             data-flip-id="post-{{ $content->slug }}"
-             data-flip-element="image">
-            <img src="{{ $featuredImage->url }}"
-                 alt="{{ $featuredImage->alt ?: ($featuredImage->caption ?: $content->title) }}"
-                 title="{{ $featuredImage->title ?: $content->title }}"
-                 class="img-fluid object-fit-cover w-100 h-100 d-block"
-                 loading="eager">
-        </div>
-    @else
-        <div class="media-wrap hero-media-wrapper w-100 position-relative overflow-hidden mb-2xl d-flex align-items-center justify-content-center bg-surface-subtle border-subtle"
-             data-flip-id="post-{{ $content->slug }}"
-             data-flip-element="image"
-             style="aspect-ratio: 21/9; min-height: 200px;">
-            <div class="text-center p-4 font-mono text-fluid-xs text-muted text-uppercase tracking-wider">
-                <span class="text-brand fw-semibold">{{ $categoryName }}</span> &bull; <span>Ensayo Técnico</span>
+    {{-- Imagen Destacada Principal (Ancho Panorámico Extendido con GSAP Flip) --}}
+    <div class="container-wide mb-2xl">
+        @if ($featuredImage)
+            <div class="media-wrap hero-media-wrapper w-100 position-relative overflow-hidden aspect-16-9 bg-surface border-subtle"
+                 data-flip-id="post-{{ $content->slug }}"
+                 data-flip-element="image">
+                <img src="{{ $featuredImage->url }}"
+                     alt="{{ $featuredImage->alt ?: ($featuredImage->caption ?: $content->title) }}"
+                     title="{{ $featuredImage->title ?: $content->title }}"
+                     class="img-fluid object-fit-cover w-100 h-100 d-block"
+                     loading="eager">
             </div>
-        </div>
-    @endif
+        @else
+            <div class="media-wrap hero-media-wrapper w-100 position-relative overflow-hidden d-flex align-items-center justify-content-center bg-surface-subtle border-subtle"
+                 data-flip-id="post-{{ $content->slug }}"
+                 data-flip-element="image"
+                 style="aspect-ratio: 21/9; min-height: 200px;">
+                <div class="text-center p-4 font-mono text-fluid-xs text-muted text-uppercase tracking-wider">
+                    <span class="text-brand fw-semibold">{{ $categoryName }}</span> &bull; <span>Ensayo Técnico</span>
+                </div>
+            </div>
+        @endif
+    </div>
 
-    {{-- Cabecera Monumental del Artículo --}}
-    <header class="editorial-article-header mb-2xl" data-detail-header>
+    {{-- Contenedor Editorial Central (Lectura Óptima y Cabecera) --}}
+    <div class="container">
+        {{-- Cabecera Monumental del Artículo --}}
+        <header class="editorial-article-header mb-2xl" data-detail-header>
         <h1 class="h1 font-heading fw-bold text-primary text-break mb-sm" data-flip-text style="letter-spacing: -0.035em;">
             {{ $content->title }}
         </h1>
@@ -255,6 +259,7 @@
             </x-btn>
         </div>
     @endif
+    </div>
 </article>
 @endsection
 

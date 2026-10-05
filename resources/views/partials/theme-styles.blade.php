@@ -87,3 +87,58 @@
         border-color: var(--accent) !important;
     }
 </style>
+
+@php
+    $customFonts = \App\Services\PortfolioCacheService::rememberCustomFonts();
+    $headingFont = data_get($customFonts, 'heading');
+    $sansFont = data_get($customFonts, 'sans');
+    $monoFont = data_get($customFonts, 'mono');
+@endphp
+
+@if($headingFont || $sansFont || $monoFont)
+<style id="portfolio-custom-typography">
+    @if($headingFont && data_get($headingFont, 'url'))
+    @font-face {
+        font-family: 'LocalCustomHeading';
+        src: url('{!! data_get($headingFont, 'url') !!}') format('{!! data_get($headingFont, 'css_format', 'woff2') !!}');
+        font-weight: 100 900;
+        font-style: normal;
+        font-display: swap;
+    }
+    @endif
+
+    @if($sansFont && data_get($sansFont, 'url'))
+    @font-face {
+        font-family: 'LocalCustomSans';
+        src: url('{!! data_get($sansFont, 'url') !!}') format('{!! data_get($sansFont, 'css_format', 'woff2') !!}');
+        font-weight: 100 900;
+        font-style: normal;
+        font-display: swap;
+    }
+    @endif
+
+    @if($monoFont && data_get($monoFont, 'url'))
+    @font-face {
+        font-family: 'LocalCustomMono';
+        src: url('{!! data_get($monoFont, 'url') !!}') format('{!! data_get($monoFont, 'css_format', 'woff2') !!}');
+        font-weight: 100 900;
+        font-style: normal;
+        font-display: swap;
+    }
+    @endif
+
+    :root,
+    html.dark,
+    html.light {
+        @if($headingFont && data_get($headingFont, 'url'))
+        --font-heading: 'LocalCustomHeading', sans-serif !important;
+        @endif
+        @if($sansFont && data_get($sansFont, 'url'))
+        --font-sans: 'LocalCustomSans', sans-serif !important;
+        @endif
+        @if($monoFont && data_get($monoFont, 'url'))
+        --font-mono: 'LocalCustomMono', monospace !important;
+        @endif
+    }
+</style>
+@endif

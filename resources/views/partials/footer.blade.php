@@ -14,7 +14,7 @@
                         <path d="M46 0 H54 V28 Q54 46 72 46 H100 V54 H72 Q54 54 54 72 V100 H46 V72 Q46 54 28 54 H0 V46 H28 Q46 46 46 28 Z"/>
                     </svg>
                 </div>
-                <h2 class="h1 m-0 fw-semibold text-primary max-w-statement">
+                <h2 class="h1 m-0 fw-semibold text-primary max-w-statement" data-blur-reveal>
                     Estaré encantado de colaborar contigo
                 </h2>
             </div>

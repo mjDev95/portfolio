@@ -192,10 +192,10 @@ export function createFlipTransitions() {
                         }
                     }
 
-                    // Fallback de alta precisión garantizando la geometría exacta de .container (idéntico al detalle del post/proyecto)
+                    // Fallback de alta precisión garantizando la geometría exacta de .container-wide (idéntico al detalle del post/proyecto)
                     if (targetTop === null || targetWidth === null) {
                         const dummy = document.createElement('div');
-                        dummy.className = 'container py-3xl';
+                        dummy.className = 'py-3xl';
                         dummy.style.visibility = 'hidden';
                         dummy.style.position = 'fixed';
                         dummy.style.top = '0';
@@ -204,8 +204,10 @@ export function createFlipTransitions() {
                         dummy.style.pointerEvents = 'none';
                         dummy.style.zIndex = '-99999';
                         dummy.innerHTML = `
-                            <div class="mb-lg" style="height: 24px;"></div>
-                            <div class="media-wrap hero-media-wrapper" style="aspect-ratio: 16 / 9; width: 100%;"></div>
+                            <div class="container mb-lg" style="height: 24px;"></div>
+                            <div class="container-wide mb-2xl">
+                                <div class="media-wrap hero-media-wrapper" style="aspect-ratio: 16 / 9; width: 100%;"></div>
+                            </div>
                         `;
                         document.body.appendChild(dummy);
 
@@ -291,7 +293,7 @@ export function createFlipTransitions() {
                         ease: 'power2.inOut',
                     }, 0);
 
-                    // Vuelo y transformación física de 4:3 a 16:9 en la cabecera (sin redondeo)
+                    // Vuelo y transformación física de 4:3 a 16:9 hacia el destino (bordes rectangulares estrictos 0px)
                     tl.to(proxy, {
                         top: targetTop,
                         left: targetLeft,
@@ -327,13 +329,12 @@ export function createFlipTransitions() {
                     gsap.set(detailTargets, { opacity: 0, y: 25 });
                 }
 
-                // Ocultar preventivamente el hero real y remover cualquier border-radius
+                // Ocultar preventivamente el hero real
                 const targetHero = data.next.container.querySelector('.hero-media-wrapper') ||
                                    data.next.container.querySelector('[data-flip-id]') ||
                                    data.next.container.querySelector('[data-flip-element="image"]');
                 if (targetHero) {
-                    targetHero.style.borderRadius = '0px';
-                    gsap.set(targetHero, { opacity: 0, visibility: 'hidden', borderRadius: '0px' });
+                    gsap.set(targetHero, { opacity: 0, visibility: 'hidden' });
                 }
 
                 // Al llegar a la nueva vista de detalle, la píldora se fija compactada de forma inmediata
@@ -401,7 +402,7 @@ export function createFlipTransitions() {
                         // Medir las coordenadas reales del hero en la nueva vista montada en scroll = 0
                         const realRect = targetHero.getBoundingClientRect();
 
-                        // Micro-alineación suave si hay cualquier diferencia subpixel
+                        // Micro-alineación suave si hay cualquier diferencia subpixel (bordes rectangulares estrictos 0px)
                         await gsap.to(proxy, {
                             top: realRect.top,
                             left: realRect.left,
@@ -412,13 +413,11 @@ export function createFlipTransitions() {
                             ease: 'power2.out',
                         });
 
-                        // Intercambio sin salto asegurando bordes rectos
-                        targetHero.style.borderRadius = '0px';
-                        gsap.set(targetHero, { opacity: 1, visibility: 'visible', borderRadius: '0px', clearProps: 'opacity,visibility' });
+                        // Intercambio sin salto asegurando bordes fluidos
+                        gsap.set(targetHero, { opacity: 1, visibility: 'visible', clearProps: 'opacity,visibility,borderRadius' });
                         proxy.remove();
                     } else if (targetHero) {
-                        targetHero.style.borderRadius = '0px';
-                        gsap.set(targetHero, { opacity: 1, visibility: 'visible', borderRadius: '0px', clearProps: 'opacity,visibility' });
+                        gsap.set(targetHero, { opacity: 1, visibility: 'visible', clearProps: 'opacity,visibility,borderRadius' });
                         if (proxy) proxy.remove();
                     } else if (proxy) {
                         proxy.remove();

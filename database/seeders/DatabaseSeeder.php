@@ -68,5 +68,8 @@ class DatabaseSeeder extends Seeder
 
         // ── 5. Sembrar Casos de Estudio Insignia y Artículos del Administrador ──
         $this->call(ContentSeeder::class);
+
+        // ── 6. Sembrar Tipografías Locales Iniciales (Manrope & Aileron) ───
+        $this->call(CustomFontSeeder::class);
     }
 }

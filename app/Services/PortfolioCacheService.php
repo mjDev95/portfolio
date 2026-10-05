@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\ContentType;
+use App\Models\CustomFont;
 use Closure;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -39,7 +40,70 @@ class PortfolioCacheService
 
     public const PREFIX_DASHBOARD = 'portfolio:admin:dashboard:';
 
+    public const PREFIX_CUSTOM_FONTS = 'portfolio:custom_fonts:v1';
+
     public const PREFIX_TRACKED_KEYS = 'portfolio:tracked_keys';
+
+    /**
+     * Remember active custom typography fonts as an associative array.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public static function rememberCustomFonts(?Closure $callback = null): array
+    {
+        self::trackKey(self::PREFIX_CUSTOM_FONTS);
+
+        $cached = Cache::remember(self::PREFIX_CUSTOM_FONTS, self::TTL_DAY, function () use ($callback) {
+            $result = $callback instanceof Closure
+                ? $callback()
+                : CustomFont::where('is_active', true)->get()->keyBy('role');
+
+            $items = $result instanceof \Illuminate\Support\Collection ? $result : collect($result ?? []);
+
+            return $items->mapWithKeys(function ($font, $key) {
+                $role = is_object($font) ? ($font->role ?? $key) : (data_get($font, 'role', $key));
+
+                return [
+                    $role => [
+                        'id' => is_object($font) ? $font->id : data_get($font, 'id'),
+                        'role' => $role,
+                        'family_name' => is_object($font) ? $font->family_name : data_get($font, 'family_name', ''),
+                        'file_path' => is_object($font) ? $font->file_path : data_get($font, 'file_path', ''),
+                        'file_name' => is_object($font) ? $font->file_name : data_get($font, 'file_name', ''),
+                        'file_size' => is_object($font) ? $font->file_size : data_get($font, 'file_size', 0),
+                        'format' => is_object($font) ? $font->format : data_get($font, 'format', 'woff2'),
+                        'css_format' => is_object($font) ? $font->css_format : data_get($font, 'css_format', 'woff2'),
+                        'url' => is_object($font) ? $font->url : data_get($font, 'url', asset('storage/'.data_get($font, 'file_path', ''))),
+                    ],
+                ];
+            })->all();
+        });
+
+        if (! is_array($cached)) {
+            self::forgetCustomFonts();
+
+            return [];
+        }
+
+        // Defensive check: if cached items are invalid/strings, clear cache and recompute
+        foreach ($cached as $item) {
+            if (! is_array($item) && ! is_object($item)) {
+                self::forgetCustomFonts();
+
+                return [];
+            }
+        }
+
+        return $cached;
+    }
+
+    /**
+     * Invalidate custom typography fonts cache.
+     */
+    public static function forgetCustomFonts(): void
+    {
+        Cache::forget(self::PREFIX_CUSTOM_FONTS);
+    }
 
     /**
      * Remember all publicly visible content types ordered by `order`.
@@ -198,6 +262,7 @@ class PortfolioCacheService
         Cache::forget(self::PREFIX_TRACKED_KEYS);
         Cache::forget(self::PREFIX_HOME_IDS);
         Cache::forget(self::PREFIX_PUBLIC_CPTS);
+        Cache::forget(self::PREFIX_CUSTOM_FONTS);
     }
 
     /**

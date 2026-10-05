@@ -18,8 +18,32 @@
     <meta name="twitter:title" content="@yield('og_title', $__env->yieldContent('title', config('app.name')))">
     <meta name="twitter:description" content="@yield('og_description', $__env->yieldContent('meta_description', $__env->yieldContent('description', config('app.name'))))">
 
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=bricolage-grotesque:400,500,600,700,800|poppins:300,400,500,600,700|jetbrains-mono:400,500,600,700&display=swap" rel="stylesheet" />
+    @php
+        $activeCustomFonts = \App\Services\PortfolioCacheService::rememberCustomFonts();
+    @endphp
+
+    {{-- Preload de fuentes locales activas para Core Web Vitals (CLS = 0) --}}
+    @if(is_iterable($activeCustomFonts))
+        @foreach ($activeCustomFonts as $cFont)
+            @php
+                $fontUrl = data_get($cFont, 'url');
+                $fontFormat = data_get($cFont, 'format', 'woff2');
+                $fontMime = match(strtolower((string) $fontFormat)) {
+                    'truetype', 'ttf' => 'ttf',
+                    'opentype', 'otf' => 'otf',
+                    default => $fontFormat,
+                };
+            @endphp
+            @if ($fontUrl)
+                <link rel="preload" href="{{ $fontUrl }}" as="font" type="font/{{ $fontMime }}" crossorigin>
+            @endif
+        @endforeach
+    @endif
+
+    @if (!data_get($activeCustomFonts, 'heading') || !data_get($activeCustomFonts, 'sans') || !data_get($activeCustomFonts, 'mono'))
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=bricolage-grotesque:400,500,600,700,800|poppins:300,400,500,600,700|jetbrains-mono:400,500,600,700&display=swap" rel="stylesheet" />
+    @endif
 
     <script>
         (function() {

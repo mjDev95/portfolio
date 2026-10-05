@@ -40,7 +40,7 @@
                 ['label' => 'Blog', 'url' => null]
             ]" />
         </div>
-        <h1 class="h2 mb-sm font-heading fw-bold" data-reveal>Blog</h1>
+        <h1 class="h2 mb-sm font-heading fw-bold" data-blur-reveal>Blog</h1>
     </div>
 
     {{-- Filtro Horizontal de Categorías (Pill Rail Voluminoso Persistente con x-btn) --}}
@@ -50,7 +50,7 @@
                    :active="empty($selectedCategory)"
                    size="sm">
                 <span>Todos</span>
-                <sup class="pill-count">{{ $total }}</sup>
+                <sup class="pill-count">{{ $allPublishedCount ?? $total }}</sup>
             </x-btn>
 
             @foreach ($categories as $cat)

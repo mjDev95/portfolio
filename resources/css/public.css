@@ -1286,8 +1286,7 @@ html.light .hero-orbit-svg {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-                color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+                color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html.light .btn-universal {
@@ -1803,11 +1802,59 @@ html.light .btn-universal.is-active {
 }
 
 .card-media-wrapper,
-.project-showcase-media,
-.hero-media-wrapper {
+.project-showcase-media {
     aspect-ratio: 16 / 9;
     background-color: var(--bg-surface);
     border: 1px solid var(--border-subtle);
+}
+
+.hero-media-wrapper {
+    background-color: var(--bg-surface);
+}
+
+.hero-media-wrapper img,
+.hero-media-wrapper iframe {
+    border-radius: inherit;
+}
+
+/* Botones Squircle para Compartir Directo en Redes (Microinteracciones) */
+.social-share-tile {
+    width: var(--fluid-s-lg);
+    height: var(--fluid-s-lg);
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+    outline: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.social-share-tile:hover {
+    background-color: var(--row-hover-bg, rgba(255, 255, 255, 0.05));
+    border-color: var(--color-brand) !important;
+    color: var(--color-brand) !important;
+}
+
+.social-share-tile svg {
+    width: var(--fluid-s-sm);
+    height: var(--fluid-s-sm);
+}
+
+/* Tooltip Reactivo Flotante (Microinteracción de Hover) */
+.social-share-tile .tile-tooltip {
+    bottom: calc(100% + var(--fluid-s-2xs));
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    padding: var(--fluid-s-2xs) var(--fluid-s-xs);
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 100;
+}
+
+.social-share-tile:hover .tile-tooltip,
+.social-share-tile.has-active-tooltip .tile-tooltip {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateX(-50%) translateY(0) !important;
 }
 
 [data-flip-element="image"] img {

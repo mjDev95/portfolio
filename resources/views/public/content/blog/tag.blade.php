@@ -74,7 +74,7 @@
             ]" />
         </div>
         <div class="d-flex align-items-center gap-3 mb-sm">
-            <h1 class="h2 font-heading fw-bold m-0" data-reveal>#{{ $tag->name }}</h1>
+            <h1 class="h2 font-heading fw-bold m-0" data-blur-reveal>#{{ $tag->name }}</h1>
             <span class="data-chip font-mono text-fluid-xs">{{ $total }} {{ $total === 1 ? 'artículo' : 'artículos' }}</span>
         </div>
         <p class="text-fluid-lg text-muted" style="max-width: 60ch;" data-reveal>

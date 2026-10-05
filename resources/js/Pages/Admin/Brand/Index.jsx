@@ -13,7 +13,7 @@ import { Palette, Type, Code2, Search, Sparkles, CheckCircle2, Plus, AlertTriang
 import { AnimatePresence, motion } from 'framer-motion';
 import { applySuperAdminPalette } from '@/Support/brandTheme';
 
-export default function Index({ palettes = [], activePaletteId = null }) {
+export default function Index({ palettes = [], activePaletteId = null, customFonts = {} }) {
     const [activeTab, setActiveTab] = useState('palettes');
     const [searchQuery, setSearchQuery] = useState('');
     const [toastMessage, setToastMessage] = useState(null);
@@ -306,7 +306,7 @@ export default function Index({ palettes = [], activePaletteId = null }) {
                         </div>
                     )}
 
-                    {activeTab === 'typography' && <TypographySection />}
+                    {activeTab === 'typography' && <TypographySection customFonts={customFonts} onToast={showToast} />}
 
                     {activeTab === 'tokens' && <TokensCodeSection onToast={showToast} />}
             </div>

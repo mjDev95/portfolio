@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\BrandIdentityController;
 use App\Http\Controllers\Admin\ColorPaletteController;
 use App\Http\Controllers\Admin\ContentController;
 use App\Http\Controllers\Admin\ContentTypeController;
+use App\Http\Controllers\Admin\CustomFontController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\MessageController;
@@ -40,6 +41,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'active'
         Route::get('brand', [BrandIdentityController::class, 'index'])->name('brand.index');
         Route::post('brand/palettes/reorder', [ColorPaletteController::class, 'reorder'])->name('brand.palettes.reorder');
         Route::resource('brand/palettes', ColorPaletteController::class, ['as' => 'brand'])->except(['create', 'show', 'edit']);
+        Route::post('brand/fonts', [CustomFontController::class, 'store'])->name('brand.fonts.store');
+        Route::delete('brand/fonts/{font}', [CustomFontController::class, 'destroy'])->name('brand.fonts.destroy');
 
         // ── User & Client Management (Dedicated Views CRUD) ──────────────────
         Route::get('api/users', [UserController::class, 'apiSearch'])->name('api.users.search');

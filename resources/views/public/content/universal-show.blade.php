@@ -11,8 +11,8 @@
 @section('edit_label', 'Editar ' . ($cpt->singular_name ?? $cpt->name))
 
 @section('content')
-<article class="container py-3xl" style="min-height: 100vh;">
-    <div class="mb-lg" data-detail-breadcrumbs>
+<article class="py-3xl" style="min-height: 100vh;">
+    <div class="container mb-lg" data-detail-breadcrumbs>
         <x-breadcrumbs :items="[
             ['label' => 'Inicio', 'url' => route('home')],
             ['label' => $cpt->name, 'url' => route('public.content.index', $cpt->public_route_slug)],
@@ -24,15 +24,19 @@
     @endphp
 
     @if ($heroImage)
-        <div class="media-wrap hero-media-wrapper w-100 position-relative overflow-hidden aspect-16-9 bg-surface border-subtle mb-2xl"
-             data-flip-id="project-{{ $content->slug }}"
-             data-flip-element="image">
-            <img src="{{ $heroImage->url }}"
-                 alt="{{ $heroImage->alt ?: ($heroImage->caption ?: $content->title) }}"
-                 title="{{ $heroImage->title ?: $content->title }}"
-                 class="img-fluid object-fit-cover w-100 h-100 d-block">
+        <div class="container-wide mb-2xl">
+            <div class="media-wrap hero-media-wrapper w-100 position-relative overflow-hidden aspect-16-9 bg-surface border-subtle"
+                 data-flip-id="project-{{ $content->slug }}"
+                 data-flip-element="image">
+                <img src="{{ $heroImage->url }}"
+                     alt="{{ $heroImage->alt ?: ($heroImage->caption ?: $content->title) }}"
+                     title="{{ $heroImage->title ?: $content->title }}"
+                     class="img-fluid object-fit-cover w-100 h-100 d-block">
+            </div>
         </div>
     @endif
+
+    <div class="container">
     <header class="mb-xl" data-reveal data-detail-header>
         <h1 class="h1 font-bold text-primary text-break" data-flip-text>{{ $content->title }}</h1>
 
@@ -146,6 +150,7 @@
                 </div>
             </div>
         @endif
+    </div>
     </div>
 </article>
 @endsection

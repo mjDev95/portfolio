@@ -25,13 +25,43 @@ export function initSmoothScroll() {
         smoothWheel: true,
     });
 
-    lenis.on('scroll', ScrollTrigger.update);
+    lenis.on('scroll', ({ scroll }) => {
+        ScrollTrigger.update();
+        try {
+            sessionStorage.setItem('portfolio_scroll_' + window.location.pathname, Math.round(scroll));
+        } catch (e) {}
+    });
 
     gsap.ticker.add((time) => {
         lenis.raf(time * 1000);
     });
 
     gsap.ticker.lagSmoothing(0);
+
+    // Restauración limpia de scroll en refresco de página sin flash de la cabecera
+    try {
+        const savedScroll = parseInt(sessionStorage.getItem('portfolio_scroll_' + window.location.pathname), 10);
+        if (savedScroll > 150) {
+            lenis.scrollTo(savedScroll, { immediate: true, force: true });
+            lenis.scroll = savedScroll;
+            lenis.targetScroll = savedScroll;
+            lenis.animatedScroll = savedScroll;
+            ScrollTrigger.update();
+            requestAnimationFrame(() => {
+                document.documentElement.classList.remove('is-restoring-scroll');
+                ScrollTrigger.refresh();
+            });
+        } else {
+            document.documentElement.classList.remove('is-restoring-scroll');
+        }
+    } catch (e) {
+        document.documentElement.classList.remove('is-restoring-scroll');
+    }
+
+    // Timeout defensivo para garantizar visibilidad incondicional
+    setTimeout(() => {
+        document.documentElement.classList.remove('is-restoring-scroll');
+    }, 400);
 
     return lenis;
 }
