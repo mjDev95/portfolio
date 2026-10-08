@@ -1,3 +1,4 @@
+import barba from '@barba/core';
 import gsap from 'gsap';
 import { startScroll, resizeScroll, stopScroll, resetScroll, ScrollTrigger } from './smooth-scroll';
 import { syncDesktopIslandState, isDesktopIslandCompacted, markNavigated } from '../animations/dynamic-island';
@@ -100,7 +101,7 @@ export function createFlipTransitions() {
                 return Boolean(isFromAllowed && isToDetail && hasCard);
             },
             async leave(data) {
-                return new Promise((resolve) => {
+                return new Promise(async (resolve) => {
                     stopScroll();
 
                     // 1. Registrar navegación en la memoria de sesión
@@ -147,16 +148,56 @@ export function createFlipTransitions() {
                     const imgSrc = (isCapturedValid && captured.imgSrc) || originImage?.currentSrc || originImage?.src || '';
                     const imgAlt = (isCapturedValid && captured.imgAlt) || originImage?.alt || '';
 
-                    // 4. Medir coordenadas EXACTAS de destino del Hero en la nueva vista (scroll = 0)
+                    // 4. Identificar destino: detección garantizada exclusiva para proyectos individuales
+                    const targetPath = data.next?.url?.path ||
+                                       (candidateTrigger?.closest?.('a')?.getAttribute('href') ? new URL(candidateTrigger.closest('a').getAttribute('href'), window.location.origin).pathname : '') ||
+                                       '';
+                    const originFlipId = originCard?.getAttribute('data-flip-id') ||
+                                         originWrapper?.getAttribute('data-flip-id') ||
+                                         captured?.card?.getAttribute('data-flip-id') ||
+                                         '';
+
+                    const isToProject = Boolean(
+                        /^\/proyectos\/[^/]+/.test(targetPath) ||
+                        originFlipId.startsWith('project-') ||
+                        data.next?.namespace === 'project-show' ||
+                        (data.next?.namespace === 'content-show' && /^\/proyectos(\/|$)/.test(targetPath))
+                    );
+
+                    // 5. Medir coordenadas EXACTAS de destino del Hero en la nueva vista (scroll = 0)
                     let targetTop = null;
                     let targetLeft = null;
                     let targetWidth = null;
                     let targetHeight = null;
 
-                    if (data.next?.html) {
+                    // Obtener HTML entrante garantizado para medición precisa
+                    let nextHtml = data.next?.html;
+                    if (!nextHtml && (data.next?.url?.href || targetPath)) {
+                        try {
+                            const targetHref = data.next?.url?.href || (window.location.origin + targetPath);
+                            const cached = barba?.cache?.get(targetHref) || barba?.cache?.get(data.next?.url?.path);
+                            if (cached?.request) {
+                                const res = await cached.request;
+                                nextHtml = res?.html;
+                            } else {
+                                const res = await fetch(targetHref, { credentials: 'same-origin' });
+                                if (res.ok) {
+                                    nextHtml = await res.text();
+                                }
+                            }
+                        } catch (e) {
+                            console.warn('[Flip] Fallback de pre-fetch de HTML:', e);
+                        }
+                    }
+
+                    if (nextHtml && !data.next.html) {
+                        data.next.html = nextHtml;
+                    }
+
+                    if (nextHtml) {
                         try {
                             const parser = new DOMParser();
-                            const nextDoc = parser.parseFromString(data.next.html, 'text/html');
+                            const nextDoc = parser.parseFromString(nextHtml, 'text/html');
                             const nextContainer = nextDoc.querySelector('[data-barba="container"]');
                             if (nextContainer) {
                                 const bodyPaddingTop = parseFloat(window.getComputedStyle(document.body).paddingTop) || 0;
@@ -167,13 +208,13 @@ export function createFlipTransitions() {
                                     width: '100%',
                                     visibility: 'hidden',
                                     pointerEvents: 'none',
-                                    zIndex: '-9999',
+                                    zIndex: '-99999',
                                 });
                                 document.body.appendChild(nextContainer);
 
                                 const nextHero = nextContainer.querySelector('.hero-media-wrapper') ||
-                                                 nextContainer.querySelector('[data-flip-id]') ||
-                                                 nextContainer.querySelector('[data-flip-element="image"]');
+                                                 nextContainer.querySelector('[data-flip-element="image"]') ||
+                                                 nextContainer.querySelector('[data-flip-id]');
 
                                 if (nextHero) {
                                     const rect = nextHero.getBoundingClientRect();
@@ -192,7 +233,7 @@ export function createFlipTransitions() {
                         }
                     }
 
-                    // Fallback de alta precisión garantizando la geometría exacta de .container-wide (idéntico al detalle del post/proyecto)
+                    // Fallback de alta precisión garantizando la geometría exacta de .container-wide
                     if (targetTop === null || targetWidth === null) {
                         const dummy = document.createElement('div');
                         dummy.className = 'py-3xl';
@@ -203,19 +244,37 @@ export function createFlipTransitions() {
                         dummy.style.right = '0';
                         dummy.style.pointerEvents = 'none';
                         dummy.style.zIndex = '-99999';
-                        dummy.innerHTML = `
-                            <div class="container mb-lg" style="height: 24px;"></div>
-                            <div class="container-wide mb-2xl">
-                                <div class="media-wrap hero-media-wrapper" style="aspect-ratio: 16 / 9; width: 100%;"></div>
-                            </div>
-                        `;
+
+                        if (isToProject) {
+                            // En proyectos, la imagen destacada se ubica debajo de las migas y de la cabecera (h1 + metadatos)
+                            dummy.innerHTML = `
+                                <div class="container mb-lg" style="height: 24px;"></div>
+                                <div class="container-wide mb-2xl">
+                                    <header class="mb-2xl" data-detail-header>
+                                        <h1 class="h1 font-heading fw-bold text-primary mb-sm">Fallback Title</h1>
+                                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-4 py-lg mb-3xl">
+                                            <div style="height: 40px; width: 100px;"></div>
+                                        </div>
+                                    </header>
+                                    <div class="media-wrap hero-media-wrapper w-100 aspect-16-9"></div>
+                                </div>
+                            `;
+                        } else {
+                            // En blog y otros CPTs, la imagen permanece en la cima
+                            dummy.innerHTML = `
+                                <div class="container mb-lg" style="height: 24px;"></div>
+                                <div class="container-wide mb-2xl">
+                                    <div class="media-wrap hero-media-wrapper w-100 aspect-16-9"></div>
+                                </div>
+                            `;
+                        }
+
                         document.body.appendChild(dummy);
 
                         const heroEl = dummy.querySelector('.hero-media-wrapper');
                         if (heroEl) {
                             const rect = heroEl.getBoundingClientRect();
-                            const bodyPaddingTop = parseFloat(window.getComputedStyle(document.body).paddingTop) || 0;
-                            targetTop = rect.top + bodyPaddingTop;
+                            targetTop = rect.top;
                             targetLeft = rect.left;
                             targetWidth = rect.width;
                             targetHeight = rect.height;
@@ -223,7 +282,7 @@ export function createFlipTransitions() {
                         dummy.remove();
                     }
 
-                    // 5. Crear el proxy de vuelo fijado en el viewport (Sin border-radius)
+                    // 6. Crear el proxy de vuelo fijado en el viewport (Sin border-radius)
                     const proxy = document.createElement('div');
                     proxy.id = 'active-flight-proxy';
                     Object.assign(proxy.style, {
@@ -266,7 +325,7 @@ export function createFlipTransitions() {
                         gsap.to(originCardTexts, { opacity: 0, y: -8, duration: 0.15, ease: 'power2.out' });
                     }
 
-                    // 6. Timeline de salida: el entorno completo de la página vieja y el footer global se desvanecen
+                    // 7. Timeline de salida: el entorno completo de la página vieja y el footer global se desvanecen
                     const mainFooter = document.getElementById('main-footer') || document.querySelector('.footer-scroll-wrapper') || document.querySelector('.site-footer, footer');
 
                     const tl = gsap.timeline({
@@ -277,6 +336,7 @@ export function createFlipTransitions() {
                                 targetLeft,
                                 targetWidth,
                                 targetHeight,
+                                isToProject,
                             };
                             data.current.container.style.display = 'none';
                             if (mainFooter) {
@@ -324,7 +384,8 @@ export function createFlipTransitions() {
                 const meta = Array.from(
                     data.next.container.querySelectorAll('[data-detail-body], [data-flip-text], .prose, .toc-sidebar-sticky')
                 ).filter((el) => el !== breadcrumbs && !breadcrumbs?.contains(el));
-                const detailTargets = [header, ...meta].filter(Boolean);
+                const rawTargets = [header, ...meta].filter(Boolean);
+                const detailTargets = rawTargets.filter((el) => !rawTargets.some((parent) => parent !== el && parent.contains(el)));
                 if (detailTargets.length > 0) {
                     gsap.set(detailTargets, { opacity: 0, y: 25 });
                 }
@@ -384,7 +445,8 @@ export function createFlipTransitions() {
                     const meta = Array.from(
                         data.next.container.querySelectorAll('[data-detail-body], [data-flip-text], .prose, .toc-sidebar-sticky')
                     ).filter((el) => el !== targetHero && !targetHero?.contains(el) && el !== breadcrumbs && !breadcrumbs?.contains(el));
-                    const detailTargets = [header, ...meta].filter(Boolean);
+                    const rawTargets = [header, ...meta].filter(Boolean);
+                    const detailTargets = rawTargets.filter((el) => !rawTargets.some((parent) => parent !== el && parent.contains(el)));
 
                     // Animar la entrada de las breadcrumbs con un elegante descenso desde arriba
                     if (breadcrumbs) {

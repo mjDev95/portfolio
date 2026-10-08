@@ -139,12 +139,6 @@ a {
 
 .min-h-90vh  { min-height: 90vh !important; }
 .min-h-100vh { min-height: 100vh !important; }
-
-.aspect-16-10 { aspect-ratio: 16 / 10; }
-.aspect-16-9  { aspect-ratio: 16 / 9; }
-.aspect-4-3   { aspect-ratio: 4 / 3; }
-.aspect-1-1   { aspect-ratio: 1 / 1; }
-
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;

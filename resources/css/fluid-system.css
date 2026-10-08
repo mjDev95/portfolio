@@ -845,6 +845,11 @@ html.is-restoring-scroll body {
 .opacity-75             { opacity: 0.75 !important; }
 .opacity-100            { opacity: 1 !important; }
 
+.aspect-16-10 { aspect-ratio: 16 / 10; }
+.aspect-16-9  { aspect-ratio: 16 / 9; }
+.aspect-4-3   { aspect-ratio: 4 / 3; }
+.aspect-1-1   { aspect-ratio: 1 / 1; }
+.aspect-21-9  { aspect-ratio: 21 / 9; }
 /* ─────────────────────────────────────────
    10. BORDER RADIUS & ROUNDED UTILITIES (Bootstrap 5.3 + Fluid)
    ───────────────────────────────────────── */
