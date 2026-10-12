@@ -4,18 +4,18 @@ import { ScrollTrigger } from '../../lib/smooth-scroll';
 let textRevealCtx = null;
 
 /**
- * Splits text within a DOM element into .framer-word and .framer-char spans,
- * preserving child block structure (e.g., span.d-block, em, etc.).
+ * Splits text within a DOM element into .split-word and .split-char spans,
+ * preserving existing child DOM nodes (e.g., span.d-block, em, svg, etc.).
  *
  * @param {HTMLElement} element
- * @returns {HTMLElement[]} Array of created .framer-char elements in reading order
+ * @returns {HTMLElement[]} Array of created .split-char elements in reading order
  */
-export function splitTextIntoFramerChars(element) {
+export function splitTextIntoChars(element) {
     if (!element) return [];
 
     // Avoid double splitting
-    if (element.dataset.velixSplit === 'true') {
-        return Array.from(element.querySelectorAll('.split-char, .framer-char'));
+    if (element.dataset.textSplit === 'true') {
+        return Array.from(element.querySelectorAll('.split-char'));
     }
 
     function processNode(node) {
@@ -86,21 +86,41 @@ export function splitTextIntoFramerChars(element) {
         processed.forEach((p) => element.appendChild(p));
     });
 
-    element.dataset.velixSplit = 'true';
-    return Array.from(element.querySelectorAll('.split-char, .framer-char'));
+    element.dataset.textSplit = 'true';
+    return Array.from(element.querySelectorAll('.split-char'));
 }
 
 /**
- * Animates an array of .framer-char elements with the calibrated Velix Blur Reveal curve.
+ * Prepares character spans with initial hidden blurred states (anti-FOUC).
  *
  * @param {HTMLElement[]} chars
  * @param {Object} options
- * @returns {gsap.core.Tween|null}
  */
-export function animateVelixChars(chars, options = {}) {
-    if (!chars || !chars.length) return null;
+export function prepareBlurChars(chars, options = {}) {
+    if (!chars || !chars.length) return;
 
-    const finalize = () => {
+    gsap.set(chars, {
+        opacity: options.opacity ?? 0,
+        y: options.y ?? 16,
+        filter: options.filter ?? 'blur(12px)',
+        webkitFilter: options.filter ?? 'blur(12px)',
+    });
+}
+
+/**
+ * Marks character spans and optional parent container as fully revealed.
+ * Removes active CSS filters and transforms to ensure crisp subpixel rendering.
+ *
+ * @param {HTMLElement[]} chars
+ * @param {HTMLElement|null} parentEl
+ */
+export function finalizeBlurChars(chars, parentEl = null) {
+    if (parentEl) {
+        parentEl.classList.add('is-revealed');
+        parentEl.style.opacity = '1';
+        parentEl.style.visibility = 'visible';
+    }
+    if (chars && chars.length) {
         chars.forEach((c) => {
             c.classList.add('is-revealed');
             c.style.filter = 'none';
@@ -108,6 +128,27 @@ export function animateVelixChars(chars, options = {}) {
             c.style.transform = 'none';
             c.style.opacity = '1';
         });
+    }
+}
+
+/**
+ * Animates an array of .split-char elements with the calibrated Character Blur Reveal curve.
+ *
+ * @param {HTMLElement[]} chars
+ * @param {Object} options
+ * @returns {gsap.core.Tween|null}
+ */
+export function animateBlurChars(chars, options = {}) {
+    if (!chars || !chars.length) return null;
+
+    const parentEl = chars[0]?.closest?.('[data-title-blur-reveal], [data-blur-reveal], [data-char-blur-reveal], h1, h2, h3, h4, h5, h6, p');
+    if (parentEl) {
+        parentEl.style.visibility = 'visible';
+        parentEl.style.opacity = '1';
+    }
+
+    const finalize = () => {
+        finalizeBlurChars(chars, parentEl);
         options.onComplete?.();
     };
 
@@ -116,12 +157,7 @@ export function animateVelixChars(chars, options = {}) {
         return null;
     }
 
-    gsap.set(chars, {
-        opacity: 0,
-        y: 16,
-        filter: 'blur(12px)',
-        webkitFilter: 'blur(12px)',
-    });
+    prepareBlurChars(chars, { y: 16 });
 
     const staggerAmount = Math.min(chars.length * 0.035, 1.1);
 
@@ -139,11 +175,67 @@ export function animateVelixChars(chars, options = {}) {
 }
 
 /**
- * Initializes Velix Blur Reveal and smooth scroll reveals on elements marked with:
- * - [data-reveal]: text headings/paragraphs get Velix word/char blur; containers/cards get smooth fade+y.
- * - [data-velix-target], [data-blur-reveal]: always character blur reveal.
+ * Creates a reusable ScrollTrigger or viewport-triggered blur reveal for a single element.
  *
- * Excludes elements inside [data-hero-curtain] because they are coordinated synchronously by hero-curtain.js.
+ * @param {HTMLElement} element
+ * @param {Object} options
+ * @returns {Object|null}
+ */
+export function createTextRevealTrigger(element, options = {}) {
+    if (!element) return null;
+
+    const chars = splitTextIntoChars(element);
+    if (!chars.length) return null;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        finalizeBlurChars(chars, element);
+        return null;
+    }
+
+    prepareBlurChars(chars, { y: 16 });
+    element.style.opacity = '1';
+    element.style.visibility = 'visible';
+
+    const tl = gsap.timeline({ paused: true });
+    const staggerAmount = Math.min(chars.length * 0.035, 1.1);
+
+    tl.to(chars, {
+        opacity: 1,
+        y: 0,
+        filter: 'blur(0px)',
+        webkitFilter: 'blur(0px)',
+        duration: options.duration ?? 0.75,
+        ease: options.ease ?? 'power2.out',
+        stagger: { amount: staggerAmount, from: 'start' },
+        onComplete: () => finalizeBlurChars(chars, element),
+    });
+
+    const triggerEl = options.trigger || (element.closest('#main-footer') ? element.closest('#main-footer') : element);
+    const startPoint = options.start || (element.closest('#main-footer') ? 'top 90%' : 'top 85%');
+
+    const trigger = ScrollTrigger.create({
+        trigger: triggerEl,
+        start: startPoint,
+        onEnter: () => tl.play(),
+        onLeaveBack: () => {
+            chars.forEach((c) => c.classList.remove('is-revealed'));
+            element.classList.remove('is-revealed');
+            tl.reverse();
+        },
+        onEnterBack: () => tl.play(),
+    });
+
+    const rect = triggerEl.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.85 && rect.bottom > 0) {
+        tl.play();
+    }
+
+    return { timeline: tl, trigger, chars };
+}
+
+/**
+ * Initializes Kinetic Character Blur Reveal on marked elements across the incoming container.
+ * Scoped and reversible within a gsap.context().
  *
  * @param {HTMLElement} container
  */
@@ -151,99 +243,38 @@ export function initTextReveal(container = document) {
     cleanupTextReveal();
 
     textRevealCtx = gsap.context(() => {
-        // 1. Text elements with explicit Velix targets, [data-blur-reveal], or section H2s
-        const explicitTargets = container.querySelectorAll('[data-velix-target], [data-blur-reveal], h2.hero-statement, h2.services-main-title');
+        // 1. Elementos explícitos con títulos editoriales o targets de desenfoque de caracteres
+        const explicitTargets = container.querySelectorAll(
+            '[data-title-blur-reveal], [data-char-blur-reveal], [data-blur-reveal], h2.hero-statement, h2.services-main-title'
+        );
+
         explicitTargets.forEach((target) => {
             if (target.closest('[data-hero-curtain]') || target.closest('[data-selected-cases]')) return;
-            if (target.dataset.velixSplit === 'true') return;
-
-            const chars = splitTextIntoFramerChars(target);
-            if (!chars.length) return;
-
-            const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            if (isReduced) {
-                chars.forEach((c) => {
-                    c.classList.add('is-revealed');
-                    c.style.filter = 'none';
-                    c.style.webkitFilter = 'none';
-                    c.style.transform = 'none';
-                    c.style.opacity = '1';
-                });
-                return;
-            }
-
-            gsap.set(chars, {
-                opacity: 0,
-                y: 16,
-                filter: 'blur(12px)',
-                webkitFilter: 'blur(12px)',
-            });
-
-            const tl = gsap.timeline({ paused: true });
-            const staggerAmount = Math.min(chars.length * 0.035, 1.1);
-
-            tl.to(chars, {
-                opacity: 1,
-                y: 0,
-                filter: 'blur(0px)',
-                webkitFilter: 'blur(0px)',
-                duration: 0.75,
-                ease: 'power2.out',
-                stagger: { amount: staggerAmount, from: 'start' },
-                onComplete: () => {
-                    chars.forEach((c) => {
-                        c.classList.add('is-revealed');
-                        c.style.filter = 'none';
-                        c.style.webkitFilter = 'none';
-                        c.style.transform = 'none';
-                        c.style.opacity = '1';
-                    });
-                },
-            });
-
-            const triggerEl = target.closest('#main-footer') ? target.closest('#main-footer') : target;
-
-            ScrollTrigger.create({
-                trigger: triggerEl,
-                start: target.closest('#main-footer') ? 'top 90%' : 'top 85%',
-                onEnter: () => tl.play(),
-                onLeaveBack: () => {
-                    chars.forEach((c) => c.classList.remove('is-revealed'));
-                    tl.reverse();
-                },
-                onEnterBack: () => tl.play(),
-            });
-
-            // Si el elemento ya está dentro del viewport visible al inicializarse, disparar inmediatamente
-            const rect = triggerEl.getBoundingClientRect();
-            if (rect.top < window.innerHeight * 0.85 && rect.bottom > 0) {
-                tl.play();
-            }
+            createTextRevealTrigger(target);
         });
 
-        // 2. Elements with [data-reveal]
+        // 2. Elementos marcados con [data-reveal] contextual
         const revealElements = container.querySelectorAll('[data-reveal]');
         const textTagNames = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P', 'SPAN'];
 
         revealElements.forEach((el) => {
-            if (el.closest('[data-hero-curtain]') || el.closest('[data-selected-cases]') || el.dataset.velixSplit === 'true') return;
+            if (el.closest('[data-hero-curtain]') || el.closest('[data-selected-cases]') || el.dataset.textSplit === 'true') return;
 
             const isText = textTagNames.includes(el.tagName) && el.children.length === 0;
 
             if (isText && el.textContent.trim().length > 0) {
-                // Apply Velix Blur Reveal to standalone text elements with [data-reveal]
-                const chars = splitTextIntoFramerChars(el);
+                const chars = splitTextIntoChars(el);
                 if (chars.length) {
                     const elRect = el.getBoundingClientRect();
                     if (elRect.top < window.innerHeight * 0.85 && elRect.bottom > 0) {
-                        animateVelixChars(chars, { delay: 0.05 });
+                        animateBlurChars(chars, { delay: 0.05 });
                     } else {
                         ScrollTrigger.create({
                             trigger: el,
                             start: 'top 85%',
                             once: true,
                             onEnter: () => {
-                                animateVelixChars(chars, { delay: 0.05 });
+                                animateBlurChars(chars, { delay: 0.05 });
                             },
                         });
                     }
@@ -251,7 +282,7 @@ export function initTextReveal(container = document) {
                 }
             }
 
-            // Generic container reveal
+            // Reveal estándar fade+y para bloques/contenedores genéricos
             gsap.fromTo(
                 el,
                 { autoAlpha: 0, y: 24 },
@@ -273,7 +304,7 @@ export function initTextReveal(container = document) {
 }
 
 /**
- * Reverts the text reveal GSAP context, terminating tweens and ScrollTriggers.
+ * Reverts the text reveal GSAP context, terminating tweens and ScrollTriggers cleanly.
  */
 export function cleanupTextReveal() {
     if (textRevealCtx) {

@@ -10,7 +10,8 @@ import { closeShareModal } from './share-modal';
 import { cleanupFooterReveal, initFooterReveal } from '../animations/footer';
 import { cleanupMethodology } from '../animations/methodology';
 import { cleanupHomeBlog } from '../animations/home-blog';
-import { splitTextIntoFramerChars, animateVelixChars } from '../animations/velix-reveal';
+import { cleanupProjectHero } from '../animations/project-hero';
+import { splitTextIntoChars, animateBlurChars } from '../animations/shared/text-reveal';
 
 let isBlogFilterTransition = false;
 
@@ -160,6 +161,7 @@ export function initBarba({ onAfterEnter } = {}) {
         cleanupFooterReveal();
         cleanupMethodology();
         cleanupHomeBlog();
+        cleanupProjectHero();
         const mainFooter = document.getElementById('main-footer') || document.querySelector('.footer-scroll-wrapper') || document.querySelector('.site-footer, footer');
         if (mainFooter) {
             gsap.set(mainFooter, { opacity: 0 });
@@ -339,9 +341,9 @@ export function initBarba({ onAfterEnter } = {}) {
                         const currentTitleEl = currentHeader.querySelector('h1');
                         if (currentTitleEl) {
                             // Si ya fue dividido en chars por la entrada, usarlos; si no, dividir ahora
-                            const currentChars = currentTitleEl.dataset.velixSplit === 'true'
-                                ? Array.from(currentTitleEl.querySelectorAll('.split-char, .framer-char'))
-                                : splitTextIntoFramerChars(currentTitleEl);
+                            const currentChars = currentTitleEl.dataset.textSplit === 'true'
+                                ? Array.from(currentTitleEl.querySelectorAll('.split-char'))
+                                : splitTextIntoChars(currentTitleEl);
 
                             if (currentChars && currentChars.length) {
                                 // Quitar is-revealed y estilos inline con !important que bloquean a GSAP
@@ -443,12 +445,12 @@ export function initBarba({ onAfterEnter } = {}) {
                             { opacity: 1, duration: 0.22, ease: 'power2.out', clearProps: 'opacity,visibility' }
                         );
 
-                        // Animación cinemática del título de categoría/etiqueta (Velix Character Blur Reveal)
+                        // Animación cinemática del título de categoría/etiqueta (Character Blur Reveal)
                         const titleEl = nextHeader.querySelector('h1');
                         if (titleEl) {
-                            const chars = splitTextIntoFramerChars(titleEl);
+                            const chars = splitTextIntoChars(titleEl);
                             if (chars && chars.length) {
-                                animateVelixChars(chars, { duration: 0.65, delay: 0.05 });
+                                animateBlurChars(chars, { duration: 0.65, delay: 0.05 });
                             }
                         }
                     }

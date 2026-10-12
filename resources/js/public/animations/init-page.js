@@ -2,12 +2,13 @@ import gsap from 'gsap';
 import { ScrollTrigger } from '../lib/smooth-scroll';
 import { initHeroCurtain } from './hero-curtain';
 import { initSelectedCases } from './selected-cases';
-import { initVelixReveals } from './velix-reveal';
+import { initTextReveal } from './shared/text-reveal';
 import { initBlogArchive, initBlogSingle, initCardReveals } from './blog';
 import { initMethodology } from './methodology';
 import { initHomeBlog } from './home-blog';
 import { initHeroEditorial } from './hero-editorial';
 import { initServicesMarquee } from './services-marquee';
+import { initProjectHero } from './project-hero';
 
 /**
  * Runs on every Barba `enter` step. Scoped to the incoming container so
@@ -19,7 +20,8 @@ export function initPageAnimations(container) {
     initHeroEditorial(container);
     initServicesMarquee(container);
     initSelectedCases(container);
-    initVelixReveals(container);
+    initProjectHero(container);
+    initTextReveal(container);
     initBlogArchive(container);
     initBlogSingle(container);
     initCardReveals(container);
@@ -27,8 +29,8 @@ export function initPageAnimations(container) {
     initHomeBlog(container);
 
     const reveals = Array.from(container.querySelectorAll('[data-reveal]')).filter((el) => {
-        return !el.matches('[data-detail-header], [data-detail-body], [data-detail-breadcrumbs], [data-card-reveal], [data-blur-reveal], [data-velix-target]') &&
-               el.dataset.velixSplit !== 'true' &&
+        return !el.matches('[data-detail-header], [data-detail-body], [data-detail-breadcrumbs], [data-card-reveal], [data-blur-reveal], [data-title-blur-reveal], [data-char-blur-reveal]') &&
+               el.dataset.textSplit !== 'true' &&
                !el.closest('[data-detail-header], [data-detail-body], [data-hero-curtain], #blog-header-block');
     });
 

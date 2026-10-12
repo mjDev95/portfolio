@@ -118,7 +118,7 @@
     <div class="container">
         {{-- Cabecera Monumental del Artículo --}}
         <header class="editorial-article-header mb-2xl" data-detail-header>
-        <h1 class="h1 font-heading fw-bold text-primary text-break mb-sm" data-flip-text style="letter-spacing: -0.035em;">
+        <h1 class="h1 font-heading fw-bold text-primary text-break mb-sm" data-flip-text data-title-blur-reveal style="letter-spacing: -0.035em;">
             {{ $content->title }}
         </h1>
 

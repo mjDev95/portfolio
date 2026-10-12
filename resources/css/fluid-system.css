@@ -911,8 +911,38 @@ html.lenis-smooth {
     position: relative;
     width: 100%;
     max-width: 100%;
-    overflow: visible;
+    overflow-x: clip;
+    box-sizing: border-box;
 }
+
+article {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+    box-sizing: border-box;
+}
+
+.hero-media-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-parallax-media {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100vh;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+    will-change: transform;
+    transform-origin: center top;
+    /* REGLA DE EXCLUSIÓN MUTUA: Cero transition de transform para no interferir con GSAP ScrollTrigger */
+    transition: none !important;
+}
+
+
 
 .prose {
     max-width: 100%;
@@ -928,4 +958,57 @@ html.lenis-smooth {
     max-width: 100%;
     height: auto;
     border-radius: var(--fluid-s-sm);
+}
+
+.prose pre {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: pre;
+    box-sizing: border-box;
+    padding: var(--fluid-s-md);
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--fluid-s-sm);
+    font-family: var(--font-mono);
+    font-size: var(--fluid-text-xs);
+    line-height: 1.6;
+    color: var(--text-primary);
+    margin-bottom: var(--fluid-s-lg);
+}
+
+.prose pre code {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    color: inherit;
+    font-size: inherit;
+    white-space: pre;
+}
+
+.prose table {
+    width: 100%;
+    max-width: 100%;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ─────────────────────────────────────────
+   13. CHARACTER BLUR REVEAL & ANTI-FOUC
+   ───────────────────────────────────────── */
+[data-title-blur-reveal]:not(.is-revealed) {
+    opacity: 0;
+}
+
+.split-char {
+    display: inline-block;
+    will-change: transform, opacity, filter;
+}
+
+.split-char.is-revealed {
+    opacity: 1 !important;
+    filter: none !important;
+    -webkit-filter: none !important;
+    transform: none !important;
 }

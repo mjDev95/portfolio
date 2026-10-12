@@ -2,6 +2,7 @@ import barba from '@barba/core';
 import gsap from 'gsap';
 import { startScroll, resizeScroll, stopScroll, resetScroll, ScrollTrigger } from './smooth-scroll';
 import { syncDesktopIslandState, isDesktopIslandCompacted, markNavigated } from '../animations/dynamic-island';
+import { splitTextIntoChars, prepareBlurChars, animateBlurChars } from '../animations/shared/text-reveal';
 
 const DETAIL_NAMESPACES = ['project-show', 'content-show', 'blog-show'];
 
@@ -247,6 +248,7 @@ export function createFlipTransitions() {
 
                         if (isToProject) {
                             // En proyectos, la imagen destacada se ubica debajo de las migas y de la cabecera (h1 + metadatos)
+                            // y utiliza relación aspect-21-9 en show.blade.php
                             dummy.innerHTML = `
                                 <div class="container mb-lg" style="height: 24px;"></div>
                                 <div class="container-wide mb-2xl">
@@ -256,7 +258,7 @@ export function createFlipTransitions() {
                                             <div style="height: 40px; width: 100px;"></div>
                                         </div>
                                     </header>
-                                    <div class="media-wrap hero-media-wrapper w-100 aspect-16-9"></div>
+                                    <div class="media-wrap hero-media-wrapper w-100 aspect-21-9"></div>
                                 </div>
                             `;
                         } else {
@@ -306,8 +308,10 @@ export function createFlipTransitions() {
                     proxyImg.alt = imgAlt;
                     Object.assign(proxyImg.style, {
                         width: '100%',
-                        height: '100%',
+                        height: isToProject ? '100vh' : '100%',
+                        minHeight: isToProject ? '100vh' : '100%',
                         objectFit: 'cover',
+                        objectPosition: isToProject ? 'center top' : 'center center',
                         display: 'block',
                         borderRadius: '0px',
                     });
@@ -353,7 +357,7 @@ export function createFlipTransitions() {
                         ease: 'power2.inOut',
                     }, 0);
 
-                    // Vuelo y transformación física de 4:3 a 16:9 hacia el destino (bordes rectangulares estrictos 0px)
+                    // Vuelo y transformación física hacia el destino (bordes rectangulares estrictos 0px)
                     tl.to(proxy, {
                         top: targetTop,
                         left: targetLeft,
@@ -381,11 +385,25 @@ export function createFlipTransitions() {
 
                 // 2. Encabezado y cuerpo del detalle preparados abajo con opacidad 0
                 const header = data.next.container.querySelector('[data-detail-header], header');
+                const titleHeading = header?.querySelector?.('h1[data-title-blur-reveal]') ||
+                                     data.next.container.querySelector('h1[data-title-blur-reveal]');
+
+                if (titleHeading && titleHeading.dataset.textSplit !== 'true') {
+                    // Fragmentar síncronamente antes de mostrar la página:
+                    // cada carácter nace en opacity: 0 y con blur, eliminando cualquier FOUC
+                    const chars = splitTextIntoChars(titleHeading);
+                    prepareBlurChars(chars, { y: 16 });
+                }
+
+                // Asegurar que si header contiene titleHeading, animemos los hijos de header excepto el titleHeading
+                const headerSubtargets = header ? Array.from(header.children).filter((el) => el !== titleHeading && !titleHeading?.contains(el)) : [];
+
                 const meta = Array.from(
                     data.next.container.querySelectorAll('[data-detail-body], [data-flip-text], .prose, .toc-sidebar-sticky')
-                ).filter((el) => el !== breadcrumbs && !breadcrumbs?.contains(el));
-                const rawTargets = [header, ...meta].filter(Boolean);
-                const detailTargets = rawTargets.filter((el) => !rawTargets.some((parent) => parent !== el && parent.contains(el)));
+                ).filter((el) => el !== breadcrumbs && !breadcrumbs?.contains(el) && el !== titleHeading && !titleHeading?.contains(el) && el !== header && !header?.contains(el));
+
+                const rawTargets = [...headerSubtargets, ...meta].filter(Boolean);
+                const detailTargets = rawTargets.filter((el) => !rawTargets.some((parent) => parent !== el && parent.contains(el)) && el !== titleHeading && !titleHeading?.contains(el));
                 if (detailTargets.length > 0) {
                     gsap.set(detailTargets, { opacity: 0, y: 25 });
                 }
@@ -442,11 +460,15 @@ export function createFlipTransitions() {
 
                     const breadcrumbs = data.next.container.querySelector('[data-detail-breadcrumbs], .public-breadcrumbs');
                     const header = data.next.container.querySelector('[data-detail-header], header');
+                    const titleHeading = header?.querySelector?.('h1[data-title-blur-reveal]') ||
+                                         data.next.container.querySelector('h1[data-title-blur-reveal]');
+                    const headerSubtargets = header ? Array.from(header.children).filter((el) => el !== titleHeading && !titleHeading?.contains(el)) : [];
+
                     const meta = Array.from(
                         data.next.container.querySelectorAll('[data-detail-body], [data-flip-text], .prose, .toc-sidebar-sticky')
-                    ).filter((el) => el !== targetHero && !targetHero?.contains(el) && el !== breadcrumbs && !breadcrumbs?.contains(el));
-                    const rawTargets = [header, ...meta].filter(Boolean);
-                    const detailTargets = rawTargets.filter((el) => !rawTargets.some((parent) => parent !== el && parent.contains(el)));
+                    ).filter((el) => el !== targetHero && !targetHero?.contains(el) && el !== breadcrumbs && !breadcrumbs?.contains(el) && el !== titleHeading && !titleHeading?.contains(el) && el !== header && !header?.contains(el));
+                    const rawTargets = [...headerSubtargets, ...meta].filter(Boolean);
+                    const detailTargets = rawTargets.filter((el) => !rawTargets.some((parent) => parent !== el && parent.contains(el)) && el !== titleHeading && !titleHeading?.contains(el));
 
                     // Animar la entrada de las breadcrumbs con un elegante descenso desde arriba
                     if (breadcrumbs) {
@@ -485,9 +507,20 @@ export function createFlipTransitions() {
                         proxy.remove();
                     }
 
-                    // Revelar textos del detalle alrededor del hero
-                    if (detailTargets.length > 0) {
-                        await gsap.to(detailTargets, {
+                    // Revelar textos del detalle alrededor del hero:
+                    // Si el detalle incluye un h1 editorial con [data-title-blur-reveal],
+                    // se activa la cinemática de Character Blur Reveal carácter por carácter.
+                    const otherDetailTargets = detailTargets.filter((el) => el !== titleHeading && !titleHeading?.contains(el));
+
+                    if (titleHeading) {
+                        const chars = Array.from(titleHeading.querySelectorAll('.split-char'));
+                        if (chars.length > 0) {
+                            animateBlurChars(chars, { delay: 0.1, duration: 0.85 });
+                        }
+                    }
+
+                    if (otherDetailTargets.length > 0) {
+                        await gsap.to(otherDetailTargets, {
                             opacity: 1,
                             y: 0,
                             stagger: 0.08,

@@ -1,6 +1,6 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from '../lib/smooth-scroll';
-import { splitTextIntoFramerChars } from './shared/text-reveal';
+import { splitTextIntoChars, finalizeBlurChars, prepareBlurChars } from './shared/text-reveal';
 
 let selectedCasesCtx = null;
 
@@ -41,22 +41,12 @@ export function initSelectedCases(container) {
         const subtitleEl = headerContent.querySelector('.showcase-subtitle');
 
         // Split text into individual characters for blur reveal
-        const titleChars = titleEl ? splitTextIntoFramerChars(titleEl) : [];
-
-        const finalizeChars = (chars) => {
-            chars.forEach((c) => {
-                c.classList.add('is-revealed');
-                c.style.filter = 'none';
-                c.style.webkitFilter = 'none';
-                c.style.transform = 'none';
-                c.style.opacity = '1';
-            });
-        };
+        const titleChars = titleEl ? splitTextIntoChars(titleEl) : [];
 
         const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         if (isReduced) {
-            finalizeChars(titleChars);
+            finalizeBlurChars(titleChars, titleEl);
             if (subtitleEl) gsap.set(subtitleEl, { opacity: 1, filter: 'none', y: 0 });
             gsap.set(cards, { opacity: 1, filter: 'none', y: 0 });
             return;
@@ -64,12 +54,7 @@ export function initSelectedCases(container) {
 
         // 1. Configuración de entrada de texto
         if (titleChars.length) {
-            gsap.set(titleChars, {
-                opacity: 0,
-                y: 16,
-                filter: 'blur(12px)',
-                webkitFilter: 'blur(12px)',
-            });
+            prepareBlurChars(titleChars, { y: 16 });
         }
 
         if (subtitleEl) {
@@ -91,7 +76,7 @@ export function initSelectedCases(container) {
                 duration: 0.75,
                 ease: 'power2.out',
                 stagger: { each: 0.035, from: 'start' },
-                onComplete: () => finalizeChars(titleChars),
+                onComplete: () => finalizeBlurChars(titleChars, titleEl),
             }, 0);
         }
 

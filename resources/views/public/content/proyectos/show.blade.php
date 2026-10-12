@@ -86,7 +86,7 @@
                 {{-- Cabecera y Título Monumental --}}
                 <header class="mb-2xl" data-detail-header>
 
-                    <h1 class="h1 font-heading fw-bold text-primary text-break mb-sm" data-flip-text style="letter-spacing: -0.035em;">
+                    <h1 class="h1 font-heading fw-bold text-primary text-break mb-sm" data-flip-text data-title-blur-reveal style="letter-spacing: -0.035em;">
                         {{ $content->title }}
                     </h1>
 
@@ -175,22 +175,24 @@
                  data-video-facade="{{ $videoFacadeUrl }}"
                  data-flip-id="project-{{ $content->slug }}"
                  data-flip-element="image"
+                 data-project-hero-effect
                  style="cursor: pointer; background: #000;">
                 @if ($heroImage)
                     <img src="{{ $heroImage->url }}"
                          alt="{{ $heroImage->alt ?: ($heroImage->caption ?: $content->title) }}"
                          title="{{ $heroImage->title ?: $content->title }}"
-                         class="img-fluid object-fit-cover w-100 h-100 d-block">
+                         class="img-fluid object-fit-cover w-100 h-100 d-block hero-parallax-media">
                 @endif
             </div>
         @elseif ($heroImage)
             <div class="media-wrap hero-media-wrapper w-100 position-relative overflow-hidden aspect-21-9 bg-surface border-subtle"
                  data-flip-id="project-{{ $content->slug }}"
-                 data-flip-element="image">
+                 data-flip-element="image"
+                 data-project-hero-effect>
                 <img src="{{ $heroImage->url }}"
                      alt="{{ $heroImage->alt ?: ($heroImage->caption ?: $content->title) }}"
                      title="{{ $heroImage->title ?: $content->title }}"
-                     class="img-fluid object-fit-cover w-100 h-100 d-block">
+                     class="img-fluid object-fit-cover w-100 h-100 d-block hero-parallax-media">
             </div>
         @else
             <div class="media-wrap hero-media-wrapper project-placeholder-media w-100 position-relative overflow-hidden aspect-21-9 d-flex flex-column align-items-center justify-content-center p-4 bg-surface border-subtle"
@@ -204,7 +206,7 @@
     </div>
 
     {{-- Contenedor Central del Caso de Estudio (Lectura y Cabecera Editorial) --}}
-    <div class="container-wide mt-5">
+    <div class="container-wide mt-2xl">
         {{-- Bloque de Narrativa, Desafío y Enlaces de Producción --}}
         @if (!empty($custom['subtitle']) || $content->excerpt || $content->tags->isNotEmpty() || $externalUrl || $githubUrl)
             <section class="row g-4 g-lg-5 mb-2xl pb-xl border-bottom-subtle" data-detail-body>

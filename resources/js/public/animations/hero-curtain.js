@@ -1,6 +1,6 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from '../lib/smooth-scroll';
-import { splitTextIntoFramerChars } from './shared/text-reveal';
+import { splitTextIntoChars, finalizeBlurChars } from './shared/text-reveal';
 
 let curtainCtx = null;
 
@@ -59,37 +59,28 @@ export function initHeroCurtain(container) {
         gsap.set(titles, { x: '14vw' });
     }
 
-    // Split text into Velix framer characters for both layers
-    const lightChars = lightTitle ? splitTextIntoFramerChars(lightTitle) : [];
-    const darkChars = darkTitle ? splitTextIntoFramerChars(darkTitle) : [];
-
-    const finalizeChars = (chars) => {
-        chars.forEach((c) => {
-            c.classList.add('is-revealed');
-            c.style.filter = 'none';
-            c.style.webkitFilter = 'none';
-            c.style.transform = 'none';
-            c.style.opacity = '1';
-        });
-    };
+    // Split text into character spans for both layers
+    const lightChars = lightTitle ? splitTextIntoChars(lightTitle) : [];
+    const darkChars = darkTitle ? splitTextIntoChars(darkTitle) : [];
 
     // Trigger synchronized entrance animation for both titles upon entering screen
     if (lightChars.length || darkChars.length) {
         const handBadges = section.querySelectorAll('.hero-hand-badge');
 
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            finalizeChars([...lightChars, ...darkChars]);
+            finalizeBlurChars([...lightChars, ...darkChars], lightTitle);
+            finalizeBlurChars([], darkTitle);
             if (handBadges.length) {
                 gsap.set(handBadges, { opacity: 1, scale: 1, rotate: 0 });
             }
         } else {
-            const velixTl = gsap.timeline({
+            const blurRevealTl = gsap.timeline({
                 delay: 0.15,
             });
 
             if (handBadges.length) {
                 gsap.set(handBadges, { opacity: 0, scale: 0.3, rotate: -20, transformOrigin: '42% 92%' });
-                velixTl.to(handBadges, {
+                blurRevealTl.to(handBadges, {
                     opacity: 1,
                     scale: 1,
                     rotate: 0,
@@ -99,7 +90,7 @@ export function initHeroCurtain(container) {
             }
 
             if (lightChars.length) {
-                velixTl.to(lightChars, {
+                blurRevealTl.to(lightChars, {
                     opacity: 1,
                     y: 0,
                     filter: 'blur(0px)',
@@ -107,12 +98,12 @@ export function initHeroCurtain(container) {
                     duration: 0.7,
                     ease: 'power2.out',
                     stagger: { each: 0.045, from: 'start' },
-                    onComplete: () => finalizeChars(lightChars),
+                    onComplete: () => finalizeBlurChars(lightChars, lightTitle),
                 }, 0);
             }
 
             if (darkChars.length) {
-                velixTl.to(darkChars, {
+                blurRevealTl.to(darkChars, {
                     opacity: 1,
                     y: 0,
                     filter: 'blur(0px)',
@@ -120,14 +111,14 @@ export function initHeroCurtain(container) {
                     duration: 0.7,
                     ease: 'power2.out',
                     stagger: { each: 0.045, from: 'start' },
-                    onComplete: () => finalizeChars(darkChars),
+                    onComplete: () => finalizeBlurChars(darkChars, darkTitle),
                 }, 0);
             }
 
             // Subtly fade in the light layer meta indicators shortly after the letters begin revealing
             const lightMeta = section.querySelectorAll('.hero-curtain-light .hero-curtain-top, .hero-curtain-light .hero-curtain-bottom');
             if (lightMeta.length) {
-                velixTl.fromTo(lightMeta,
+                blurRevealTl.fromTo(lightMeta,
                     { opacity: 0, y: 10 },
                     { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out', stagger: 0.1 },
                     0.35,
