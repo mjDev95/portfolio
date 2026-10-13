@@ -234,6 +234,25 @@ class Content extends Model
         return data_get($this->custom_values, $key, $default);
     }
 
+    protected function summaryHtml(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $summary = $this->getCustomValue('summary');
+                if (blank($summary)) {
+                    return '';
+                }
+
+                $html = (new CommonMarkConverter([
+                    'html_input' => 'strip',
+                    'allow_unsafe_links' => false,
+                ]))->convert($summary)->getContent();
+
+                return Purifier::clean($html, 'content_body');
+            },
+        );
+    }
+
     protected function bodyHtml(): Attribute
     {
         return Attribute::make(

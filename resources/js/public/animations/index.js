@@ -8,6 +8,7 @@ export {
     finalizeBlurChars,
     animateBlurChars,
     createTextRevealTrigger,
+    createEditorialHeaderTimeline,
 } from './shared/text-reveal';
 export { initHeroCurtain, cleanupHeroCurtain } from './hero-curtain';
 export { initSelectedCases, cleanupSelectedCases } from './selected-cases';

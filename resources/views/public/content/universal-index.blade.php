@@ -15,7 +15,7 @@
                 ['label' => $cpt->name, 'url' => null]
             ]" />
         </div>
-        <h1 class="h2 mb-sm" data-reveal>{{ $cpt->name }}</h1>
+        <h1 class="h2 mb-sm" data-blur-reveal>{{ $cpt->name }}</h1>
 
         @if ($cpt->description)
             <p class="text-fluid-lg text-muted" style="max-width: 60ch;" data-reveal>

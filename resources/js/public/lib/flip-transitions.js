@@ -2,7 +2,12 @@ import barba from '@barba/core';
 import gsap from 'gsap';
 import { startScroll, resizeScroll, stopScroll, resetScroll, ScrollTrigger } from './smooth-scroll';
 import { syncDesktopIslandState, isDesktopIslandCompacted, markNavigated } from '../animations/dynamic-island';
-import { splitTextIntoChars, prepareBlurChars, animateBlurChars } from '../animations/shared/text-reveal';
+import {
+    splitTextIntoChars,
+    prepareBlurChars,
+    animateBlurChars,
+    createEditorialHeaderTimeline,
+} from '../animations/shared/text-reveal';
 
 const DETAIL_NAMESPACES = ['project-show', 'content-show', 'blog-show'];
 
@@ -25,7 +30,13 @@ if (typeof window !== 'undefined') {
                 card.removeAttribute('data-magnetic');
                 gsap.killTweensOf(card);
 
+                const flipId = card.getAttribute('data-flip-id');
+                const scopedRoot = card.closest('[data-card-reveal]') || card.closest('section') || card.parentElement;
+
                 const wrapper = card.querySelector('[data-flip-element="image"]') ||
+                                (card.getAttribute('data-flip-element') === 'image' ? card : null) ||
+                                (flipId && scopedRoot ? scopedRoot.querySelector(`[data-flip-id="${flipId}"][data-flip-element="image"]`) : null) ||
+                                (flipId ? document.querySelector(`[data-flip-id="${flipId}"][data-flip-element="image"]`) : null) ||
                                 card.querySelector('.project-media-frame') ||
                                 card.querySelector('.card-media-wrapper') ||
                                 card.querySelector('.project-showcase-media') ||
@@ -91,8 +102,8 @@ export function createFlipTransitions() {
         {
             name: 'flip-to-detail',
             custom({ current, next, trigger }) {
-                const isFromAllowed = ['projects-index', 'blog-index', 'blog-category', 'blog-tag', 'blog-show', 'home', 'content-index'].includes(current.namespace) ||
-                                      (current.url?.path && (/^\/(proyectos|blog)(\/(categoria|etiqueta|tag)\/[^/]+)?\/?$/.test(current.url.path) || current.url.path === '/' || current.url.path === ''));
+                const isFromAllowed = ['projects-index', 'blog-index', 'blog-category', 'blog-tag', 'blog-show', 'project-show', 'content-show', 'home', 'content-index'].includes(current.namespace) ||
+                                      (current.url?.path && (/^\/(proyectos|blog)(\/(categoria|etiqueta|tag)\/[^/]+|\/[^/]+)?\/?$/.test(current.url.path) || current.url.path === '/' || current.url.path === ''));
                 const isToDetail = DETAIL_NAMESPACES.includes(next.namespace) ||
                                   (next.url?.path && /^\/(proyectos|blog)\/[^/]+/.test(next.url.path));
 
@@ -262,9 +273,17 @@ export function createFlipTransitions() {
                                 </div>
                             `;
                         } else {
-                            // En blog y otros CPTs, la imagen permanece en la cima
+                            // En blog y otros CPTs, la imagen se ubica debajo de las migas y de la cabecera (h1 + metadatos)
                             dummy.innerHTML = `
                                 <div class="container mb-lg" style="height: 24px;"></div>
+                                <div class="container">
+                                    <header class="editorial-article-header mb-2xl" data-detail-header>
+                                        <h1 class="h1 font-heading fw-bold text-primary mb-sm">Fallback Title</h1>
+                                        <div class="d-flex flex-wrap align-items-center gap-3 mb-lg">
+                                            <div style="height: 32px; width: 120px;"></div>
+                                        </div>
+                                    </header>
+                                </div>
                                 <div class="container-wide mb-2xl">
                                     <div class="media-wrap hero-media-wrapper w-100 aspect-16-9"></div>
                                 </div>
@@ -470,8 +489,8 @@ export function createFlipTransitions() {
                     const rawTargets = [...headerSubtargets, ...meta].filter(Boolean);
                     const detailTargets = rawTargets.filter((el) => !rawTargets.some((parent) => parent !== el && parent.contains(el)) && el !== titleHeading && !titleHeading?.contains(el));
 
-                    // Animar la entrada de las breadcrumbs con un elegante descenso desde arriba
-                    if (breadcrumbs) {
+                    // Si no hay cabecera con línea de tiempo editorial, animar breadcrumbs de manera genérica
+                    if (breadcrumbs && (!header || !titleHeading)) {
                         gsap.to(breadcrumbs, {
                             opacity: 1,
                             y: 0,
@@ -508,11 +527,19 @@ export function createFlipTransitions() {
                     }
 
                     // Revelar textos del detalle alrededor del hero:
-                    // Si el detalle incluye un h1 editorial con [data-title-blur-reveal],
-                    // se activa la cinemática de Character Blur Reveal carácter por carácter.
-                    const otherDetailTargets = detailTargets.filter((el) => el !== titleHeading && !titleHeading?.contains(el));
+                    // Si el detalle incluye un header editorial con [data-title-blur-reveal],
+                    // se orquesta la línea de tiempo cinematográfica (Opción 2: Horizontal Stagger Ribbon & Depth Defocus).
+                    const otherDetailTargets = detailTargets.filter(
+                        (el) => el !== titleHeading &&
+                                !titleHeading?.contains(el) &&
+                                el !== breadcrumbs &&
+                                !breadcrumbs?.contains(el) &&
+                                !el.closest('[data-detail-meta]')
+                    );
 
-                    if (titleHeading) {
+                    if (header && titleHeading) {
+                        createEditorialHeaderTimeline(header, { delay: 0.1 });
+                    } else if (titleHeading) {
                         const chars = Array.from(titleHeading.querySelectorAll('.split-char'));
                         if (chars.length > 0) {
                             animateBlurChars(chars, { delay: 0.1, duration: 0.85 });

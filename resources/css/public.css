@@ -19,10 +19,22 @@ html, body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
     font-family: var(--font-sans);
+    font-weight: 450;
+    font-style: normal;
+    font-size: 1em;
+    line-height: 1.66;
     letter-spacing: -0.015em;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     transition: background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1), color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+p {
+    font-weight: 450;
+    font-style: normal;
+    font-size: 1em;
+    line-height: 1.66;
+    margin-bottom: 1em;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -938,7 +950,7 @@ html.light .island-theme-btn .icon-sun  { display: none; }
 .project-name {
     font-family: var(--font-heading);
     font-size: var(--fluid-text-lg);
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: -0.02em;
     color: var(--text-primary);
     margin: 0;

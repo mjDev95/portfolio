@@ -82,12 +82,48 @@
 
 <article class="py-3xl" style="min-height: 100vh;">
     {{-- Breadcrumbs Estables (24px fijo para GSAP Flip) --}}
-    <div class="container mb-lg" data-detail-breadcrumbs>
+    <div class="container mb-lg">
         <x-breadcrumbs :items="[
             ['label' => 'Inicio', 'url' => route('home')],
             ['label' => 'Blog', 'url' => route('public.content.index', $cpt->public_route_slug)],
             ['label' => $content->title, 'url' => null]
         ]" />
+    </div>
+
+    {{-- Contenedor Editorial Central (Lectura Óptima y Cabecera) --}}
+    <div class="container">
+        {{-- Cabecera Monumental del Artículo --}}
+        <header class="editorial-article-header mb-2xl" data-detail-header>
+            <h1 class="h1 font-heading fw-bold text-primary text-break mb-sm" data-flip-text data-title-blur-reveal style="letter-spacing: -0.035em;">
+                {{ $content->title }}
+            </h1>
+
+            <div class="d-flex flex-wrap align-items-center gap-3 mb-lg" data-detail-meta>
+                <div class="d-flex align-items-center gap-2 font-mono text-fluid-xs text-muted text-uppercase tracking-wider">
+                    @if ($category)
+                        <a href="{{ route('public.content.category', [$cpt->public_route_slug, $category->slug]) }}" class="text-brand fw-semibold text-decoration-none transition-opacity hover:opacity-100" data-magnetic>
+                            {{ $categoryName }}
+                        </a>
+                    @else
+                        <span class="text-brand fw-semibold">{{ $categoryName }}</span>
+                    @endif
+                    <span>&bull;</span>
+                    <span>{{ $content->published_at ? $content->published_at->format('d M Y') : 'Reciente' }}</span>
+                </div>
+
+                <div class="d-flex align-items-center">
+                    <x-btn id="btn-open-share-modal" 
+                           modal="share" 
+                           :share-title="$content->title" 
+                           :share-type="$cpt->singular_name ?? 'Ensayo'" 
+                           icon="share" 
+                           icon-position="left"
+                           size="sm">
+                        Compartir
+                    </x-btn>
+                </div>
+            </div>
+        </header>
     </div>
 
     {{-- Imagen Destacada Principal (Ancho Panorámico Extendido con GSAP Flip) --}}
@@ -114,49 +150,10 @@
         @endif
     </div>
 
-    {{-- Contenedor Editorial Central (Lectura Óptima y Cabecera) --}}
+    {{-- Contenedor Editorial Central (Lectura Óptima y Cuerpo) --}}
     <div class="container">
-        {{-- Cabecera Monumental del Artículo --}}
-        <header class="editorial-article-header mb-2xl" data-detail-header>
-        <h1 class="h1 font-heading fw-bold text-primary text-break mb-sm" data-flip-text data-title-blur-reveal style="letter-spacing: -0.035em;">
-            {{ $content->title }}
-        </h1>
-
-        <div class="d-flex flex-wrap align-items-center gap-3 mb-lg">
-            <div class="d-flex align-items-center gap-2 font-mono text-fluid-xs text-muted text-uppercase tracking-wider">
-                @if ($category)
-                    <a href="{{ route('public.content.category', [$cpt->public_route_slug, $category->slug]) }}" class="text-brand fw-semibold text-decoration-none transition-opacity hover:opacity-100" data-magnetic>
-                        {{ $categoryName }}
-                    </a>
-                @else
-                    <span class="text-brand fw-semibold">{{ $categoryName }}</span>
-                @endif
-                <span>&bull;</span>
-                <span>{{ $content->published_at ? $content->published_at->format('d M Y') : 'Reciente' }}</span>
-            </div>
-
-            <div class="d-flex align-items-center">
-                <x-btn id="btn-open-share-modal" 
-                       modal="share" 
-                       :share-title="$content->title" 
-                       :share-type="$cpt->singular_name ?? 'Ensayo'" 
-                       icon="share" 
-                       icon-position="left"
-                       size="sm">
-                    Compartir
-                </x-btn>
-            </div>
-        </div>
-
-        @if ($content->excerpt)
-            <p class="text-fluid-lg text-secondary text-break mb-xl" data-flip-text>
-                {{ $content->excerpt }}
-            </p>
-        @endif
-    </header>
-
-    {{-- Layout Editorial a Doble Columna (TOC Sticky + Cuerpo de Lectura) --}}
-    <div class="row g-4 g-lg-5 mb-3xl">
+        {{-- Layout Editorial a Doble Columna (TOC Sticky + Cuerpo de Lectura) --}}
+        <div class="row g-4 g-lg-5 mb-3xl">
         {{-- Columna Lateral: Table of Contents & Ficha Rápida (Desktop) --}}
         <aside class="col-12 col-lg-4 col-xl-3 d-none d-lg-block">
             <div class="toc-sidebar-sticky">

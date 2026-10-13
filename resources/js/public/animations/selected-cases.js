@@ -127,56 +127,7 @@ export function initSelectedCases(container) {
             },
         });
 
-        // 4. Animación de entrada de cada tarjeta — patrón diferido:
-        // El estado inicial y willChange se aplican sólo en onEnter,
-        // evitando crear capas GPU para tarjetas que aún no son visibles.
-        // Las tarjetas en fila visual 3+ (index >= 2) no usan blur para
-        // no competir en el presupuesto del compositor con el scrub de headerContent.
-        cards.forEach((card, index) => {
-            const isInitialCard = index < 2;
-            const useBlur = index < 2;
-            const yOffset = isInitialCard ? 35 : 40;
-
-            // Estado oculto inicial sin willChange (sin GPU layer hasta que entre)
-            gsap.set(card, { opacity: 0, y: yOffset });
-
-            let cardTween = null;
-
-            ScrollTrigger.create({
-                trigger: card,
-                start: isInitialCard ? 'top 85%' : 'top 80%',
-                onEnter: () => {
-                    // Crear/reutilizar tween sólo cuando la tarjeta está a punto de entrar
-                    if (!cardTween) {
-                        const fromVars = { opacity: 0, y: yOffset, immediateRender: false };
-                        const toVars = {
-                            opacity: 1,
-                            y: 0,
-                            duration: 0.85,
-                            ease: 'power3.out',
-                            clearProps: 'willChange',
-                        };
-
-                        if (useBlur) {
-                            fromVars.filter = 'blur(6px)';
-                            fromVars.webkitFilter = 'blur(6px)';
-                            toVars.filter = 'blur(0px)';
-                            toVars.webkitFilter = 'blur(0px)';
-                            toVars.clearProps = 'filter,webkitFilter,willChange';
-                        }
-
-                        gsap.set(card, { willChange: 'transform, opacity' });
-                        cardTween = gsap.fromTo(card, fromVars, toVars);
-                    } else {
-                        cardTween.play();
-                    }
-                },
-                onLeaveBack: () => {
-                    if (cardTween) {
-                        cardTween.reverse();
-                    }
-                },
-            });
-        });
+        // 4. La animación de revelado de tarjetas es orquestada universalmente
+        // por `initCardReveals` mediante el atributo `data-card-reveal`.
     }, section);
 }

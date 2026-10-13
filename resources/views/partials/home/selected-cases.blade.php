@@ -21,7 +21,7 @@
             <h2 class="showcase-title h1" data-showcase-title>
                 Casos de Estudio &amp; Trabajo
             </h2>
-            <p class="showcase-subtitle">
+            <p class="showcase-subtitle h5">
                 Plataformas web de alto impacto, arquitecturas a medida en WordPress y experiencias interactivas diseñadas para convertir, escalar y cargar en milisegundos.
             </p>
         </div>
@@ -40,7 +40,7 @@
                             $cat = $item->categories->first()?->name ?? ($item->contentType?->singular_name ?? 'Proyecto');
                             $url = route('public.content.show', [$cptSlug, $item->slug]);
                         @endphp
-                        <article class="project-card-wrap">
+                        <article class="project-card-wrap" data-card-reveal>
                             <a href="{{ $url }}" 
                                class="project-card d-block" 
                                data-project-card
@@ -64,9 +64,9 @@
                                         </div>
                                     @endif
                                 </figure>
-                                <div class="project-meta-row d-flex align-items-baseline flex-column justify-content-between pt-3">
-                                    <span class="project-category  text-fluid-xs text-brand text-uppercase ms-3 flex-shrink-0">{{ $cat }}</span>
-                                    <h3 class="project-name m-0">{{ $item->title }}</h3>
+                                <div class="project-meta-row d-flex align-items-baseline flex-column justify-content-between pt-3 ">
+                                    <span class="project-category  text-fluid-xs text-brand text-uppercase flex-shrink-0">{{ $cat }}</span>
+                                    <h3 class=" font-light project-name m-0">{{ $item->title }}</h3>
                                 </div>
                             </a>
                         </article>
@@ -81,7 +81,7 @@
                             $cat = $item->categories->first()?->name ?? ($item->contentType?->singular_name ?? 'Proyecto');
                             $url = route('public.content.show', [$cptSlug, $item->slug]);
                         @endphp
-                        <article class="project-card-wrap">
+                        <article class="project-card-wrap" data-card-reveal>
                             <a href="{{ $url }}" 
                                class="project-card d-block" 
                                data-project-card
@@ -107,7 +107,7 @@
                                 </figure>
                                 <div class="project-meta-row d-flex align-items-baseline flex-column justify-content-between pt-3">
                                     <span class="project-category text-fluid-xs text-brand text-uppercase ms-3 flex-shrink-0">{{ $cat }}</span>
-                                    <h3 class="project-name m-0">{{ $item->title }}</h3>
+                                    <h3 class="project-name font-light m-0">{{ $item->title }}</h3>
                                 </div>
                             </a>
                         </article>

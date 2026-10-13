@@ -14,7 +14,7 @@
                 ['label' => 'Proyectos', 'url' => null]
             ]" />
         </div>
-        <h1 class="h2 mb-sm font-heading fw-bold" data-reveal>Proyectos</h1>
+        <h1 class="h2 mb-sm font-heading fw-bold" data-blur-reveal>Proyectos</h1>
         <p class="text-fluid-lg text-muted" style="max-width: 60ch;" data-reveal>
             {{ $cpt->description ?: 'Portafolio selecto de portales institucionales, plataformas de alto tráfico, arquitecturas headless y experiencias web fluidas.' }}
         </p>
@@ -29,7 +29,7 @@
                 $clientName = $item->custom_values['client'] ?? null;
                 $detailUrl = route('public.content.show', [$cpt->public_route_slug, $item->slug]);
             @endphp
-            <div class="col-12 col-md-6" data-reveal>
+            <div class="col-12 col-md-6" data-card-reveal>
                 <a href="{{ $detailUrl }}" 
                    class="project-showcase-card position-relative d-block text-decoration-none text-reset" 
                    data-project-card
@@ -61,7 +61,7 @@
                             </div>
                         </div>
                         
-                        <h2 class="project-title-heading font-heading h3 mt-2 lh-tight text-primary">{{ $item->title }}</h2>                    
+                        <h2 class="project-title-heading font-heading h3 mt-2 lh-tight font-light text-primary">{{ $item->title }}</h2>                    
                     </div>
                 </a>
             </div>

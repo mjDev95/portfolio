@@ -87,10 +87,10 @@ class UserCptSeeder extends Seeder
 
         $proyectosFields = [
             [
-                'label' => 'Subtítulo',
-                'name' => 'subtitle',
-                'type' => 'text',
-                'placeholder' => 'Lema o descripción corta',
+                'label' => 'Resumen del Proyecto',
+                'name' => 'summary',
+                'type' => 'textarea',
+                'placeholder' => 'Escribe una síntesis del proyecto (admite Markdown)...',
                 'is_required' => false,
                 'sort_order' => 1,
             ],
@@ -189,7 +189,7 @@ class UserCptSeeder extends Seeder
                 'excerpt' => 'Arquitectura moderna de comercio electrónico de alta conversión construida con Laravel 13 y React Inertia.',
                 'body' => "## Descripción del Proyecto\n\nDesarrollo integral de una solución e-commerce escalable con tiempos de respuesta menores a 600ms, integración con pasarelas de pago y sincronización de inventario en tiempo real.\n\n### Desafíos Superados\n\n- Optimización del Core Web Vitals con puntuación 99 en Lighthouse.\n- Implementación de checkout fluido en una sola página con validación reactiva.\n- Aislamiento multi-moneda y facturación automatizada.",
                 'custom_values' => [
-                    'subtitle' => 'Experiencia de compra ultra-rápida y modular',
+                    'summary' => "### Arquitectura E-Commerce Modular y Ultrarrápida\n\nDesarrollo integral con **Laravel 13** y **React Inertia**, optimizado para tiempos de respuesta menores a 600ms y checkout en una sola página.",
                     'client' => 'Nordic Goods & Co.',
                     'year' => 2026,
                     'external_url' => 'https://example.com/nordic',
@@ -218,7 +218,7 @@ class UserCptSeeder extends Seeder
                 'excerpt' => 'Sistema de diseño corporativo y panel analítico para la gestión de activos e inversiones de alto rendimiento.',
                 'body' => "## Caso de Estudio UI/UX\n\nDiseño y desarrollo de una suite analítica que consolida gráficos interactivos de rendimiento bursátil, alertas de riesgo y reportes exportables en tiempo real.\n\n### Aspectos Clave\n\n- Librería de componentes accesibles con tokens de diseño en modo claro/oscuro.\n- Visualizaciones de datos con Recharts optimizadas para 60 FPS.\n- Flujo de interacción testeado con más de 50 usuarios profesionales del sector.",
                 'custom_values' => [
-                    'subtitle' => 'Telemetría financiera de alto impacto visual',
+                    'summary' => "### Telemetría Financiera y Visualización Reactiva\n\nSuite analítica con tokens de diseño en **modo claro/oscuro** y renderizado de gráficos a 60 FPS para gestión de inversiones de alto impacto.",
                     'client' => 'Apex Capital Management',
                     'year' => 2025,
                     'external_url' => 'https://example.com/apex-dashboard',
@@ -246,7 +246,7 @@ class UserCptSeeder extends Seeder
                 'excerpt' => 'Plataforma web para despachos jurídicos con generación automatizada de contratos y trazabilidad de expedientes.',
                 'body' => "## Visión General\n\nDigitalización completa del flujo de trabajo de un bufete jurídico internacional, eliminando el 75% del papeleo manual y acelerando el ciclo de firma digital.\n\n### Tecnologías y Estrategia\n\n- Generación dinámica de plantillas legales con control de versiones.\n- Pipeline de notificaciones asíncronas con colas de Laravel.\n- Firma criptográfica segura y almacenamiento distribuido.",
                 'custom_values' => [
-                    'subtitle' => 'Transformación digital para el sector legal corporativo',
+                    'summary' => "### Digitalización y Trazabilidad Documental Jurídica\n\nAutomatización integral de contratos legales con pipelines asíncronos y firma criptográfica, reduciendo el 75% de trámites manuales.",
                     'client' => 'LexGlobal Partners',
                     'year' => 2025,
                     'external_url' => 'https://example.com/lexglobal',

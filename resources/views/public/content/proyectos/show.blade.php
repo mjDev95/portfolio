@@ -19,7 +19,7 @@
         $year = $custom['year'] ?? null;
         $role = $custom['role'] ?? null;
         $stack = $custom['stack'] ?? null;
-        $metricsSummary = $custom['metrics_summary'] ?? null;
+        $summary = $custom['summary'] ?? null;
         $externalUrl = $custom['external_url'] ?? null;
         $githubUrl = $custom['github_url'] ?? null;
         $videoFacadeUrl = $custom['video_facade_url'] ?? null;
@@ -71,12 +71,9 @@
     {{-- Hero Media Principal (Ancho Panorámico Extendido con GSAP Flip) --}}
     <div class="container-wide mb-2xl">
         <div class="row">
-            <div class="col-12 col-lg-2">
-
-            </div>
-            <div class="col-12 col-lg-10">
+            <div class="col-12">
                 {{-- Breadcrumbs Estables (24px fijo para GSAP Flip) --}}
-                <div class="mb-sm h6" data-detail-breadcrumbs>
+                <div class="mb-sm h6">
                     <x-breadcrumbs :items="[
                         ['label' => 'Inicio', 'url' => route('home')],
                         ['label' => 'Proyectos', 'url' => route('public.content.index', $cpt->public_route_slug)],
@@ -91,7 +88,7 @@
                     </h1>
 
                     {{-- Barra Horizontal de Metadatos (Fila Única: Tipografía Grande + 3 Redes Sociales Squircle) --}}
-                    <div class="d-flex flex-wrap align-items-start align-items-lg-center justify-content-between gap-4 py-lg mb-3xl" data-reveal>
+                    <div class="d-flex flex-wrap align-items-start align-items-lg-center justify-content-between gap-4 py-lg mb-3xl" data-detail-meta>
                         <div class="d-flex flex-wrap align-items-start gap-4 gap-lg-5">
                             @foreach ($metaItems as $item)
                                 <div class="d-flex flex-column gap-1">
@@ -115,18 +112,18 @@
                             @endforeach
                         </div>
 
-                        {{-- Redes Sociales Directas Squircle (Sin Modal, con Tooltips) --}}
+                        {{-- Redes Sociales Directas Redondas (Sin Modal, con Tooltips) --}}
                         <div class="d-flex align-items-center gap-2 flex-shrink-0" aria-label="Compartir en redes sociales">
                             {{-- Instagram --}}
                             <button type="button" 
-                                    class="social-share-tile d-inline-flex align-items-center justify-content-center position-relative cursor-pointer text-decoration-none user-select-none rounded-3 border-subtle bg-surface text-primary" 
+                                    class="btn-circle-action position-relative cursor-pointer text-decoration-none user-select-none" 
                                     data-share-direct="instagram" 
                                     data-share-title="{{ $content->title }}" 
                                     data-share-url="{{ url()->current() }}" 
                                     data-magnetic 
                                     aria-label="Copiar enlace para Instagram">
                                 <span class="tile-tooltip position-absolute opacity-0 font-mono text-fluid-xs text-nowrap rounded-1 border-subtle bg-primary text-primary">Instagram</span>
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="flex-shrink-0">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="flex-shrink-0">
                                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                                     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
@@ -135,7 +132,7 @@
 
                             {{-- LinkedIn --}}
                             <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode(url()->current()) }}" 
-                            class="social-share-tile d-inline-flex align-items-center justify-content-center position-relative cursor-pointer text-decoration-none user-select-none rounded-3 border-subtle bg-surface text-primary" 
+                            class="btn-circle-action position-relative cursor-pointer text-decoration-none user-select-none" 
                             data-share-direct="linkedin" 
                             data-share-title="{{ $content->title }}" 
                             data-share-url="{{ url()->current() }}" 
@@ -144,14 +141,16 @@
                             target="_blank" 
                             rel="noopener noreferrer">
                                 <span class="tile-tooltip position-absolute opacity-0 font-mono text-fluid-xs text-nowrap rounded-1 border-subtle bg-primary text-primary">LinkedIn</span>
-                                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="flex-shrink-0">
-                                    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.25c-.9 0-1.63.73-1.63 1.63 0 .9.73 1.63 1.63 1.63.9 0 1.63-.73 1.63-1.63 0-.9-.73-1.63-1.63-1.63z"/>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="flex-shrink-0">
+                                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                                    <rect x="2" y="9" width="4" height="12"></rect>
+                                    <circle cx="4" cy="4" r="2"></circle>
                                 </svg>
                             </a>
 
                             {{-- WhatsApp --}}
                             <a href="https://api.whatsapp.com/send?text={{ urlencode($content->title . ' ' . url()->current()) }}" 
-                            class="social-share-tile d-inline-flex align-items-center justify-content-center position-relative cursor-pointer text-decoration-none user-select-none rounded-3 border-subtle bg-surface text-primary" 
+                            class="btn-circle-action position-relative cursor-pointer text-decoration-none user-select-none" 
                             data-share-direct="whatsapp" 
                             data-share-title="{{ $content->title }}" 
                             data-share-url="{{ url()->current() }}" 
@@ -160,8 +159,8 @@
                             target="_blank" 
                             rel="noopener noreferrer">
                                 <span class="tile-tooltip position-absolute opacity-0 font-mono text-fluid-xs text-nowrap rounded-1 border-subtle bg-primary text-primary">WhatsApp</span>
-                                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="flex-shrink-0">
-                                    <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24m4.52 11.66c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.13-.15.17-.25.25-.42.09-.17.04-.31-.02-.44-.06-.12-.56-1.34-.76-1.84-.2-.49-.4-.42-.56-.43h-.47c-.17 0-.44.06-.66.31-.23.25-.88.86-.88 2.1 0 1.23.9 2.42 1.03 2.59.12.17 1.77 2.7 4.28 3.78.6.26 1.07.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.11-.22-.18-.47-.3z"/>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="flex-shrink-0">
+                                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
                                 </svg>
                             </a>
                         </div>
@@ -206,19 +205,19 @@
     </div>
 
     {{-- Contenedor Central del Caso de Estudio (Lectura y Cabecera Editorial) --}}
-    <div class="container-wide mt-2xl">
+    <div class="container-wide mt-2xl resumen-container">
         {{-- Bloque de Narrativa, Desafío y Enlaces de Producción --}}
-        @if (!empty($custom['subtitle']) || $content->excerpt || $content->tags->isNotEmpty() || $externalUrl || $githubUrl)
+        @if (!empty($summary) || $content->excerpt || $content->tags->isNotEmpty() || $externalUrl || $githubUrl)
             <section class="row g-4 g-lg-5 mb-2xl pb-xl border-bottom-subtle" data-detail-body>
-                <div class="col-12 col-lg-8">
-                    @if (!empty($custom['subtitle']))
-                        <p class="text-fluid-lg text-primary fw-medium leading-relaxed mb-md" data-flip-text>
-                            {{ $custom['subtitle'] }}
-                        </p>
+                <div class="col-12">
+                    @if (!empty($summary))
+                        <div class="prose h3 font-heading text-primary fw-medium leading-relaxed  mb-md" data-flip-text>
+                            {!! $content->summary_html !!}
+                        </div>
                     @endif
 
-                    @if ($content->excerpt)
-                        <p class="text-fluid-base text-secondary leading-relaxed mb-md">
+                    @if ($content->excerpt && empty($summary))
+                        <p class="text-fluid-base leading-relaxed mb-md">
                             {{ $content->excerpt }}
                         </p>
                     @endif
@@ -229,31 +228,6 @@
                                 <span class="text-fluid-xs text-muted font-mono">#{{ $tag->name }}</span>
                             @endforeach
                         </div>
-                    @endif
-                </div>
-
-                <div class="col-12 col-lg-4">
-                    @if ($externalUrl)
-                        <x-btn href="{{ $externalUrl }}" 
-                               target="_blank" 
-                               rel="noopener noreferrer" 
-                               icon="nearr" 
-                               size="sm" 
-                               data-magnetic>
-                            Sitio en vivo
-                        </x-btn>
-                    @endif
-
-                    @if ($githubUrl)
-                        <x-btn href="{{ $githubUrl }}" 
-                               target="_blank" 
-                               rel="noopener noreferrer" 
-                               variant="surface" 
-                               icon="nearr" 
-                               size="sm" 
-                               data-magnetic>
-                            Código fuente
-                        </x-btn>
                     @endif
                 </div>
             </section>
@@ -301,5 +275,75 @@
                 </div>
           
         </section>
+
+    {{-- Interlinking SEO: Siguiente Proyecto (Diseño Editorial Plano, Sin Cajas) --}}
+    @if ($nextProject)
+        @php
+            $nextThumb = $nextProject->thumbnail;
+            $nextUrl = route('public.content.show', [$cpt->public_route_slug, $nextProject->slug]);
+        @endphp
+        <section class="container-wide mt-3xl pt-2xl border-top-subtle" data-reveal>
+            <div class="row g-4 g-lg-5 align-items-center" data-card-reveal>
+                {{-- Columna Izquierda: Imagen destacada con GSAP Flip --}}
+                <div class="col-12 col-lg-7">
+                    <a href="{{ $nextUrl }}" 
+                       class="d-block overflow-hidden text-decoration-none" 
+                       data-flip-card
+                       data-flip-id="project-{{ $nextProject->slug }}"
+                       data-magnetic data-magnetic-strength="0.02">
+                        <div class="media-wrap w-100 overflow-hidden aspect-16-10 bg-surface-subtle border-subtle"
+                             data-flip-id="project-{{ $nextProject->slug }}"
+                             data-flip-element="image">
+                            @if ($nextThumb)
+                                <img src="{{ $nextThumb->url }}" 
+                                     alt="{{ $nextProject->title }}" 
+                                     class="img-fluid object-fit-cover w-100 h-100 d-block transition-transform"
+                                     loading="lazy">
+                            @else
+                                <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4">
+                                    <span class="font-mono text-fluid-xs text-muted text-uppercase tracking-wider">
+                                        {{ $nextProject->title }}
+                                    </span>
+                                </div>
+                            @endif
+                        </div>
+                    </a>
+                </div>
+
+                {{-- Columna Derecha: Numerador, Título, Extracto y Botón a 45° --}}
+                <div class="col-12 col-lg-5 ps-lg-4">
+
+                    <h2 class="h2 font-heading fw-bold text-primary tracking-tight lh-tight mb-3">
+                        <a href="{{ $nextUrl }}" 
+                           class="text-reset text-decoration-none hover-text-brand"
+                           data-flip-card
+                           data-flip-id="project-{{ $nextProject->slug }}">
+                            {{ $nextProject->title }}
+                        </a>
+                    </h2>
+
+                    @if ($nextProject->excerpt)
+                        <p class="h5 text-secondary leading-relaxed mb-4">
+                            {{ $nextProject->excerpt }}
+                        </p>
+                    @endif
+
+                    <div class="pt-1">
+                        <a href="{{ $nextUrl }}" 
+                           class="btn-circle-action" 
+                           aria-label="Ver siguiente proyecto: {{ $nextProject->title }}"
+                           data-flip-card
+                           data-flip-id="project-{{ $nextProject->slug }}"
+                           data-magnetic data-magnetic-strength="0.08">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <line x1="7" y1="17" x2="17" y2="7"></line>
+                                <polyline points="7 7 17 7 17 17"></polyline>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    @endif
 </article>
 @endsection

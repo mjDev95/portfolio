@@ -38,7 +38,7 @@
                     </div>
                 </div>
                 
-                <h2 class="project-title-heading font-heading h3 mt-2 lh-tight text-primary">{{ $item->title }}</h2>
+                <h2 class="project-title-heading font-heading h3 mt-2 lh-tight font-light text-primary">{{ $item->title }}</h2>
             </div>
         </a>
     </div>

@@ -17,7 +17,7 @@
                 {{-- Encabezado Editorial en una sola fila (Alineación horizontal limpia a la línea de base) --}}
                 <div class="d-flex align-items-baseline justify-content-between gap-3 mb-lg">
                     <h2 class="font-heading h1 fw-bold text-primary lh-tight mb-0" data-blur-reveal>
-                        Artículos y publicaciones recientes
+                        Artículos recientes
                     </h2>
 
                     <div class="flex-shrink-0" data-reveal>
@@ -56,11 +56,6 @@
                                     <div class="position-relative overflow-hidden w-100 border-subtle bg-surface rounded-0 aspect-16-10"
                                          data-flip-id="post-{{ $item->slug }}"
                                          data-flip-element="image">
-                                        
-                                        {{-- Badge plano de Categoría sobre la imagen (Sin Glass ni Blur) --}}
-                                        <span class="position-absolute top-0 start-0 m-2 font-mono text-fluid-xs text-primary bg-surface border border-subtle rounded-0 px-2 py-1 lh-1 tracking-wider text-uppercase" style="z-index: 2; pointer-events: none;">
-                                            ({{ $categoryName }})
-                                        </span>
 
                                         @if ($itemThumb)
                                             <img src="{{ $itemThumb->url }}" 
@@ -79,7 +74,7 @@
                                     {{-- Cuerpo de la Nota con Tipografía Fluida --}}
                                     <div class="d-flex flex-column flex-grow-1 pt-xs">
                                         {{-- Título de la Nota --}}
-                                        <h3 class="font-heading text-fluid-h5 fw-semibold text-primary lh-sm mb-xs">
+                                        <h3 class="font-heading h4 text-primary lh-sm mb-xs font-light">
                                             {{ $item->title }}
                                         </h3>
 

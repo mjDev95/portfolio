@@ -11,6 +11,7 @@ import { cleanupFooterReveal, initFooterReveal } from '../animations/footer';
 import { cleanupMethodology } from '../animations/methodology';
 import { cleanupHomeBlog } from '../animations/home-blog';
 import { cleanupProjectHero } from '../animations/project-hero';
+import { cleanupCardReveals } from '../animations/shared/card-reveal';
 import { splitTextIntoChars, animateBlurChars } from '../animations/shared/text-reveal';
 
 let isBlogFilterTransition = false;
@@ -162,6 +163,7 @@ export function initBarba({ onAfterEnter } = {}) {
         cleanupMethodology();
         cleanupHomeBlog();
         cleanupProjectHero();
+        cleanupCardReveals();
         const mainFooter = document.getElementById('main-footer') || document.querySelector('.footer-scroll-wrapper') || document.querySelector('.site-footer, footer');
         if (mainFooter) {
             gsap.set(mainFooter, { opacity: 0 });

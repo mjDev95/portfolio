@@ -31,18 +31,16 @@
     --fluid-s-3xl: clamp(5rem, 12vw, 11rem);        /* ~80–176px */
     --fluid-s-4xl: clamp(6rem, 16vw, 15rem);        /* ~96–240px */
 
-    /* Escala tipográfica fluida (independiente de .h1-.h6, para uso en prosa) */
-    --fluid-text-xs:   clamp(0.75rem, 0.6vw + 0.65rem, 0.85rem);
-    --fluid-text-sm:   clamp(0.875rem, 0.5vw + 0.8rem, 1rem);
-    --fluid-text-base: clamp(1rem, 0.4vw + 0.95rem, 1.125rem);
-    --fluid-text-md:   clamp(1.05rem, 0.6vw + 0.92rem, 1.25rem);
-    --fluid-text-lg:   clamp(1.15rem, 1vw + 1rem, 1.4rem);
-    --fluid-text-xl:   clamp(1.4rem, 2vw + 1rem, 1.9rem);
+    /* Escala tipográfica fluida (1em es el mínimo absoluto universal) */
+    --fluid-text-base: 1.1em;
+    --fluid-text-md:   clamp(1.05em, 0.6vw + 0.92em, 1.25em);
+    --fluid-text-lg:   clamp(1.15em, 1vw + 1em, 1.4em);
+    --fluid-text-xl:   clamp(1.4em, 2vw + 1em, 1.9em);
 
-    /* Familias tipográficas maestras */
-    --font-heading: 'Bricolage Grotesque', sans-serif;
-    --font-sans: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    /* Familias tipográficas maestras (sincronizadas con la Base de Datos: Manrope & Aileron) */
+    --font-heading: 'LocalCustomHeading', 'Manrope', sans-serif;
+    --font-sans: 'LocalCustomSans', 'Aileron', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'LocalCustomMono', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
     /* Escala tipográfica hero y estadísticas fluidas maestras */
     --fluid-hero-statement: clamp(1.85rem, 3.8vw + 0.5rem, 4.25rem);
@@ -52,7 +50,7 @@
     --fluid-h1: clamp(2.4rem, 6vw, 4.5rem);
     --fluid-h2: clamp(1.8rem, 4.5vw, 3.2rem);
     --fluid-h3: clamp(1.4rem, 3vw, 2.2rem);
-    --fluid-h4: clamp(1.15rem, 2vw, 1.6rem);
+    --fluid-h4: clamp(1.55em, 2.3vw, 2.5em);
     --fluid-h5: clamp(0.95rem, 1.5vw, 1.2rem);
     --fluid-h6: clamp(0.75rem, 1.2vw, 0.85rem);
 
@@ -525,7 +523,7 @@ html.is-restoring-scroll body {
 .lh-tight { line-height: 0.98 !important; }
 .lh-1    { line-height: 1 !important; }
 .lh-sm   { line-height: 1.25 !important; }
-.lh-base { line-height: 1.5 !important; }
+.lh-base { line-height: 1.66 !important; }
 .lh-lg   { line-height: 2 !important; }
 
 .list-unstyled { list-style: none !important; padding-left: 0 !important; margin-bottom: 0; }
@@ -535,16 +533,33 @@ html.is-restoring-scroll body {
 /* ─────────────────────────────────────────
    7. ESCALA TIPOGRÁFICA FLUIDA (H1-H6 + prosa + hero)
    ───────────────────────────────────────── */
+html, body {
+    font-family: var(--font-sans) !important;
+    font-weight: 400 !important;
+    font-style: normal !important;
+    font-size: 1em !important;
+    line-height: 1.66 !important;
+}
+
+p {
+    font-family: var(--font-sans);
+    font-weight: 400 !important;
+    font-style: normal !important;
+    font-size: var(--fluid-text-base) !important;
+    line-height: 1.66 !important;
+    margin-bottom: 1em !important;
+}
+
 .font-heading { font-family: var(--font-heading) !important; }
 .font-sans    { font-family: var(--font-sans) !important; }
 .font-mono    { font-family: var(--font-mono) !important; }
 
-.h1, h1 { font-size: var(--fluid-h1) !important; font-weight: 300; line-height: 1.05; letter-spacing: -0.02em; overflow-wrap: break-word; }
-.h2, h2 { font-size: var(--fluid-h2) !important; font-weight: 300; line-height: 1.1; letter-spacing: -0.01em; overflow-wrap: break-word; }
-.h3, h3 { font-size: var(--fluid-h3) !important; font-weight: 400; line-height: 1.2; overflow-wrap: break-word; }
-.h4, h4 { font-size: var(--fluid-h4) !important; font-weight: 400; line-height: 1.25; overflow-wrap: break-word; }
-.h5, h5 { font-size: var(--fluid-h5) !important; font-weight: 500; line-height: 1.3; overflow-wrap: break-word; }
-.h6, h6 { font-size: var(--fluid-h6) !important; font-weight: 600; line-height: 1.4; letter-spacing: 0.1em; overflow-wrap: break-word; }
+.h1, h1 { font-family: var(--font-heading); font-size: var(--fluid-h1) !important; font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; overflow-wrap: break-word; }
+.h2, h2 { font-family: var(--font-heading); font-size: var(--fluid-h2) !important; font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; overflow-wrap: break-word; }
+.h3, h3 { font-family: var(--font-heading); font-size: var(--fluid-h3) !important; font-weight: 600; line-height: 1.2; overflow-wrap: break-word; }
+.h4, h4 { font-family: var(--font-heading); font-size: var(--fluid-h4) !important; font-weight: 600; line-height: 1.25; overflow-wrap: break-word; }
+.h5, h5 { font-family: var(--font-heading); font-size: var(--fluid-h5) !important; font-weight: 600; line-height: 1.6; overflow-wrap: break-word; }
+.h6, h6 { font-family: var(--font-heading); font-size: var(--fluid-h6) !important; font-weight: 600; line-height: 1.7; letter-spacing: 0.1em; overflow-wrap: break-word; }
 
 .font-fluid-hero-statement {
     font-family: var(--font-heading);
@@ -562,8 +577,6 @@ html.is-restoring-scroll body {
     font-weight: 600;
 }
 
-.text-fluid-xs   { font-size: var(--fluid-text-xs); }
-.text-fluid-sm   { font-size: var(--fluid-text-sm); }
 .text-fluid-base { font-size: var(--fluid-text-base); }
 .text-fluid-md   { font-size: var(--fluid-text-md); }
 .text-fluid-lg   { font-size: var(--fluid-text-lg); }
@@ -997,7 +1010,15 @@ article {
 /* ─────────────────────────────────────────
    13. CHARACTER BLUR REVEAL & ANTI-FOUC
    ───────────────────────────────────────── */
-[data-title-blur-reveal]:not(.is-revealed) {
+[data-title-blur-reveal]:not(.is-revealed),
+[data-blur-reveal]:not(.is-revealed),
+[data-char-blur-reveal]:not(.is-revealed),
+[data-card-reveal]:not(.is-revealed) {
+    opacity: 0;
+}
+
+[data-detail-breadcrumbs]:not(.is-revealed),
+[data-detail-meta]:not(.is-revealed) {
     opacity: 0;
 }
 
@@ -1011,4 +1032,58 @@ article {
     filter: none !important;
     -webkit-filter: none !important;
     transform: none !important;
+}
+
+/* ─────────────────────────────────────────
+   14. BOTÓN CIRCULAR EDITORIAL DE ACCIÓN (45°)
+   ───────────────────────────────────────── */
+.btn-circle-action {
+    width: clamp(3.25rem, 4.5vw, 4.25rem);
+    height: clamp(3.25rem, 4.5vw, 4.25rem);
+    border-radius: 50% !important;
+    border: 1px solid var(--border-subtle);
+    background-color: var(--bg-surface-subtle);
+    color: var(--text-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+.btn-circle-action svg {
+    width: clamp(1.5rem, 2vw, 2rem);
+    height: clamp(1.5rem, 2vw, 2rem);
+    stroke: currentColor;
+    stroke-width: 1.25;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-circle-action:hover {
+    background-color: var(--text-primary);
+    border-color: var(--text-primary);
+    color: var(--bg-primary);
+}
+
+.btn-circle-action:hover svg {
+    color: var(--bg-primary);
+    stroke: currentColor;
+    transform: translate(2px, -2px);
+}
+
+/* Tooltip opcional para instancias de .btn-circle-action que lo requieran (ej. redes sociales) */
+.btn-circle-action .tile-tooltip {
+    bottom: calc(100% + var(--fluid-s-xs));
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    pointer-events: none;
+    padding: var(--fluid-s-2xs) var(--fluid-s-xs);
+    font-size: var(--fluid-text-xs);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 10;
+}
+
+.btn-circle-action:hover .tile-tooltip {
+    opacity: 1 !important;
+    transform: translateX(-50%) translateY(0);
 }

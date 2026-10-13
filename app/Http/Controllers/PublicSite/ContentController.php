@@ -330,6 +330,39 @@ class ContentController extends Controller
             ->with(['media', 'categories', 'tags', 'user'])
             ->firstOrFail();
 
+        // Interlinking SEO: Siguiente proyecto (por sort_order / fecha de publicación)
+        $nextPost = Content::where('content_type_id', $cpt->id)
+            ->published()
+            ->where('id', '!=', $content->id)
+            ->where(function ($q) use ($content) {
+                $q->where('sort_order', '>', $content->sort_order)
+                    ->orWhere(function ($sub) use ($content) {
+                        $sub->where('sort_order', $content->sort_order)
+                            ->where('published_at', '<', $content->published_at ?? now());
+                    });
+            })
+            ->with([
+                'media' => fn ($q) => $q->where('content_media.collection', 'thumbnail'),
+                'categories',
+            ])
+            ->orderBy('sort_order', 'asc')
+            ->orderByDesc('published_at')
+            ->first();
+
+        // Si es el último, cicla al primer proyecto disponible para garantizar siempre interlinking SEO continuo
+        if (! $nextPost) {
+            $nextPost = Content::where('content_type_id', $cpt->id)
+                ->published()
+                ->where('id', '!=', $content->id)
+                ->with([
+                    'media' => fn ($q) => $q->where('content_media.collection', 'thumbnail'),
+                    'categories',
+                ])
+                ->orderBy('sort_order', 'asc')
+                ->orderByDesc('published_at')
+                ->first();
+        }
+
         $otherPosts = Content::where('content_type_id', $cpt->id)
             ->published()
             ->where('id', '!=', $content->id)
@@ -341,8 +374,6 @@ class ContentController extends Controller
             ->orderByDesc('published_at')
             ->take(2)
             ->get();
-
-        $nextPost = $otherPosts->first();
 
         $view = view()->exists("public.content.{$cpt->slug}.show")
             ? "public.content.{$cpt->slug}.show"
@@ -356,6 +387,7 @@ class ContentController extends Controller
             'content' => $content,
             'otherPosts' => $otherPosts,
             'nextPost' => $nextPost,
+            'nextProject' => $nextPost,
         ]);
     }
 }

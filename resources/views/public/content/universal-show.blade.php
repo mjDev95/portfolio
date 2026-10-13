@@ -12,7 +12,7 @@
 
 @section('content')
 <article class="py-3xl" style="min-height: 100vh;">
-    <div class="container mb-lg" data-detail-breadcrumbs>
+    <div class="container mb-lg">
         <x-breadcrumbs :items="[
             ['label' => 'Inicio', 'url' => route('home')],
             ['label' => $cpt->name, 'url' => route('public.content.index', $cpt->public_route_slug)],
