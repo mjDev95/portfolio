@@ -1544,14 +1544,14 @@ html.light .btn-universal.is-active {
 }
 
 .hero-curtain-light {
-    background-color: #ffffff;
-    color: #0d0f12;
+    background-color: #0d0f12;
+    color: #ffffff;
     z-index: 1;
 }
 
 .hero-curtain-dark {
-    background-color: #0d0f12;
-    color: #ffffff;
+    background-color: #ffffff;
+    color: #0d0f12;
     z-index: 2;
     clip-path: inset(0% 100% 0% 0%);
     -webkit-clip-path: inset(0% 100% 0% 0%);
@@ -1600,11 +1600,11 @@ html.light .btn-universal.is-active {
 }
 
 .hero-curtain-title-light {
-    color: #0d0f12 !important;
+    color: #ffffff !important;
 }
 
 .hero-curtain-title-dark {
-    color: #ffffff !important;
+    color: #0d0f12 !important;
 }
 
 .hero-curtain-title .split-word,
@@ -1680,6 +1680,82 @@ html.light .btn-universal.is-active {
     will-change: opacity, transform;
 }
 
+/* ─────────────────────────────────────────────────────────────
+   EMBLEMA DE MARCA (Capas Sólido + Líneas por Scroll)
+   ───────────────────────────────────────────────────────────── */
+.hero-curtain-brand-symbol {
+    position: absolute;
+    top: 50%;
+    right: -2vw;
+    transform: translateY(-50%);
+    width: clamp(520px, 64vw, 1080px);
+    height: clamp(520px, 64vw, 1080px);
+    pointer-events: none;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    will-change: transform;
+}
+
+.brand-symbol-solid,
+.brand-symbol-lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.brand-symbol-solid {
+    opacity: 0;
+    will-change: opacity;
+    color: rgb(211, 212, 207); /* Gris actual idéntico al SVG original */
+}
+
+.hero-curtain-light .brand-symbol-solid {
+    opacity: 0;
+    color: rgb(211, 212, 207);
+}
+
+.hero-curtain-dark .brand-symbol-solid {
+    opacity: 0;
+    color: rgb(211, 212, 207);
+}
+
+.brand-symbol-lines {
+    will-change: opacity, transform;
+}
+
+/* Lado base oscuro: líneas claras invertidas (#e5e7eb) */
+.hero-curtain-light .brand-symbol-lines {
+    color: #f3f4f6;
+}
+
+/* Lado cortina blanca: líneas oscuras invertidas (#1a1e24) */
+.hero-curtain-dark .brand-symbol-lines {
+    color: #1a1e24;
+}
+
+.brand-vector-solid,
+.brand-vector-lines {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.brand-vector-lines path,
+.brand-vector-lines circle,
+.brand-vector-lines ellipse,
+.brand-vector-lines rect {
+    transform-box: fill-box;
+    transform-origin: center;
+    will-change: stroke-dashoffset, transform;
+}
+
 .hero-curtain-bottom {
     display: flex;
     justify-content: space-between;
@@ -1693,7 +1769,7 @@ html.light .btn-universal.is-active {
     max-width: 38ch;
     font-size: var(--fluid-curtain-bio);
     line-height: 1.45;
-    color: #d1d5db;
+    color: #4b5563;
     margin: 0;
     opacity: 0;
     will-change: opacity, transform;
@@ -1709,7 +1785,7 @@ html.light .btn-universal.is-active {
 }
 
 .hero-curtain-social a {
-    color: #ffffff;
+    color: #0d0f12;
     text-decoration: none;
     transition: color 0.2s ease;
 }

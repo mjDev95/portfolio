@@ -21,13 +21,23 @@
                 </div>
             </div>
 
+            {{-- Emblema en la cortina base: Base Sólida + Trazos Geométricos --}}
+            <div class="hero-curtain-brand-symbol" aria-hidden="true">
+                <div class="brand-symbol-solid" data-symbol-solid>
+                    <x-svg-brand-solid class="brand-vector-solid" />
+                </div>
+                <div class="brand-symbol-lines" data-symbol-lines>
+                    <x-svg-brand-lines class="brand-vector-lines" />
+                </div>
+            </div>
+
             <div class="hero-curtain-bottom">
                 <span class="font-mono text-fluid-xs text-muted">Mario Joaquín Galicia &bull; Portafolio&trade;</span>
                 <span class="font-mono text-fluid-xs text-muted">mjgaliciab@gmail.com</span>
             </div>
         </div>
 
-        {{-- CAPA 2: FONDO OSCURO (Cortina deslizante con clip-path horizontal) --}}
+        {{-- CAPA 2: FONDO BLANCO / CLARO (Cortina deslizante que entra al hacer scroll) --}}
         <div class="hero-curtain-layer hero-curtain-dark" aria-hidden="true">
             <div class="hero-curtain-top">
                 <span class="font-mono text-fluid-xs text-secondary d-none d-sm-inline">CDMX &bull; México</span>
@@ -48,6 +58,18 @@
                          onerror="this.parentElement.style.display='none';">
                 </div>
             @endif
+
+            {{-- Emblema en la cortina clara: Base Sólida + Trazos Geométricos (Líneas) Superpuestos --}}
+            <div class="hero-curtain-brand-symbol" aria-hidden="true">
+                {{-- 1. Base Sólida --}}
+                <div class="brand-symbol-solid" data-symbol-solid>
+                    <x-svg-brand-solid class="brand-vector-solid" />
+                </div>
+                {{-- 2. Trazos Geométricos (Líneas) encima del sólido --}}
+                <div class="brand-symbol-lines" data-symbol-lines>
+                    <x-svg-brand-lines class="brand-vector-lines" />
+                </div>
+            </div>
 
             {{-- Titular idéntico sincronizado en posición y traslación con la capa clara --}}
             <div class="hero-curtain-title-wrap">

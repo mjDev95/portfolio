@@ -47,6 +47,16 @@ export function initHeroCurtain(container) {
     const portrait = section.querySelector('.hero-curtain-portrait');
     const darkBio = section.querySelector('.hero-curtain-dark .hero-curtain-bio');
     const darkSocial = section.querySelector('.hero-curtain-dark .hero-curtain-social');
+    const brandSymbols = section.querySelectorAll('.hero-curtain-brand-symbol');
+    const symbolSolids = section.querySelectorAll('[data-symbol-solid]');
+    const symbolLines = section.querySelectorAll('[data-symbol-lines]');
+
+    // Elementos vectoriales de líneas y sólidos
+    const lineElements = section.querySelectorAll('.brand-vector-lines path, .brand-vector-lines circle, .brand-vector-lines ellipse, .brand-vector-lines rect');
+    const rectElements = section.querySelectorAll('.brand-vector-lines rect');
+    const circleElements = section.querySelectorAll('.brand-vector-lines circle, .brand-vector-lines ellipse');
+    const pathElements = section.querySelectorAll('.brand-vector-lines path');
+    const vectorSolidPaths = section.querySelectorAll('.brand-vector-solid path');
 
     const titles = [lightTitle, darkTitle].filter(Boolean);
     const metaElements = [darkBio, darkSocial].filter(Boolean);
@@ -57,6 +67,34 @@ export function initHeroCurtain(container) {
     }
     if (titles.length) {
         gsap.set(titles, { x: '14vw' });
+    }
+    if (brandSymbols.length) {
+        gsap.set(brandSymbols, { opacity: 1, scale: 1, x: 0, y: 0 });
+    }
+    if (symbolSolids.length) {
+        gsap.set(symbolSolids, { opacity: 0 });
+    }
+    if (symbolLines.length) {
+        gsap.set(symbolLines, { opacity: 1 });
+    }
+
+    // Inicializar círculos y rectángulos en escala 0 y opacidad 0 (burbujas cerradas en sus propios centros)
+    if (lineElements.length) {
+        gsap.set(lineElements, {
+            scale: 0,
+            opacity: 0,
+            transformBox: 'fill-box',
+            transformOrigin: '50% 50%',
+        });
+    }
+
+    if (vectorSolidPaths.length) {
+        gsap.set(vectorSolidPaths, {
+            opacity: 0,
+            scale: 0.95,
+            transformBox: 'fill-box',
+            transformOrigin: '50% 50%',
+        });
     }
 
     // Split text into character spans for both layers
@@ -261,7 +299,85 @@ export function initHeroCurtain(container) {
         }, 0.38);
     }
 
-    // 6. Buffer de anclaje (0.85 a 1.0): mantiene la pantalla completamente revelada
+    // 6. FASE 1: Explosión orgánica de burbujas (Líneas completas)
+    // Se crea una subtimeline dedicada para las formas lineales.
+    const linesTl = gsap.timeline();
+
+    if (rectElements.length) {
+        linesTl.to(rectElements, {
+            scale: 1,
+            opacity: 1,
+            duration: 0.28,
+            stagger: {
+                each: 0.04,
+                from: 'random',
+            },
+            ease: 'back.out(1.8)',
+        }, 0);
+    }
+
+    if (circleElements.length) {
+        linesTl.to(circleElements, {
+            scale: 1,
+            opacity: 1,
+            duration: 0.28,
+            stagger: {
+                each: 0.015,
+                from: 'random',
+            },
+            ease: 'back.out(1.7)',
+        }, 0.04);
+    }
+
+    if (pathElements.length) {
+        linesTl.to(pathElements, {
+            scale: 1,
+            opacity: 1,
+            duration: 0.28,
+            stagger: {
+                each: 0.02,
+                from: 'center',
+            },
+            ease: 'power2.out',
+        }, 0.08);
+    }
+
+    // Incrustamos el florecimiento de líneas al inicio del scroll de la cortina (inicia en 0.08)
+    tl.add(linesTl, 0.08);
+
+    // 7. FASE 2: Pintado / Revelado de la Silueta Sólida (ico-sould)
+    // ESTRICTO: Se programa con '>+0.12' para iniciar SÓLO DESPUÉS de que linesTl haya concluido al 100%
+    // más un margen de espera de seguridad donde todas las figuras ya están inmóviles en su sitio
+    if (symbolSolids.length) {
+        tl.to(symbolSolids, {
+            opacity: 1,
+            duration: 0.24,
+            ease: 'power2.out',
+        }, '>+0.12');
+    }
+
+    if (vectorSolidPaths.length) {
+        tl.to(vectorSolidPaths, {
+            opacity: 1,
+            scale: 1,
+            duration: 0.24,
+            stagger: 0.01,
+            ease: 'power2.out',
+        }, '<');
+    }
+
+    // 8. FASE 3: Desvanecimiento de las geometrías lineales (ico-lines -> opacity: 0)
+    // Una vez que el sólido está completamente pintado y en su lugar final,
+    // desvanecemos suavemente todos los círculos, rectángulos y líneas para dejar únicamente la silueta sólida limpia
+    if (symbolLines.length) {
+        tl.to(symbolLines, {
+            opacity: 0,
+            duration: 0.18,
+            ease: 'power2.inOut',
+        }, '>+0.04');
+    }
+
+    // 7. Buffer de anclaje (0.85 a 1.0): mantiene la pantalla completamente revelada
     // firmemente anclada hasta que el marcador 'end' toca el borde superior ('scroller-start')
     // para desanclarse con total naturalidad sin brincos bruscos ni adelantos de sección.
     tl.to({}, { duration: 0.15 });

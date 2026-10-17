@@ -1,0 +1,141 @@
+{{--
+  Brand Lines Vector Component (ico-lines.svg inline)
+  Permite animar trazados, círculos orbitales y contornos geométricos independientemente mediante GSAP.
+--}}
+<svg {{ $attributes->merge(['class' => 'svg-brand-lines d-block w-100 h-100']) }} viewBox="0 0 6621 8202" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-miterlimit:10;">
+    <g transform="matrix(1,0,0,1,-3093.295149,1274.183613)">
+        <g transform="matrix(8.333333,0,0,8.333333,0,0)" class="svg-lines-master-group">
+            {{-- 1. Ejes estructurales y cápsula principal --}}
+            <g class="svg-line-contour" transform="matrix(-0.825026,-0.565095,-0.565095,0.825026,523.339546,471.918715)">
+                <path d="M-139.399,-450.205C-275.64,-450.205 -386.084,-339.761 -386.083,-203.521C-386.084,-67.281 -275.64,43.164 -139.399,43.164C-3.159,43.164 107.285,-67.281 107.285,-203.521C107.285,-339.761 -3.159,-450.206 -139.399,-450.205Z" style="fill:none;fill-rule:nonzero;stroke:currentColor;stroke-width:2.5px;"/>
+            </g>
+            <g class="svg-line-contour" transform="matrix(-0.825026,-0.565094,-0.565094,0.825026,492.934669,637.766044)">
+                <ellipse cx="-70.765" cy="-103.314" rx="125.226" ry="125.225" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-contour" transform="matrix(-0.825026,-0.565095,-0.565095,0.825026,477.104185,571.433619)">
+                <path d="M-121.309,-391.782C-239.869,-391.781 -335.981,-295.67 -335.981,-177.11C-335.982,-58.55 -239.869,37.563 -121.309,37.562C-2.749,37.562 93.362,-58.55 93.363,-177.11C93.363,-295.67 -2.75,-391.783 -121.309,-391.782Z" style="fill:none;fill-rule:nonzero;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-contour" transform="matrix(-0.825026,-0.565095,-0.565095,0.825026,550.209585,464.701719)">
+                <path d="M-121.309,-391.782C-239.869,-391.781 -335.981,-295.67 -335.981,-177.11C-335.982,-58.55 -239.869,37.563 -121.309,37.562C-2.749,37.562 93.362,-58.55 93.363,-177.11C93.363,-295.67 -2.749,-391.782 -121.309,-391.782Z" style="fill:none;fill-rule:nonzero;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-frame" transform="matrix(0.825026,0.565095,0.565095,-0.825026,697.371834,210.577986)">
+                <rect x="-72.678" y="-234.72" width="429.344" height="124.283" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-frame" transform="matrix(0.825026,0.565095,0.565095,-0.825026,976.764104,116.046951)">
+                <rect x="-224.72" y="-725.753" width="382.266" height="676.971" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-contour" transform="matrix(-0.825027,-0.565093,-0.565093,0.825027,423.070371,549.577388)">
+                <path d="M-178.24,-575.644C-352.44,-575.645 -493.657,-434.427 -493.657,-260.227C-493.657,-86.028 -352.439,55.19 -178.24,55.189C-4.039,55.189 137.177,-86.028 137.177,-260.228C137.177,-434.428 -4.041,-575.645 -178.24,-575.644Z" style="fill:none;fill-rule:nonzero;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-arc" transform="matrix(1,0,0,1,532.5146,-149.9941)">
+                <path d="M0,483.311C12.195,402.192 42.394,322.447 91.769,250.361C204.778,85.369 390.384,0 576.441,7.61" style="fill:none;fill-rule:nonzero;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+
+            {{-- 2. Círculos orbitales menores y constelación superior --}}
+            <g class="svg-line-orbit" transform="matrix(-0.825028,-0.565092,-0.565092,0.825028,703.152088,58.782138)">
+                <ellipse cx="-17.559" cy="-25.635" rx="31.071" ry="31.071" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-orbit" transform="matrix(-0.82502,-0.565104,-0.565104,0.82502,789.830901,16.552447)">
+                <ellipse cx="-8.514" cy="-12.428" rx="15.065" ry="15.065" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-orbit" transform="matrix(-0.82502,-0.565104,-0.565104,0.82502,708.128426,57.024971)">
+                <ellipse cx="-19.154" cy="-27.964" rx="33.896" ry="33.896" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-orbit" transform="matrix(-0.825023,-0.5651,-0.5651,0.825023,731.079632,70.74892)">
+                <ellipse cx="-24.476" cy="-35.733" rx="43.311" ry="43.311" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-node" transform="matrix(-0.825022,-0.565101,-0.565101,0.825022,955.050551,53.512462)">
+                <ellipse cx="-4.789" cy="-6.991" rx="8.474" ry="8.474" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-node" transform="matrix(-0.825022,-0.565101,-0.565101,0.825022,1030.432364,123.404045)">
+                <ellipse cx="-4.789" cy="-6.991" rx="8.474" ry="8.474" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-node" transform="matrix(-0.825022,-0.565101,-0.565101,0.825022,1052.735151,177.482162)">
+                <ellipse cx="-4.789" cy="-6.991" rx="8.474" ry="8.474" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-node" transform="matrix(-0.825022,-0.565101,-0.565101,0.825022,1067.185351,233.029062)">
+                <ellipse cx="-4.789" cy="-6.991" rx="8.474" ry="8.474" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-node" transform="matrix(-0.825022,-0.565101,-0.565101,0.825022,1076.167576,266.570328)">
+                <ellipse cx="-4.788" cy="-6.991" rx="8.474" ry="8.474" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-node" transform="matrix(-0.825022,-0.565101,-0.565101,0.825022,1072.441151,355.316862)">
+                <ellipse cx="-4.789" cy="-6.991" rx="8.474" ry="8.474" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+
+            {{-- 3. Círculos del rostro y óvalos faciales --}}
+            <g class="svg-line-face" transform="matrix(-0.825024,-0.565098,-0.565098,0.825024,955.856524,285.107353)">
+                <ellipse cx="-39.904" cy="-58.259" rx="70.616" ry="70.616" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-face" transform="matrix(-0.82503,-0.565089,-0.565089,0.82503,987.737775,254.27783)">
+                <ellipse cx="-28.199" cy="-41.171" rx="49.902" ry="49.902" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-face" transform="matrix(-0.825024,-0.565097,-0.565097,0.825024,931.679144,220.217644)">
+                <ellipse cx="-40.969" cy="-59.814" rx="72.499" ry="72.499" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-face" transform="matrix(-0.825026,-0.565095,-0.565095,0.825026,880.184876,191.30364)">
+                <ellipse cx="-51.397" cy="-75.038" rx="90.953" ry="90.954" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-face" transform="matrix(-0.825026,-0.565095,-0.565095,0.825026,917.724095,162.641347)">
+                <ellipse cx="-35.117" cy="-51.269" rx="62.142" ry="62.142" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-face" transform="matrix(-0.825026,-0.565095,-0.565095,0.825026,971.177731,43.242797)">
+                <ellipse cx="-52.461" cy="-76.592" rx="92.836" ry="92.837" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-face" transform="matrix(-0.825027,-0.565093,-0.565093,0.825027,801.313006,-18.891017)">
+                <ellipse cx="-26.602" cy="-38.84" rx="47.077" ry="47.077" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-orbit" transform="matrix(-0.825024,-0.565097,-0.565097,0.825024,765.878774,159.162547)">
+                <circle cx="-61.614" cy="-89.953" r="109.031" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-orbit" transform="matrix(-0.825027,-0.565093,-0.565093,0.825027,855.204287,192.9166)">
+                <circle cx="-53.206" cy="-77.68" r="94.155" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-orbit" transform="matrix(-0.825024,-0.565098,-0.565098,0.825024,644.264098,117.859431)">
+                <circle cx="-31.817" cy="-46.452" r="56.305" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-arc" transform="matrix(1,0,0,1,1108.9072,563.5162)">
+                <path d="M0,-706.162C74.325,-535.425 61.684,-331.358 -51.22,-166.521C-99.317,-96.299 -160.66,-40.397 -229.643,0" style="fill:none;fill-rule:nonzero;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-face" transform="matrix(-0.825027,-0.565094,-0.565094,0.825027,920.38829,396.91798)">
+                <ellipse cx="-44.586" cy="-65.095" rx="78.902" ry="78.902" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-face" transform="matrix(-0.825027,-0.565094,-0.565094,0.825027,945.18809,414.36108)">
+                <ellipse cx="-44.587" cy="-65.096" rx="78.902" ry="78.902" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-detail" transform="matrix(-0.825031,-0.565087,-0.565087,0.825031,650.014446,514.511106)">
+                <ellipse cx="-13.834" cy="-20.196" rx="24.481" ry="24.48" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-detail" transform="matrix(-0.825027,-0.565093,-0.565093,0.825027,624.373999,482.256742)">
+                <ellipse cx="-16.494" cy="-24.081" rx="29.188" ry="29.188" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-detail" transform="matrix(-0.825031,-0.565087,-0.565087,0.825031,684.362851,524.344236)">
+                <ellipse cx="-13.834" cy="-20.197" rx="24.48" ry="24.481" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-orbit" transform="matrix(-0.825027,-0.565094,-0.565094,0.825027,555.989804,547.026404)">
+                <circle cx="-70.019" cy="-102.226" r="123.908" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-orbit" transform="matrix(-0.825025,-0.565096,-0.565096,0.825025,404.22373,695.287154)">
+                <circle cx="-70.02" cy="-102.227" r="123.908" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-orbit" transform="matrix(-0.825025,-0.565096,-0.565096,0.825025,472.582259,742.109649)">
+                <ellipse cx="-70.02" cy="-102.227" rx="123.907" ry="123.907" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+
+            {{-- 4. Gafas y lentes --}}
+            <g class="svg-line-glasses" transform="matrix(-0.825027,-0.565094,-0.565094,0.825027,581.859745,397.331363)">
+                <ellipse cx="-31.392" cy="-45.831" rx="55.551" ry="55.551" style="fill:none;stroke:currentColor;stroke-width:2.5px;"/>
+            </g>
+            <g class="svg-line-pupil" transform="matrix(-0.825022,-0.565101,-0.565101,0.825022,643.436915,355.597621)">
+                <ellipse cx="-11.706" cy="-17.089" rx="20.714" ry="20.714" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+            <g class="svg-line-glasses" transform="matrix(-0.825027,-0.565094,-0.565094,0.825027,751.000358,508.617545)">
+                <ellipse cx="-31.392" cy="-45.831" rx="55.552" ry="55.551" style="fill:none;stroke:currentColor;stroke-width:2.5px;"/>
+            </g>
+            <g class="svg-line-pupil" transform="matrix(-0.825022,-0.565101,-0.565101,0.825022,799.658615,455.752921)">
+                <ellipse cx="-11.706" cy="-17.089" rx="20.714" ry="20.714" style="fill:none;stroke:currentColor;stroke-width:2px;"/>
+            </g>
+        </g>
+    </g>
+</svg>
+
