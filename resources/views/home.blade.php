@@ -6,13 +6,10 @@
 
 @section('content')
 <div class="position-relative">
-    {{-- 0. Hero Curtain: Split-Screen Inverted ScrollTrigger Reveal (Lo primero que se ve al entrar) --}}
+    {{-- 0. Hero Curtain con Editorial integrado sobre la transición de portal --}}
     @include('partials.home.hero-curtain')
 
-    {{-- 1. Hero Editorial & Estadísticas Monumentales (section #hero-editorial-2) --}}
-    @include('partials.home.hero-editorial')
-
-    {{-- 2. Servicios / What I do? (Editorial Cards Stack) --}}
+    {{-- 1. Servicios / What I do? (Editorial Cards Stack) --}}
     @include('partials.home.services')
 
     {{-- 3. Casos Seleccionados (Editorial Rows & CMS CPTs) --}}

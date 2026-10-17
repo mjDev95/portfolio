@@ -1,6 +1,7 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from '../lib/smooth-scroll';
-import { splitTextIntoChars, finalizeBlurChars } from './shared/text-reveal';
+import { splitTextIntoChars, finalizeBlurChars, animateBlurChars } from './shared/text-reveal';
+import { triggerHeroEditorialCounters } from './hero-editorial';
 
 let curtainCtx = null;
 
@@ -58,6 +59,10 @@ export function initHeroCurtain(container) {
     const pathElements = section.querySelectorAll('.brand-vector-lines path');
     const vectorSolidPaths = section.querySelectorAll('.brand-vector-solid path');
 
+    const eyePupils = section.querySelectorAll('.eye-pupil-zoom, [data-zoom-lens]');
+    const portalDisc = section.querySelector('[data-portal-disc]');
+    const nextSection = container.querySelector('#hero-editorial-2') || document.querySelector('#hero-editorial-2');
+
     const titles = [lightTitle, darkTitle].filter(Boolean);
     const metaElements = [darkBio, darkSocial].filter(Boolean);
 
@@ -91,9 +96,41 @@ export function initHeroCurtain(container) {
     if (vectorSolidPaths.length) {
         gsap.set(vectorSolidPaths, {
             opacity: 0,
-            scale: 0.95,
             transformBox: 'fill-box',
             transformOrigin: '50% 50%',
+        });
+    }
+
+    // Helper: calcula la posición exacta del centro del ojo en relación con el contenedor anclado (pinElement)
+    function getEyeCenter() {
+        const eye = section.querySelector('.hero-curtain-dark .svg-solid-eye-lens') 
+                 || section.querySelector('.svg-solid-eye-lens')
+                 || section.querySelector('.hero-curtain-dark [data-zoom-lens]') 
+                 || section.querySelector('[data-zoom-lens]');
+        const layer = section.querySelector('.hero-curtain-dark') || pinElement;
+        if (eye && layer) {
+            const eyeRect = eye.getBoundingClientRect();
+            const layerRect = layer.getBoundingClientRect();
+            return {
+                x: (eyeRect.left + eyeRect.width / 2) - layerRect.left,
+                y: (eyeRect.top + eyeRect.height / 2) - layerRect.top,
+            };
+        }
+        return {
+            x: window.innerWidth * 0.72,
+            y: window.innerHeight * 0.5,
+        };
+    }
+
+    if (portalDisc) {
+        const center = getEyeCenter();
+        gsap.set(portalDisc, {
+            left: () => getEyeCenter().x,
+            top: () => getEyeCenter().y,
+            scale: 0,
+            opacity: 0,
+            xPercent: -50,
+            yPercent: -50,
         });
     }
 
@@ -204,7 +241,7 @@ export function initHeroCurtain(container) {
             pin: pinElement,
             pinSpacing: true,
             start: 'top top',
-            end: '+=1600',
+            end: '+=2200',
             scrub: 0.5,
             anticipatePin: 1,
             invalidateOnRefresh: true,
@@ -359,7 +396,6 @@ export function initHeroCurtain(container) {
     if (vectorSolidPaths.length) {
         tl.to(vectorSolidPaths, {
             opacity: 1,
-            scale: 1,
             duration: 0.24,
             stagger: 0.01,
             ease: 'power2.out',
@@ -377,10 +413,76 @@ export function initHeroCurtain(container) {
         }, '>+0.04');
     }
 
-    // 7. Buffer de anclaje (0.85 a 1.0): mantiene la pantalla completamente revelada
-    // firmemente anclada hasta que el marcador 'end' toca el borde superior ('scroller-start')
-    // para desanclarse con total naturalidad sin brincos bruscos ni adelantos de sección.
-    tl.to({}, { duration: 0.15 });
+    // 9. FASE 4: ZOOM EXCLUSIVO DEL OJO (Portal Circular Limpio tipo CodePen yLpaEjx)
+    // El SVG Soul completo permanece 100% inmóvil en su lugar, sin escalarse ni trasladarse.
+    // Solo el portal circular posicionado exactamente sobre el ojo crece de forma ultra nítida hasta cubrir la pantalla.
+    
+    // A. Desvanecemos suavemente el titular, el retrato y los textos para limpiar la escena
+    const curtainElementsToClear = [portrait, lightTitle, darkTitle, darkBio, darkSocial, ...section.querySelectorAll('.hero-curtain-top, .hero-curtain-bottom')].filter(Boolean);
+    if (curtainElementsToClear.length) {
+        tl.to(curtainElementsToClear, {
+            opacity: 0,
+            y: -15,
+            duration: 0.18,
+            ease: 'power2.in',
+        }, '>+0.06');
+    }
+
+    // B. El disco portal (.hero-curtain-portal-disc) se alinea exactamente al centro del ojo y escala nítidamente hasta cubrir toda la pantalla
+    if (portalDisc) {
+        // En el instante de inicio de Phase 4, fijamos la posición calculada del ojo y opacidad 1
+        tl.set(portalDisc, {
+            left: () => getEyeCenter().x,
+            top: () => getEyeCenter().y,
+            scale: 0.25,
+            opacity: 1,
+            xPercent: -50,
+            yPercent: -50,
+        }, '<');
+
+        // Escala exponencialmente limpia (scale: 65x de un círculo de 60px = 3900px de diámetro, cubriendo completamente 100vw x 100vh)
+        tl.to(portalDisc, {
+            scale: 65,
+            duration: 0.65,
+            ease: 'power2.in',
+        }, '<+0.02');
+    }
+
+    const editorialOverlay = section.querySelector('[data-editorial-overlay]');
+
+    // C. Conforme el círculo YA CUBRIÓ la pantalla por completo con el fondo gris del Soul,
+    // empieza a mostrarse la siguiente sección montada directamente encima de él
+    if (editorialOverlay) {
+        const editorialStatement = editorialOverlay.querySelector('.hero-statement');
+        const statementChars = editorialStatement ? splitTextIntoChars(editorialStatement) : [];
+
+        tl.fromTo(editorialOverlay,
+            { opacity: 0, y: 35, pointerEvents: 'none' },
+            { 
+                opacity: 1, 
+                y: 0, 
+                pointerEvents: 'auto', 
+                duration: 0.35, 
+                ease: 'power2.out',
+                onStart: () => {
+                    triggerHeroEditorialCounters();
+                    if (statementChars.length) {
+                        animateBlurChars(statementChars, { delay: 0.05 });
+                    }
+                },
+            },
+            '>-0.02'
+        );
+    } else if (nextSection) {
+        tl.fromTo(nextSection,
+            { opacity: 0, y: 35 },
+            { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' },
+            '>-0.02'
+        );
+    }
+
+    // Buffer de anclaje para desanclaje limpio
+    tl.to({}, { duration: 0.10 });
 
     // Garantizamos que la línea de tiempo inicie exactamente en progreso 0 (cortina cerrada) al montarse
     tl.progress(0);

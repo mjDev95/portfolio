@@ -32,7 +32,8 @@ export function initPageAnimations(container) {
     const reveals = Array.from(container.querySelectorAll('[data-reveal]')).filter((el) => {
         return !el.matches('[data-detail-header], [data-detail-body], [data-detail-breadcrumbs], [data-card-reveal], [data-blur-reveal], [data-title-blur-reveal], [data-char-blur-reveal]') &&
                el.dataset.textSplit !== 'true' &&
-               !el.closest('[data-detail-header], [data-detail-body], [data-hero-curtain], #blog-header-block');
+               (!el.closest('[data-hero-curtain]') || el.closest('[data-editorial-overlay]')) &&
+               !el.closest('[data-detail-header], [data-detail-body], #blog-header-block');
     });
 
     reveals.forEach((el) => {

@@ -493,7 +493,7 @@ export function initTextReveal(container = document) {
         const explicitTargets = [...new Set([...containerTargets, ...footerTargets])];
 
         explicitTargets.forEach((target) => {
-            if (target.closest('[data-hero-curtain]') || target.closest('[data-selected-cases]')) return;
+            if ((target.closest('[data-hero-curtain]') && !target.closest('[data-editorial-overlay]')) || target.closest('[data-selected-cases]')) return;
             if (target === detailTitle || target.closest('[data-detail-header]')) return;
             createTextRevealTrigger(target);
         });
@@ -503,7 +503,7 @@ export function initTextReveal(container = document) {
         const textTagNames = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P', 'SPAN'];
 
         revealElements.forEach((el) => {
-            if (el.closest('[data-hero-curtain]') || el.closest('[data-selected-cases]') || el.dataset.textSplit === 'true') return;
+            if ((el.closest('[data-hero-curtain]') && !el.closest('[data-editorial-overlay]')) || el.closest('[data-selected-cases]') || el.dataset.textSplit === 'true') return;
 
             const isText = textTagNames.includes(el.tagName) && el.children.length === 0;
 

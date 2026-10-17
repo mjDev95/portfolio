@@ -90,6 +90,15 @@
                     <a href="{{ route('contact') }}">Contacto</a>
                 </div>
             </div>
+
+            {{-- Portal Circular Limpio (Transición Estilo CodePen yLpaEjx) --}}
+            {{-- Reside dentro de la capa blanca activa donde está el SVG Soul --}}
+            <div class="hero-curtain-portal-disc" data-portal-disc aria-hidden="true"></div>
+        </div>
+
+        {{-- Capa de la Sección Editorial entrante: Se monta DIRECTAMENTE encima del disco portal en expansión --}}
+        <div class="hero-curtain-editorial-overlay" data-editorial-overlay>
+            @include('partials.home.hero-editorial')
         </div>
     </div>
 </section>

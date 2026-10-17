@@ -13,6 +13,12 @@ export function cleanupHeroEditorial() {
     }
 }
 
+let activeCounters = [];
+
+export function triggerHeroEditorialCounters() {
+    activeCounters.forEach((run) => run());
+}
+
 /**
  * Initializes interactive animations for the Hero Editorial section:
  * - Incremental numerical count-up on statistics cards ([data-stat-counter]).
@@ -23,6 +29,7 @@ export function cleanupHeroEditorial() {
  */
 export function initHeroEditorial(container = document) {
     cleanupHeroEditorial();
+    activeCounters = [];
 
     const section = container.querySelector('#hero-editorial-2') || container.querySelector('.hero-editorial-section');
     if (!section) return;
@@ -53,22 +60,32 @@ export function initHeroEditorial(container = document) {
             el.textContent = formatValue(0);
 
             const state = { value: 0 };
+            let hasRun = false;
 
-            gsap.to(state, {
-                value: targetVal,
-                duration: 1.8,
-                ease: 'power2.out',
-                scrollTrigger: {
-                    trigger: el,
-                    start: 'top 85%',
-                    once: true,
-                },
-                onUpdate: () => {
-                    el.textContent = formatValue(state.value);
-                },
-                onComplete: () => {
-                    el.textContent = formatValue(targetVal);
-                },
+            const runCounter = () => {
+                if (hasRun) return;
+                hasRun = true;
+                gsap.to(state, {
+                    value: targetVal,
+                    duration: 1.8,
+                    ease: 'power2.out',
+                    onUpdate: () => {
+                        el.textContent = formatValue(state.value);
+                    },
+                    onComplete: () => {
+                        el.textContent = formatValue(targetVal);
+                    },
+                });
+            };
+
+            activeCounters.push(runCounter);
+
+            // También dejamos el ScrollTrigger si está en flujo normal
+            ScrollTrigger.create({
+                trigger: el,
+                start: 'top 85%',
+                once: true,
+                onEnter: runCounter,
             });
         });
     }, section);

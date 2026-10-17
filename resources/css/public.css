@@ -1747,6 +1747,46 @@ html.light .btn-universal.is-active {
     overflow: visible;
 }
 
+/* Disco Portal Circular (Inspiración CodePen: Scrolling Circle Transition) */
+.hero-curtain-portal-disc {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: rgb(211, 212, 207); /* Mismo gris exacto del SVG Soul */
+    pointer-events: none;
+    z-index: 99;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+    will-change: transform, opacity;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+}
+
+/* Capa de la Sección Editorial montada directamente sobre el disco portal */
+.hero-curtain-editorial-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 101;
+    pointer-events: none;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    will-change: transform, opacity;
+}
+
+.hero-curtain-editorial-overlay .hero-editorial-section {
+    padding-top: 0;
+    padding-bottom: 0;
+    background: transparent;
+}
+
 .brand-vector-lines path,
 .brand-vector-lines circle,
 .brand-vector-lines ellipse,
@@ -1754,6 +1794,12 @@ html.light .btn-universal.is-active {
     transform-box: fill-box;
     transform-origin: center;
     will-change: stroke-dashoffset, transform;
+}
+
+.eye-pupil-zoom {
+    transform-box: fill-box;
+    transform-origin: center;
+    will-change: transform;
 }
 
 .hero-curtain-bottom {
