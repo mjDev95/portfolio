@@ -114,23 +114,23 @@ export function initHeroCurtain(container) {
             return {
                 x: (eyeRect.left + eyeRect.width / 2) - layerRect.left,
                 y: (eyeRect.top + eyeRect.height / 2) - layerRect.top,
+                radius: Math.max(12, eyeRect.width / 2),
             };
         }
         return {
             x: window.innerWidth * 0.72,
             y: window.innerHeight * 0.5,
+            radius: 16,
         };
     }
 
     if (portalDisc) {
         const center = getEyeCenter();
+        const initialRadius = Math.round(center.radius || 15);
         gsap.set(portalDisc, {
-            left: () => getEyeCenter().x,
-            top: () => getEyeCenter().y,
-            scale: 0,
             opacity: 0,
-            xPercent: -50,
-            yPercent: -50,
+            clipPath: `circle(${initialRadius}px at ${center.x}px ${center.y}px)`,
+            webkitClipPath: `circle(${initialRadius}px at ${center.x}px ${center.y}px)`,
         });
     }
 
@@ -414,35 +414,44 @@ export function initHeroCurtain(container) {
     }
 
     // 9. FASE 4: ZOOM EXCLUSIVO DEL OJO (Portal Circular Limpio tipo CodePen yLpaEjx)
-    // El SVG Soul completo permanece 100% inmóvil en su lugar, sin escalarse ni trasladarse.
+    // El SVG Soul completo y todos los elementos permanecen en su sitio: es la cortina del círculo la que los cubre.
     // Solo el portal circular posicionado exactamente sobre el ojo crece de forma ultra nítida hasta cubrir la pantalla.
-    
-    // A. Desvanecemos suavemente el titular, el retrato y los textos para limpiar la escena
-    const curtainElementsToClear = [portrait, lightTitle, darkTitle, darkBio, darkSocial, ...section.querySelectorAll('.hero-curtain-top, .hero-curtain-bottom')].filter(Boolean);
-    if (curtainElementsToClear.length) {
-        tl.to(curtainElementsToClear, {
-            opacity: 0,
-            y: -15,
-            duration: 0.18,
-            ease: 'power2.in',
-        }, '>+0.06');
-    }
 
-    // B. El disco portal (.hero-curtain-portal-disc) se alinea exactamente al centro del ojo y escala nítidamente hasta cubrir toda la pantalla
+    // B. El disco portal (.hero-curtain-portal-disc) es una cortina full-bleed con clip-path: circle(...)
+    // Comienza en el tamaño exacto del ojo y se expande vectorialmente (100% nítido, sin blur ni escalado de píxeles) hasta cubrir toda la pantalla.
     if (portalDisc) {
-        // En el instante de inicio de Phase 4, fijamos la posición calculada del ojo y opacidad 1
+        // En el instante de inicio de Phase 4, sincronizamos la posición exacta del ojo y mostramos la cortina
         tl.set(portalDisc, {
-            left: () => getEyeCenter().x,
-            top: () => getEyeCenter().y,
-            scale: 0.25,
             opacity: 1,
-            xPercent: -50,
-            yPercent: -50,
+            clipPath: () => {
+                const c = getEyeCenter();
+                return `circle(${Math.round(c.radius || 15)}px at ${Math.round(c.x)}px ${Math.round(c.y)}px)`;
+            },
+            webkitClipPath: () => {
+                const c = getEyeCenter();
+                return `circle(${Math.round(c.radius || 15)}px at ${Math.round(c.x)}px ${Math.round(c.y)}px)`;
+            },
         }, '<');
 
-        // Escala exponencialmente limpia (scale: 65x de un círculo de 60px = 3900px de diámetro, cubriendo completamente 100vw x 100vh)
+        // Expansión vectorial continua tipo CodePen: radio de 150vmax a 160% garantiza cubrir cualquier viewport
         tl.to(portalDisc, {
-            scale: 65,
+            clipPath: () => {
+                const c = getEyeCenter();
+                // Radio suficiente para cubrir todas las esquinas desde (c.x, c.y)
+                const maxDist = Math.hypot(
+                    Math.max(c.x, window.innerWidth - c.x),
+                    Math.max(c.y, window.innerHeight - c.y)
+                ) + 100;
+                return `circle(${Math.ceil(maxDist)}px at ${Math.round(c.x)}px ${Math.round(c.y)}px)`;
+            },
+            webkitClipPath: () => {
+                const c = getEyeCenter();
+                const maxDist = Math.hypot(
+                    Math.max(c.x, window.innerWidth - c.x),
+                    Math.max(c.y, window.innerHeight - c.y)
+                ) + 100;
+                return `circle(${Math.ceil(maxDist)}px at ${Math.round(c.x)}px ${Math.round(c.y)}px)`;
+            },
             duration: 0.65,
             ease: 'power2.in',
         }, '<+0.02');
