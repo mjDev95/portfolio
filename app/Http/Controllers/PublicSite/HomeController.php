@@ -17,7 +17,7 @@ class HomeController extends Controller
         $blogCpt = ContentType::where('slug', Post::TYPE_SLUG)->where('is_public', true)->first();
 
         $projects = Project::showcase(6)->get();
-        $latestPosts = Post::latestEditorial(6)->get();
+        $latestPosts = Post::latestEditorial(1)->get();
 
         return view('home', [
             'projects' => $projects,

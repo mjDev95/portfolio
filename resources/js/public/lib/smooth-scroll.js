@@ -94,7 +94,6 @@ export function resetScroll() {
 
     if (lenis) {
         lenis.scrollTo(0, { immediate: true, force: true });
-        lenis.scroll = 0;
         lenis.targetScroll = 0;
         lenis.animatedScroll = 0;
         lenis.velocity = 0;

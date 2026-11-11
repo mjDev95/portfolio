@@ -1,6 +1,6 @@
 import { initSmoothScroll, ScrollTrigger } from './lib/smooth-scroll';
 import { initMagneticCursor } from './lib/magnetic-cursor';
-import { initBarba } from './lib/transitions';
+import { initBarba, playInitialLiquidReveal } from './lib/transitions';
 import { initPageAnimations } from './animations/init-page';
 import { initContactForm } from './lib/contact-form';
 import { sendAnalyticsPing } from './lib/tracker';
@@ -87,5 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
             initFooterReveal();
         },
     });
+
+    playInitialLiquidReveal();
 });
 

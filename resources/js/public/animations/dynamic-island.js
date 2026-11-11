@@ -1,654 +1,299 @@
 import gsap from 'gsap';
 import { getLenis, ScrollTrigger } from '../lib/smooth-scroll';
+import { buildPixelGrid, schedulePixelWave } from './shared/pixel-wave';
+import { initMagnetic } from './shared/magnetic';
 
-/**
- * Dynamic Island Dual Architecture (Portavia-style):
- * 1. Desktop Island (#desktop-island):
- *    - Exclusivo para >= 1024px.
- *    - Inicia expandida en el Hero y Hero Editorial.
- *    - Al llegar a Servicios (#services, start: 'top 30%'), se compacta.
- *    - REGLA ESTRICTA: Al regresar hacia arriba en scroll, NO aplica reverse; se queda compactada.
- *    - Hover en Desktop (cuando está compactada): se expande suavemente y colapsa al salir el cursor.
- *
- * 2. Mobile Island (#mobile-island):
- *    - Exclusivo para < 1024px.
- *    - Jamás se muestra expandida como en ordenador.
- *    - Cabecera fija con avatar, status "Available for work" y toggle button.
- *    - Al abrirse, se expande estrictamente sobre el Eje Y mediante un GSAP timeline suave.
- *    - Las barras animan de hamburguesa a una "X" perfecta.
- *    - Cierre suave reversible con timeline.reverse() al hacer click en el toggle, al hacer click
- *      fuera de la cápsula, o al pulsar cualquier enlace.
- */
+let swapTl = null;
+let drawerTl = null;
+let isDrawerOpen = false;
+let boundEvents = false;
+let lenisBound = false;
 
-let servicesTrigger = null;
-let isDesktopCompacted = false;
-let isDesktopHovered = false;
-let isNavigating = false;
-
-let mobileTl = null;
-let isMobileExpanded = false;
-let outsideClickHandler = null;
-
-export function initDynamicIsland(preserveState = true) {
-    cleanupDynamicIsland(preserveState);
-
-    initDesktopIsland();
-    initMobileIsland();
-    initAnchorScroll();
+export function isNavDrawerOpen() {
+    return isDrawerOpen;
 }
 
-/**
- * ─────────────────────────────────────────────────────────────
- * 1. DESKTOP ISLAND (>= 1024px)
- * ─────────────────────────────────────────────────────────────
- */
-export function hasNavigated() {
-    if (typeof window === 'undefined') return false;
-    try {
-        if (sessionStorage.getItem('portfolio_navigated') === 'true') {
-            return true;
-        }
-    } catch (e) {}
-    return Boolean(window.__hasNavigatedInternal);
+export function isNavDrawerClosing() {
+    return Boolean(drawerTl && drawerTl.progress() > 0);
 }
 
-export function markNavigated() {
-    if (typeof window === 'undefined') return;
-    try {
-        sessionStorage.setItem('portfolio_navigated', 'true');
-    } catch (e) {}
-    window.__hasNavigatedInternal = true;
-    window.__portfolioPillWasCompacted = true;
-    isDesktopCompacted = true;
-}
-
-function bindDesktopIslandHover(desktopIsland, expandedBlock, compactBlock) {
-    if (!desktopIsland.dataset.hoverBound) {
-        desktopIsland.dataset.hoverBound = 'true';
-        desktopIsland.addEventListener('mouseenter', () => {
-            if (window.innerWidth < 1024 || !isDesktopCompacted || isNavigating) return;
-            isDesktopHovered = true;
-            transitionDesktopToExpanded(desktopIsland, expandedBlock, compactBlock, false);
-        });
-
-        desktopIsland.addEventListener('mouseleave', () => {
-            if (window.innerWidth < 1024) return;
-            isDesktopHovered = false;
-            if (isDesktopCompacted) {
-                transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, false);
-            }
-        });
-
-        // Microinteracción cinemática: al pulsar un enlace de navegación dentro
-        // de la píldora expandida, colapsar inmediatamente a modo compacto antes de salir
-        const navLinks = expandedBlock.querySelectorAll('a');
-        navLinks.forEach((link) => {
-            link.addEventListener('click', () => {
-                isNavigating = true;
-                isDesktopHovered = false;
-                isDesktopCompacted = true;
-                markNavigated();
-                transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, false);
-
-                // Bloqueo temporal para que el puntero inmóvil no re-abra la píldora al llegar a la nueva vista
-                setTimeout(() => {
-                    isNavigating = false;
-                }, 1200);
-            });
-        });
+function getCurrentScrollY(explicitY) {
+    if (typeof explicitY === 'number') {
+        return explicitY;
     }
-}
-
-export function isDesktopIslandCompacted() {
-    const desktopIsland = typeof document !== 'undefined' ? document.getElementById('desktop-island') : null;
-    return isDesktopCompacted || hasNavigated() || Boolean(desktopIsland?.classList.contains('is-compacted'));
-}
-
-export function syncDesktopIslandState(forceCompacted = null) {
-    if (typeof window !== 'undefined' && window.innerWidth < 1024) return;
-
-    const desktopIsland = document.getElementById('desktop-island');
-    if (!desktopIsland) return;
-
-    const expandedBlock = document.getElementById('desktop-island-expanded');
-    const compactBlock = document.getElementById('desktop-island-compact');
-    if (!expandedBlock || !compactBlock) return;
-
-    const userHasNavigated = hasNavigated();
-
-    const shouldBeCompacted = forceCompacted !== null
-        ? Boolean(forceCompacted)
-        : (userHasNavigated ||
-           isDesktopCompacted ||
-           desktopIsland.classList.contains('is-compacted'));
-
-    if (shouldBeCompacted) {
-        isDesktopCompacted = true;
-        markNavigated();
-        transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, true);
-    } else {
-        isDesktopCompacted = false;
-        transitionDesktopToExpanded(desktopIsland, expandedBlock, compactBlock, true);
+    const lenis = getLenis();
+    if (lenis && typeof lenis.scroll === 'number') {
+        return lenis.scroll;
     }
-
-    bindDesktopIslandHover(desktopIsland, expandedBlock, compactBlock);
+    return window.scrollY || document.documentElement.scrollTop || 0;
 }
 
-function initDesktopIsland() {
-    isDesktopHovered = false;
+function updateActiveNavLinks() {
+    const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+    const links = document.querySelectorAll('.nav-flat-link, .drawer-nav-link');
 
-    const desktopIsland = document.getElementById('desktop-island');
-    if (!desktopIsland) return;
-
-    const expandedBlock = document.getElementById('desktop-island-expanded');
-    const compactBlock = document.getElementById('desktop-island-compact');
-    if (!expandedBlock || !compactBlock) return;
-
-    // REGLA FUNDAMENTAL DE NAVEGACIÓN:
-    // Si venimos de otra sección (navegación interna SPA o cualquier página previa en la sesión),
-    // DEBE llegar y mantenerse colapsada/compactada.
-    // Solo si es primera carga por URL directa entra expandida para dar a conocer el menú.
-    const userHasNavigated = hasNavigated();
-    const wasCompacted = userHasNavigated ||
-                         isDesktopCompacted ||
-                         desktopIsland.classList.contains('is-compacted');
-
-    const servicesEl = document.getElementById('services');
-
-    if (wasCompacted) {
-        syncDesktopIslandState(true);
-    } else {
-        // Entrada directa por URL: evaluar si ya pasamos físicamente la sección #services o 300px
-        const currentY = window.scrollY || document.documentElement.scrollTop || 0;
-        if (servicesEl) {
-            const servicesRect = servicesEl.getBoundingClientRect();
-            const isAlreadyAtServices = servicesRect.top <= window.innerHeight * 0.3 && currentY > 1600;
-            if (isAlreadyAtServices) {
-                syncDesktopIslandState(true);
-            } else {
-                syncDesktopIslandState(false);
-            }
-        } else {
-            if (currentY >= 300) {
-                syncDesktopIslandState(true);
-            } else {
-                syncDesktopIslandState(false);
-            }
-        }
-    }
-
-    if (servicesEl) {
-        servicesTrigger = ScrollTrigger.create({
-            trigger: servicesEl,
-            start: 'top 30%',
-            onEnter: () => {
-                if (isDesktopCompacted) return;
-                isDesktopCompacted = true;
-                markNavigated();
-                if (!isDesktopHovered) {
-                    transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, false);
-                }
-            },
-            // REGLA: Sin onLeaveBack (no revierte al volver arriba)
-            invalidateOnRefresh: true,
-        });
-    } else {
-        servicesTrigger = ScrollTrigger.create({
-            start: 300,
-            onEnter: () => {
-                if (isDesktopCompacted) return;
-                isDesktopCompacted = true;
-                markNavigated();
-                if (!isDesktopHovered) {
-                    transitionDesktopToCompact(desktopIsland, expandedBlock, compactBlock, false);
-                }
-            },
-            invalidateOnRefresh: true,
-        });
-    }
-
-    bindDesktopIslandHover(desktopIsland, expandedBlock, compactBlock);
-}
-
-function getElementTargetWidth(el, container) {
-    const clone = el.cloneNode(true);
-    clone.style.position = 'absolute';
-    clone.style.visibility = 'hidden';
-    clone.style.display = 'flex';
-    clone.style.pointerEvents = 'none';
-    clone.style.left = '-9999px';
-    clone.style.top = '-9999px';
-    clone.style.width = 'max-content';
-    clone.style.opacity = '0';
-    document.body.appendChild(clone);
-    const contentWidth = clone.offsetWidth;
-    document.body.removeChild(clone);
-
-    const comp = window.getComputedStyle(container);
-    const padLeft = parseFloat(comp.paddingLeft) || 8;
-    const padRight = parseFloat(comp.paddingRight) || 8;
-    const borderLeft = parseFloat(comp.borderLeftWidth) || 1;
-    const borderRight = parseFloat(comp.borderRightWidth) || 1;
-
-    return Math.ceil(contentWidth + padLeft + padRight + borderLeft + borderRight);
-}
-
-function transitionDesktopToCompact(island, expandedBlock, compactBlock, immediate = false) {
-    if (immediate) {
-        island.classList.add('is-compacted');
-        island.classList.remove('is-expanded');
-        const targetWidth = getElementTargetWidth(compactBlock, island);
-        gsap.set(island, { width: targetWidth, scaleY: 1 });
-        gsap.set(compactBlock, {
-            position: 'relative',
-            left: 'auto',
-            top: 'auto',
-            yPercent: 0,
-            x: 0,
-            scale: 1,
-            filter: 'none',
-            opacity: 1,
-            visibility: 'visible',
-            pointerEvents: 'auto',
-        });
-        gsap.set(expandedBlock, {
-            position: 'absolute',
-            left: '0.45rem',
-            top: '50%',
-            yPercent: -50,
-            x: 0,
-            scale: 0.86,
-            filter: 'blur(5px)',
-            opacity: 0,
-            visibility: 'hidden',
-            pointerEvents: 'none',
-        });
-        return;
-    }
-
-    gsap.killTweensOf([island, expandedBlock, compactBlock]);
-
-    const targetWidth = getElementTargetWidth(compactBlock, island);
-    const currentWidth = island.offsetWidth;
-    island.style.width = currentWidth + 'px';
-
-    gsap.set(compactBlock, {
-        position: 'absolute',
-        left: '0.45rem',
-        top: '50%',
-        yPercent: -50,
-        opacity: 0,
-        scale: 0.86,
-        filter: 'blur(5px)',
-        x: 10,
-        visibility: 'visible',
-        pointerEvents: 'none',
+    links.forEach((link) => {
+        try {
+            const url = new URL(link.href, window.location.origin);
+            const linkPath = url.pathname.replace(/\/+$/, '') || '/';
+            const isActive = linkPath === '/'
+                ? currentPath === '/'
+                : currentPath === linkPath || currentPath.startsWith(linkPath + '/');
+            link.classList.toggle('active', isActive);
+        } catch (e) {}
     });
+}
 
-    const tl = gsap.timeline({
+function ensureSwapTimeline() {
+    const flatBar = document.getElementById('nav-flat-bar');
+    const toggle = document.getElementById('nav-magnetic-toggle');
+    if (!flatBar || !toggle) return null;
+
+    if (swapTl) return swapTl;
+
+    swapTl = gsap.timeline({
+        paused: true,
+        onStart: () => {
+            flatBar.classList.add('is-hidden');
+            toggle.classList.add('is-visible');
+        },
         onComplete: () => {
-            island.classList.add('is-compacted');
-            island.classList.remove('is-expanded');
-            gsap.set(compactBlock, {
-                position: 'relative',
-                left: 'auto',
-                top: 'auto',
-                yPercent: 0,
-                x: 0,
-                scale: 1,
-                opacity: 1,
-                filter: 'none',
-                visibility: 'visible',
-                pointerEvents: 'auto',
-            });
-            gsap.set(expandedBlock, {
-                position: 'absolute',
-                left: '0.45rem',
-                top: '50%',
-                yPercent: -50,
-                x: 0,
-                scale: 0.86,
-                opacity: 0,
-                filter: 'blur(5px)',
-                visibility: 'hidden',
-                pointerEvents: 'none',
-            });
-            island.style.width = targetWidth + 'px';
-            gsap.set(island, { scaleY: 1 });
+            flatBar.classList.add('is-hidden');
+            toggle.classList.add('is-visible');
+        },
+        onReverseComplete: () => {
+            flatBar.classList.remove('is-hidden');
+            toggle.classList.remove('is-visible');
+            gsap.set(toggle, { x: 0, y: 0 });
         },
     });
 
-    // 1. Morfología física Apple: contracción fluida del ancho + compresión de volumen
-    tl.to(island, {
-        width: targetWidth,
-        duration: 0.48,
-        ease: 'power4.out',
-    }, 0);
-
-    tl.to(island, {
-        scaleY: 0.94,
-        duration: 0.2,
-        ease: 'power2.out',
-    }, 0);
-    tl.to(island, {
-        scaleY: 1,
-        duration: 0.28,
-        ease: 'power2.out',
-    }, 0.2);
-
-    // 2. El menú expandido se contrae suavemente, se desenfoca y desaparece
-    tl.to(expandedBlock, {
-        opacity: 0,
-        scale: 0.86,
-        filter: 'blur(5px)',
-        x: -10,
-        duration: 0.22,
-        ease: 'power2.in',
-    }, 0);
-
-    // 3. Emerge el bloque compacto ("Available for work" + estrellas) con rebote elástico Apple
-    tl.to(compactBlock, {
-        opacity: 1,
-        scale: 1,
-        filter: 'blur(0px)',
-        x: 0,
-        duration: 0.36,
-        ease: 'back.out(1.5)',
-    }, 0.12);
-}
-
-function transitionDesktopToExpanded(island, expandedBlock, compactBlock, immediate = false) {
-    if (immediate) {
-        island.classList.remove('is-compacted');
-        island.classList.add('is-expanded');
-        gsap.set(island, { width: 'auto', scaleY: 1 });
-        gsap.set(expandedBlock, {
-            position: 'relative',
-            left: 'auto',
-            top: 'auto',
-            yPercent: 0,
-            x: 0,
-            scale: 1,
-            filter: 'none',
-            opacity: 1,
-            visibility: 'visible',
-            pointerEvents: 'auto',
-        });
-        gsap.set(compactBlock, {
-            position: 'absolute',
-            left: '0.45rem',
-            top: '50%',
-            yPercent: -50,
-            x: 0,
-            scale: 0.88,
-            filter: 'blur(4px)',
-            opacity: 0,
-            visibility: 'hidden',
-            pointerEvents: 'none',
-        });
-        return;
-    }
-
-    gsap.killTweensOf([island, expandedBlock, compactBlock]);
-
-    const targetWidth = getElementTargetWidth(expandedBlock, island);
-    const currentWidth = island.offsetWidth;
-    island.style.width = currentWidth + 'px';
-
-    gsap.set(expandedBlock, {
-        position: 'absolute',
-        left: '0.45rem',
-        top: '50%',
-        yPercent: -50,
-        opacity: 0,
-        scale: 0.88,
-        filter: 'blur(5px)',
-        x: -10,
-        visibility: 'visible',
-        pointerEvents: 'none',
-    });
-
-    const tl = gsap.timeline({
-        onComplete: () => {
-            island.classList.remove('is-compacted');
-            island.classList.add('is-expanded');
-            gsap.set(expandedBlock, {
-                position: 'relative',
-                left: 'auto',
-                top: 'auto',
-                yPercent: 0,
-                x: 0,
-                scale: 1,
-                opacity: 1,
-                filter: 'none',
-                visibility: 'visible',
-                pointerEvents: 'auto',
-            });
-            gsap.set(compactBlock, {
-                position: 'absolute',
-                left: '0.45rem',
-                top: '50%',
-                yPercent: -50,
-                x: 0,
-                scale: 0.88,
-                opacity: 0,
-                filter: 'blur(5px)',
-                visibility: 'hidden',
-                pointerEvents: 'none',
-            });
-            island.style.width = 'auto';
-            gsap.set(island, { scaleY: 1 });
-        },
-    });
-
-    // 1. Morfología física Apple: estiramiento elástico orgánico del ancho exterior
-    tl.to(island, {
-        width: targetWidth,
-        duration: 0.52,
-        ease: 'back.out(1.15)',
-    }, 0);
-
-    tl.to(island, {
-        scaleY: 0.95,
-        duration: 0.22,
-        ease: 'power2.out',
-    }, 0);
-    tl.to(island, {
-        scaleY: 1,
-        duration: 0.3,
-        ease: 'power2.out',
-    }, 0.22);
-
-    // 2. Desvanecimiento y contracción suave del bloque compacto
-    tl.to(compactBlock, {
-        opacity: 0,
-        scale: 0.88,
-        filter: 'blur(5px)',
-        x: 10,
-        duration: 0.18,
-        ease: 'power2.in',
-    }, 0);
-
-    // 3. Emerge con impulso elástico el menú expandido completo
-    tl.to(expandedBlock, {
-        opacity: 1,
-        scale: 1,
-        filter: 'blur(0px)',
-        x: 0,
-        duration: 0.38,
-        ease: 'back.out(1.35)',
-    }, 0.1);
-}
-
-/**
- * ─────────────────────────────────────────────────────────────
- * 2. MOBILE & TABLET ISLAND (< 1024px)
- * ─────────────────────────────────────────────────────────────
- */
-function initMobileIsland() {
-    const mobileIsland = document.getElementById('mobile-island');
-    if (!mobileIsland) return;
-
-    const toggleBtn = document.getElementById('mobile-island-toggle');
-    const barTop = toggleBtn ? toggleBtn.querySelector('.bar-top') : null;
-    const barBot = toggleBtn ? toggleBtn.querySelector('.bar-bot') : null;
-    const mobileBody = document.getElementById('mobile-island-body');
-    const navLinks = mobileIsland.querySelectorAll('.mobile-island-link');
-    const footer = mobileIsland.querySelector('.mobile-island-footer');
-
-    if (!toggleBtn || !barTop || !barBot || !mobileBody) return;
-
-    function buildTimeline() {
-        if (mobileTl) {
-            mobileTl.kill();
-            mobileTl = null;
-        }
-
-        // Medir altura natural del cuerpo para animación fluida en el Eje Y
-        const prevH = mobileBody.style.height;
-        const prevDisp = mobileBody.style.display;
-        const prevVis = mobileBody.style.visibility;
-        mobileBody.style.height = 'auto';
-        mobileBody.style.display = 'block';
-        mobileBody.style.visibility = 'hidden';
-        const targetHeight = mobileBody.offsetHeight || mobileBody.scrollHeight || 340;
-        mobileBody.style.height = prevH;
-        mobileBody.style.display = prevDisp;
-        mobileBody.style.visibility = prevVis;
-
-        mobileTl = gsap.timeline({
-            paused: true,
-            reversed: true,
-            onStart: () => {
-                mobileIsland.classList.add('is-open');
-                toggleBtn.setAttribute('aria-expanded', 'true');
-            },
-            onReverseComplete: () => {
-                mobileIsland.classList.remove('is-open');
-                toggleBtn.setAttribute('aria-expanded', 'false');
-                gsap.set(mobileBody, { height: 0, opacity: 0 });
-                isMobileExpanded = false;
-            },
-        });
-
-        // 1. Transformación de las barras a una 'X' perfecta
-        mobileTl.to(barTop, {
-            y: 3,
-            rotation: 45,
-            duration: 0.35,
-            ease: 'power3.inOut',
-        }, 0);
-
-        mobileTl.to(barBot, {
-            y: -3,
-            rotation: -45,
-            duration: 0.35,
-            ease: 'power3.inOut',
-        }, 0);
-
-        // 2. Expansión fluida de la cápsula estrictamente sobre el Eje Y
-        mobileTl.fromTo(mobileBody,
-            { height: 0, opacity: 0 },
-            {
-                height: targetHeight,
-                opacity: 1,
-                duration: 0.44,
-                ease: 'power3.inOut',
-            },
+    swapTl
+        .fromTo(
+            flatBar,
+            { autoAlpha: 1, y: 0 },
+            { autoAlpha: 0, y: -14, duration: 0.22, ease: 'power2.in' },
             0
+        )
+        .fromTo(
+            toggle,
+            { autoAlpha: 0, scale: 0.4 },
+            { autoAlpha: 1, scale: 1, duration: 0.36, ease: 'back.out(1.7)' },
+            0.12
         );
 
-        // 3. Stagger de los enlaces de navegación
-        if (navLinks.length) {
-            mobileTl.fromTo(navLinks,
-                { opacity: 0, y: 12 },
-                {
-                    opacity: 1,
-                    y: 0,
-                    duration: 0.3,
-                    stagger: 0.035,
-                    ease: 'power2.out',
-                },
-                0.12
-            );
-        }
+    return swapTl;
+}
 
-        // 4. Stagger de las acciones del footer
-        if (footer) {
-            mobileTl.fromTo(footer,
-                { opacity: 0, y: 8 },
-                {
-                    opacity: 1,
-                    y: 0,
-                    duration: 0.28,
-                    ease: 'power2.out',
-                },
-                0.2
-            );
-        }
-    }
+export function syncScrollSwapState(immediate = false, explicitY = undefined) {
+    const flatBar = document.getElementById('nav-flat-bar');
+    const toggle = document.getElementById('nav-magnetic-toggle');
+    if (!flatBar || !toggle) return;
 
-    function toggleMobile() {
-        if (!mobileTl) {
-            buildTimeline();
+    const tl = ensureSwapTimeline();
+    if (!tl) return;
+
+    const isDrawerActiveOrClosing = isDrawerOpen || Boolean(drawerTl && drawerTl.progress() > 0);
+    const shouldShowToggle = window.innerWidth < 1024 || isDrawerActiveOrClosing || getCurrentScrollY(explicitY) > 60;
+
+    if (shouldShowToggle) {
+        flatBar.classList.add('is-hidden');
+        toggle.classList.add('is-visible');
+        if (immediate) {
+            tl.progress(1).pause();
+        } else if (tl.reversed() || (tl.paused() && tl.progress() < 1)) {
+            tl.play();
         }
-        if (mobileTl.reversed()) {
-            isMobileExpanded = true;
-            mobileTl.play();
-        } else {
-            isMobileExpanded = false;
-            mobileTl.reverse();
+    } else {
+        if (immediate) {
+            flatBar.classList.remove('is-hidden');
+            toggle.classList.remove('is-visible');
+            gsap.set(toggle, { x: 0, y: 0 });
+            tl.progress(0).pause();
+        } else if (!tl.reversed() && tl.progress() > 0) {
+            tl.reverse();
         }
     }
+}
 
-    function closeMobile() {
-        if (mobileTl && !mobileTl.reversed()) {
-            isMobileExpanded = false;
-            mobileTl.reverse();
-        }
-    }
-
-    if (!mobileIsland.dataset.bound) {
-        mobileIsland.dataset.bound = 'true';
-
-        toggleBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleMobile();
-        });
-
-        // Cerrar al hacer click fuera de la cápsula
-        outsideClickHandler = (e) => {
-            if (isMobileExpanded && !mobileIsland.contains(e.target)) {
-                closeMobile();
-            }
-        };
-        document.addEventListener('click', outsideClickHandler);
-
-        // Cerrar al hacer click en cualquier enlace o botón interno (excepto theme toggle)
-        const interactiveLinks = mobileBody.querySelectorAll('a, button:not(#mobile-island-theme-toggle)');
-        interactiveLinks.forEach((link) => {
-            link.addEventListener('click', () => {
-                closeMobile();
-            });
-        });
-
-        // Reconstruir timeline al redimensionar la ventana (giro de pantalla móvil)
-        window.addEventListener('resize', () => {
-            if (window.innerWidth < 1024 && isMobileExpanded && mobileTl) {
-                buildTimeline();
-                mobileTl.progress(1);
-            }
+function bindScrollSync() {
+    const lenis = getLenis();
+    if (lenis && !lenisBound) {
+        lenisBound = true;
+        lenis.on('scroll', ({ scroll }) => {
+            syncScrollSwapState(false, scroll);
         });
     }
 }
 
-/**
- * ─────────────────────────────────────────────────────────────
- * 3. LENIS ANCHOR SCROLL
- * ─────────────────────────────────────────────────────────────
- */
+function buildDrawerTimeline() {
+    const drawer = document.getElementById('nav-pixel-drawer');
+    const gridEl = document.getElementById('drawer-pixel-grid');
+    const surface = document.getElementById('drawer-surface');
+    const backdrop = document.getElementById('nav-drawer-backdrop');
+    const toggle = document.getElementById('nav-magnetic-toggle');
+    if (!drawer || !gridEl || !surface) return;
+
+    if (drawerTl) {
+        drawerTl.kill();
+    }
+
+    const isDesktop = window.innerWidth >= 1024;
+    const panelWidth = isDesktop ? (window.innerWidth || 1440) * 0.5 : (window.innerWidth || 390);
+    const panelHeight = window.innerHeight || 900;
+
+    const gridState = buildPixelGrid(gridEl, {
+        initialOpacity: 0,
+        cellClass: 'drawer-pixel-cell',
+        cols: isDesktop ? 10 : null,
+        width: panelWidth,
+        height: panelHeight,
+    });
+
+    const barTop = toggle?.querySelector('.bar-top');
+    const barBot = toggle?.querySelector('.bar-bot');
+
+    if (barTop && barBot) {
+        gsap.set(barTop, { y: -4, rotation: 0 });
+        gsap.set(barBot, { y: 4, rotation: 0 });
+    }
+    gsap.set(surface, { opacity: 0 });
+    if (backdrop) gsap.set(backdrop, { opacity: 0 });
+
+    drawerTl = gsap.timeline({
+        paused: true,
+        reversed: true,
+        onStart: () => {
+            drawer.classList.add('is-open');
+            drawer.setAttribute('aria-hidden', 'false');
+            toggle?.setAttribute('aria-expanded', 'true');
+            getLenis()?.stop();
+        },
+        onReverseComplete: () => {
+            drawer.classList.remove('is-open');
+            drawer.setAttribute('aria-hidden', 'true');
+            toggle?.setAttribute('aria-expanded', 'false');
+            isDrawerOpen = false;
+            const wipe = document.getElementById('transition-wipe');
+            if (!wipe || wipe.style.visibility === 'hidden') {
+                getLenis()?.start();
+            }
+            syncScrollSwapState(false);
+        },
+    });
+
+    if (barTop && barBot) {
+        drawerTl.to(barTop, { y: 0, rotation: 45, duration: 0.32, ease: 'power2.inOut' }, 0);
+        drawerTl.to(barBot, { y: 0, rotation: -45, duration: 0.32, ease: 'power2.inOut' }, 0);
+    }
+
+    if (backdrop) {
+        drawerTl.to(backdrop, { opacity: 1, duration: 0.35, ease: 'power2.out' }, 0);
+    }
+
+    const waveEndTime = schedulePixelWave(drawerTl, gridState, {
+        fromOpacity: 0,
+        toOpacity: 1,
+        direction: 'right-to-left',
+        startOffset: 0,
+    });
+
+    drawerTl.to(
+        surface,
+        { opacity: 1, duration: 0.3, ease: 'power2.out' },
+        Math.max(0.15, waveEndTime - 0.08)
+    );
+}
+
+export function openNavDrawer() {
+    if (!drawerTl) buildDrawerTimeline();
+    if (!drawerTl) return;
+    isDrawerOpen = true;
+    drawerTl.timeScale(1).play();
+}
+
+export function closeNavDrawer(immediate = false) {
+    if (!drawerTl) return;
+    isDrawerOpen = false;
+    if (immediate) {
+        drawerTl.pause(0);
+        const drawer = document.getElementById('nav-pixel-drawer');
+        const toggle = document.getElementById('nav-magnetic-toggle');
+        drawer?.classList.remove('is-open');
+        drawer?.setAttribute('aria-hidden', 'true');
+        toggle?.setAttribute('aria-expanded', 'false');
+        syncScrollSwapState(true, 0);
+        return;
+    }
+    drawerTl.timeScale(1.35).reverse();
+}
+
+export function toggleNavDrawer() {
+    if (!drawerTl || drawerTl.reversed()) {
+        openNavDrawer();
+    } else {
+        closeNavDrawer();
+    }
+}
+
+function bindGlobalDrawerEvents() {
+    if (boundEvents) return;
+    boundEvents = true;
+
+    ScrollTrigger.addEventListener('refresh', () => {
+        syncScrollSwapState(false);
+    });
+
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('#nav-magnetic-toggle')) {
+            e.stopPropagation();
+            toggleNavDrawer();
+            return;
+        }
+        const drawerLink = e.target.closest('[data-drawer-link]');
+        if (isDrawerOpen && drawerLink) {
+            const href = drawerLink.getAttribute('href');
+            if (href) {
+                try {
+                    const targetUrl = new URL(href, window.location.origin);
+                    const curPath = window.location.pathname.replace(/\/+$/, '') || '/';
+                    const nextPath = targetUrl.pathname.replace(/\/+$/, '') || '/';
+                    if (targetUrl.origin === window.location.origin && curPath === nextPath && !targetUrl.hash) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        closeNavDrawer(false);
+                        return;
+                    }
+                } catch (_) {}
+            }
+            closeNavDrawer(false);
+            return;
+        }
+        if (isDrawerOpen && e.target.closest('#nav-drawer-backdrop')) {
+            closeNavDrawer(false);
+        }
+    });
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isDrawerOpen) {
+            closeNavDrawer();
+        }
+    });
+
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            syncScrollSwapState(true);
+            if (!isDrawerOpen) {
+                buildDrawerTimeline();
+            }
+        }, 200);
+    });
+}
+
 function initAnchorScroll() {
-    const links = document.querySelectorAll('.island-nav-link, .mobile-island-link');
+    const links = document.querySelectorAll('.nav-flat-link, .drawer-nav-link');
     links.forEach((link) => {
         if (link.dataset.anchorBound === 'true') return;
         link.dataset.anchorBound = 'true';
@@ -669,40 +314,38 @@ function initAnchorScroll() {
     });
 }
 
-/**
- * ─────────────────────────────────────────────────────────────
- * 4. BARBA TRANSITION COORDINATION & CLEANUP
- * ─────────────────────────────────────────────────────────────
- */
+export function initDynamicIsland() {
+    const header = document.getElementById('site-header');
+    const drawer = document.getElementById('nav-pixel-drawer');
+    if (!header) return;
 
-/**
- * Gently accommodates the desktop island to its definitive state on the new page
- * without abrupt resets or flickering.
- */
-export function accommodateDynamicIsland() {
-    syncDesktopIslandState();
+    initMagnetic(header);
+    if (drawer) initMagnetic(drawer);
+    updateActiveNavLinks();
+    ensureSwapTimeline();
+    bindScrollSync();
+    syncScrollSwapState(true);
+    requestAnimationFrame(() => syncScrollSwapState(true));
+
+    if (!drawerTl) {
+        buildDrawerTimeline();
+    }
+
+    initAnchorScroll();
+    bindGlobalDrawerEvents();
 }
 
-export function cleanupDynamicIsland(preserveState = false) {
-    if (servicesTrigger) {
-        servicesTrigger.kill();
-        servicesTrigger = null;
-    }
-    if (mobileTl) {
-        mobileTl.kill();
-        mobileTl = null;
-    }
-    if (outsideClickHandler) {
-        document.removeEventListener('click', outsideClickHandler);
-        outsideClickHandler = null;
-    }
-
-    if (!preserveState) {
-        if (!hasNavigated()) {
-            isDesktopCompacted = false;
-        }
-        isDesktopHovered = false;
-        isMobileExpanded = false;
-        isNavigating = false;
+export function cleanupDynamicIsland(immediate = false) {
+    if (isDrawerOpen || isNavDrawerClosing()) {
+        closeNavDrawer(immediate);
     }
 }
+
+export function syncDesktopIslandState(immediate = true) {
+    updateActiveNavLinks();
+    syncScrollSwapState(immediate, 0);
+}
+
+export function markNavigated() {}
+export function isDesktopIslandCompacted() { return true; }
+export function accommodateDynamicIsland() {}

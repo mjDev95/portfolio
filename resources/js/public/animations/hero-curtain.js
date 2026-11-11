@@ -1,7 +1,7 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from '../lib/smooth-scroll';
 import { splitTextIntoChars, finalizeBlurChars, animateBlurChars } from './shared/text-reveal';
-import { triggerHeroEditorialCounters } from './hero-editorial';
+import { triggerHeroEditorialCounters, resetHeroEditorialCounters } from './hero-editorial';
 
 let curtainCtx = null;
 
@@ -27,14 +27,10 @@ export function initHeroCurtain(container) {
     const navbar = document.querySelector('.site-header-fixed');
 
     if (!section) {
-        // En páginas sin hero curtain, aseguramos que el navbar esté completamente visible
+        // En páginas sin hero curtain, aseguramos que el contenedor del header esté visible
         if (navbar) {
             navbar.classList.remove('navbar-curtain-hidden');
-            gsap.set(navbar, { autoAlpha: 1, y: 0, scale: 1, pointerEvents: 'auto' });
-            const islands = navbar.querySelectorAll('.nav-desktop-island, .nav-mobile-island');
-            if (islands.length) {
-                gsap.set(islands, { scale: 1, opacity: 1, filter: 'none', y: 0 });
-            }
+            gsap.set(navbar, { autoAlpha: 1, y: 0, scale: 1 });
         }
         return;
     }
@@ -203,7 +199,11 @@ export function initHeroCurtain(container) {
     }
 
     if (portrait) {
-        gsap.set(portrait, { opacity: 0, scale: 0.94, x: 60 });
+        gsap.set(portrait, { opacity: 0, scale: 0.94, x: 60, visibility: 'visible' });
+        const portraitWrap = section.querySelector('.hero-curtain-portrait-wrap');
+        if (portraitWrap) {
+            gsap.set(portraitWrap, { visibility: 'visible' });
+        }
     }
     if (metaElements.length) {
         gsap.set(metaElements, { opacity: 0, y: 20 });
@@ -211,29 +211,20 @@ export function initHeroCurtain(container) {
 
     // Floating navbar: estrictamente oculto mientras el hero curtain esté activo
     if (navbar) {
-        const isPastCurtain = window.scrollY >= 1550;
-        const islands = navbar.querySelectorAll('.nav-desktop-island, .nav-mobile-island');
+        const isPastCurtain = window.scrollY >= 1100;
         if (isPastCurtain) {
             navbar.classList.remove('navbar-curtain-hidden');
-            gsap.set(navbar, { autoAlpha: 1, pointerEvents: 'auto' });
-            if (islands.length) {
-                gsap.set(islands, { scale: 1, opacity: 1, filter: 'none', y: 0 });
-            }
+            gsap.set(navbar, { autoAlpha: 1, y: 0 });
         } else {
             navbar.classList.add('navbar-curtain-hidden');
-            gsap.set(navbar, { autoAlpha: 0, pointerEvents: 'none' });
-            if (islands.length) {
-                gsap.set(islands, { scale: 0.35, opacity: 0, filter: 'blur(8px)', y: -12 });
-            }
+            gsap.set(navbar, { autoAlpha: 0 });
         }
     }
 
     // Create scrub timeline pinned with ScrollTrigger
     // Anclamos pinElement (.hero-curtain-pin de 100vh) con pinSpacing: true.
-    // Como el contenedor padre (.hero-curtain-container) tiene min-height: 100vh (sin height fijo),
-    // el pinSpacer de 100vh + 1600px empuja a #hero-editorial-2 exactamente 1600px hacia abajo.
-    // La cortina permanece anclada al 100% del viewport de borde superior a inferior,
-    // y se desancla exactamente cuando el marcador rojo 'end' sube y toca el borde superior ('scroller-start').
+    // La cortina permanece anclada durante el scroll de líneas y pintura del flat sólido.
+    // Al concluir, el zoom del ojo y la revelación de la sección editorial se disparan de forma automática.
     const tl = gsap.timeline({
         scrollTrigger: {
             id: 'hero-curtain-trigger',
@@ -241,57 +232,32 @@ export function initHeroCurtain(container) {
             pin: pinElement,
             pinSpacing: true,
             start: 'top top',
-            end: '+=2200',
+            end: '+=1250',
             scrub: 0.5,
             anticipatePin: 1,
             invalidateOnRefresh: true,
             onLeave: () => {
-                // Al terminar la cortina, revelamos la cápsula flotante tipo Apple Dynamic Island:
-                // emerge de un tamaño compacto (scale 0.35, blur 8px) a escala 1 con rebote elástico premium
                 if (navbar) {
                     navbar.classList.remove('navbar-curtain-hidden');
-                    gsap.set(navbar, { autoAlpha: 1, pointerEvents: 'auto' });
-                    const islands = navbar.querySelectorAll('.nav-desktop-island, .nav-mobile-island');
-                    if (islands.length) {
-                        gsap.fromTo(islands,
-                            { scale: 0.35, opacity: 0, filter: 'blur(8px)', y: -12 },
-                            {
-                                scale: 1,
-                                opacity: 1,
-                                filter: 'blur(0px)',
-                                y: 0,
-                                duration: 0.55,
-                                ease: 'back.out(1.6)',
-                                pointerEvents: 'auto',
-                                overwrite: 'auto',
-                                clearProps: 'filter',
-                            }
-                        );
-                    }
+                    gsap.fromTo(
+                        navbar,
+                        { autoAlpha: 0, y: -10 },
+                        { autoAlpha: 1, y: 0, duration: 0.4, ease: 'power2.out', overwrite: 'auto' }
+                    );
                 }
             },
             onEnterBack: () => {
-                // Al regresar haciendo scroll hacia arriba al hero curtain, se oculta en sentido inverso
-                // contrayéndose hacia su semilla (scale 1 -> 0.35 con blur y opacidad)
                 if (navbar) {
-                    const islands = navbar.querySelectorAll('.nav-desktop-island, .nav-mobile-island');
-                    if (islands.length) {
-                        gsap.to(islands, {
-                            scale: 0.35,
-                            opacity: 0,
-                            filter: 'blur(8px)',
-                            y: -12,
-                            duration: 0.32,
-                            ease: 'power3.in',
-                            overwrite: 'auto',
-                            onComplete: () => {
-                                navbar.classList.add('navbar-curtain-hidden');
-                                gsap.set(navbar, { autoAlpha: 0, pointerEvents: 'none' });
-                            },
-                        });
-                    } else {
-                        navbar.classList.add('navbar-curtain-hidden');
-                    }
+                    gsap.to(navbar, {
+                        autoAlpha: 0,
+                        y: -10,
+                        duration: 0.25,
+                        ease: 'power2.in',
+                        overwrite: 'auto',
+                        onComplete: () => {
+                            navbar.classList.add('navbar-curtain-hidden');
+                        },
+                    });
                 }
             },
         },
@@ -402,25 +368,26 @@ export function initHeroCurtain(container) {
         }, '<');
     }
 
-    // 8. FASE 3: Desvanecimiento de las geometrías lineales (ico-lines -> opacity: 0)
+    // 8. FASE 3: Desvanecimiento COMPLETO de las geometrías lineales (ico-lines -> opacity: 0)
     // Una vez que el sólido está completamente pintado y en su lugar final,
-    // desvanecemos suavemente todos los círculos, rectángulos y líneas para dejar únicamente la silueta sólida limpia
+    // desvanecemos todos los círculos, rectángulos y líneas para dejar únicamente la silueta sólida limpia
     if (symbolLines.length) {
         tl.to(symbolLines, {
             opacity: 0,
-            duration: 0.18,
+            duration: 0.22,
             ease: 'power2.inOut',
         }, '>+0.04');
     }
 
-    // 9. FASE 4: ZOOM EXCLUSIVO DEL OJO (Portal Circular Limpio tipo CodePen yLpaEjx)
-    // El SVG Soul completo y todos los elementos permanecen en su sitio: es la cortina del círculo la que los cubre.
-    // Solo el portal circular posicionado exactamente sobre el ojo crece de forma ultra nítida hasta cubrir la pantalla.
+    // 8.1 TIEMPO DE PERMANENCIA DEL FLAT SÓLIDO (Silueta Sólida Limpia Visible)
+    // Se deja una pausa deliberada en el scroll donde SÓLO se aprecia la silueta sólida limpia (flat)
+    tl.to({}, { duration: 0.28 }, '>');
 
-    // B. El disco portal (.hero-curtain-portal-disc) es una cortina full-bleed con clip-path: circle(...)
-    // Comienza en el tamaño exacto del ojo y se expande vectorialmente (100% nítido, sin blur ni escalado de píxeles) hasta cubrir toda la pantalla.
+    const editorialSection = document.getElementById('hero-editorial-2') || document.querySelector('.hero-editorial-section');
+
+    // 9. FASE 4: ZOOM DEL OJO (Portal Circular Limpio que cubre el hero como transición cinemática)
     if (portalDisc) {
-        // En el instante de inicio de Phase 4, sincronizamos la posición exacta del ojo y mostramos la cortina
+        // En el inicio de Phase 4, inicializamos la posición del disco portal en la pupila del ojo
         tl.set(portalDisc, {
             opacity: 1,
             clipPath: () => {
@@ -431,13 +398,12 @@ export function initHeroCurtain(container) {
                 const c = getEyeCenter();
                 return `circle(${Math.round(c.radius || 15)}px at ${Math.round(c.x)}px ${Math.round(c.y)}px)`;
             },
-        }, '<');
+        }, '>');
 
-        // Expansión vectorial continua tipo CodePen: radio de 150vmax a 160% garantiza cubrir cualquier viewport
+        // Expansión nítida del portal hasta cubrir por completo el viewport
         tl.to(portalDisc, {
             clipPath: () => {
                 const c = getEyeCenter();
-                // Radio suficiente para cubrir todas las esquinas desde (c.x, c.y)
                 const maxDist = Math.hypot(
                     Math.max(c.x, window.innerWidth - c.x),
                     Math.max(c.y, window.innerHeight - c.y)
@@ -452,46 +418,32 @@ export function initHeroCurtain(container) {
                 ) + 100;
                 return `circle(${Math.ceil(maxDist)}px at ${Math.round(c.x)}px ${Math.round(c.y)}px)`;
             },
-            duration: 0.65,
-            ease: 'power2.in',
-        }, '<+0.02');
+            duration: 0.55,
+            ease: 'power2.inOut',
+        }, '>');
     }
 
-    const editorialOverlay = section.querySelector('[data-editorial-overlay]');
+    // Si la siguiente sección tiene margen negativo sobre el pin de la cortina,
+    // mantenemos su visibilidad oculta (opacity: 0) hasta que el portal del ojo haya cubierto completamente la pantalla
+    if (editorialSection) {
+        gsap.set(editorialSection, { opacity: 0, pointerEvents: 'none' });
 
-    // C. Conforme el círculo YA CUBRIÓ la pantalla por completo con el fondo gris del Soul,
-    // empieza a mostrarse la siguiente sección montada directamente encima de él
-    if (editorialOverlay) {
-        const editorialStatement = editorialOverlay.querySelector('.hero-statement');
-        const statementChars = editorialStatement ? splitTextIntoChars(editorialStatement) : [];
-
-        tl.fromTo(editorialOverlay,
-            { opacity: 0, y: 35, pointerEvents: 'none' },
-            { 
-                opacity: 1, 
-                y: 0, 
-                pointerEvents: 'auto', 
-                duration: 0.35, 
-                ease: 'power2.out',
-                onStart: () => {
-                    triggerHeroEditorialCounters();
-                    if (statementChars.length) {
-                        animateBlurChars(statementChars, { delay: 0.05 });
-                    }
-                },
+        tl.to(editorialSection, {
+            opacity: 1,
+            duration: 0.25,
+            ease: 'power2.out',
+            onStart: () => {
+                editorialSection.style.pointerEvents = 'auto';
             },
-            '>-0.02'
-        );
-    } else if (nextSection) {
-        tl.fromTo(nextSection,
-            { opacity: 0, y: 35 },
-            { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' },
-            '>-0.02'
-        );
+            onReverseComplete: () => {
+                editorialSection.style.pointerEvents = 'none';
+                resetHeroEditorialCounters();
+            },
+        }, '>');
     }
 
-    // Buffer de anclaje para desanclaje limpio
-    tl.to({}, { duration: 0.10 });
+    // Buffer de anclaje final para permitir el desanclaje limpio
+    tl.to({}, { duration: 0.15 });
 
     // Garantizamos que la línea de tiempo inicie exactamente en progreso 0 (cortina cerrada) al montarse
     tl.progress(0);

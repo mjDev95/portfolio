@@ -16,7 +16,11 @@ export function cleanupHeroEditorial() {
 let activeCounters = [];
 
 export function triggerHeroEditorialCounters() {
-    activeCounters.forEach((run) => run());
+    activeCounters.forEach((c) => c.run());
+}
+
+export function resetHeroEditorialCounters() {
+    activeCounters.forEach((c) => c.reset());
 }
 
 /**
@@ -62,10 +66,13 @@ export function initHeroEditorial(container = document) {
             const state = { value: 0 };
             let hasRun = false;
 
+            let currentTween = null;
+
             const runCounter = () => {
                 if (hasRun) return;
                 hasRun = true;
-                gsap.to(state, {
+                if (currentTween) currentTween.kill();
+                currentTween = gsap.to(state, {
                     value: targetVal,
                     duration: 1.8,
                     ease: 'power2.out',
@@ -78,14 +85,22 @@ export function initHeroEditorial(container = document) {
                 });
             };
 
-            activeCounters.push(runCounter);
+            const resetCounter = () => {
+                hasRun = false;
+                if (currentTween) currentTween.kill();
+                state.value = 0;
+                el.textContent = formatValue(0);
+            };
 
-            // También dejamos el ScrollTrigger si está en flujo normal
+            activeCounters.push({ run: runCounter, reset: resetCounter });
+
+            // ScrollTrigger para iniciar cuando el elemento realmente entre en pantalla
             ScrollTrigger.create({
                 trigger: el,
-                start: 'top 85%',
-                once: true,
+                start: 'top 92%',
                 onEnter: runCounter,
+                onEnterBack: runCounter,
+                onLeaveBack: resetCounter,
             });
         });
     }, section);

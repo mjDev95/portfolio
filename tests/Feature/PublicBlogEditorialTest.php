@@ -674,22 +674,15 @@ class PublicBlogEditorialTest extends TestCase
         $response = $this->get('/');
 
         $response->assertOk()
-            ->assertSee('id="blog"', false)
-            ->assertSee('home-blog-section', false)
-            ->assertSee('data-home-blog-track', false)
-            ->assertSee('data-home-blog-pin', false)
-            ->assertSee('Artículos y publicaciones recientes')
-            ->assertDontSee('Read the blog')
-            ->assertDontSee('badge-floating-glass')
+            ->assertDontSee('home-blog-section', false)
+            ->assertDontSee('data-home-blog-track', false)
+            ->assertDontSee('data-home-blog-pin', false)
+            ->assertSee('id="latest-news-pill"', false)
+            ->assertSee('data-latest-news-pill', false)
+            ->assertSee('data-news-pill-dismiss', false)
             ->assertSee('Primer Ensayo en Home')
-            ->assertSee('Segundo Ensayo en Home')
-            ->assertSee('Ensayo 3 en Home')
-            ->assertSee('Ensayo 4 en Home')
-            ->assertSee('Ensayo 5 en Home')
-            ->assertSee('Ensayo 6 en Home')
-            ->assertSee('Ver todas las publicaciones')
-            ->assertSee('href="'.route('public.content.index', 'blog').'"', false)
-            ->assertSee('data-card-reveal', false)
-            ->assertSee('data-flip-card', false);
+            ->assertDontSee('Arquitectura Web')
+            ->assertSee('Noticias')
+            ->assertSee('href="'.route('public.content.show', ['blog', 'primer-ensayo-en-home']).'"', false);
     }
 }

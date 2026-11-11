@@ -6,7 +6,7 @@ import { initTextReveal } from './shared/text-reveal';
 import { initCardReveals, cleanupCardReveals } from './shared/card-reveal';
 import { initBlogArchive, initBlogSingle } from './blog';
 import { initMethodology } from './methodology';
-import { initHomeBlog } from './home-blog';
+import { initLatestNewsPill } from './latest-news-pill';
 import { initHeroEditorial } from './hero-editorial';
 import { initServicesMarquee } from './services-marquee';
 import { initProjectHero } from './project-hero';
@@ -27,12 +27,12 @@ export function initPageAnimations(container) {
     initBlogSingle(container);
     initCardReveals(container);
     initMethodology(container);
-    initHomeBlog(container);
+    initLatestNewsPill(container);
 
     const reveals = Array.from(container.querySelectorAll('[data-reveal]')).filter((el) => {
         return !el.matches('[data-detail-header], [data-detail-body], [data-detail-breadcrumbs], [data-card-reveal], [data-blur-reveal], [data-title-blur-reveal], [data-char-blur-reveal]') &&
                el.dataset.textSplit !== 'true' &&
-               (!el.closest('[data-hero-curtain]') || el.closest('[data-editorial-overlay]')) &&
+               !el.closest('[data-hero-curtain]') &&
                !el.closest('[data-detail-header], [data-detail-body], #blog-header-block');
     });
 

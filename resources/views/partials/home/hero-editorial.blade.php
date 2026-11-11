@@ -35,8 +35,8 @@
                 <div class="col-12 col-md-4 hero-stat-col">
                     <div class="font-fluid-stat-number text-primary mb-sm will-change-transform" 
                          data-stat-counter 
-                         data-stat-target="2" 
-                         data-stat-suffix="M+">2M+</div>
+                         data-stat-target="2000" 
+                         data-stat-suffix="+">2000+</div>
                     <div class="border-top-subtle pt-sm d-flex flex-column gap-1">
                         <h3 class="font-sans text-fluid-base fw-semibold text-primary m-0">Usuarios impactados</h3>
                         <p class="font-sans text-fluid-xs text-secondary lh-base m-0">

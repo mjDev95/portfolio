@@ -83,7 +83,13 @@
 
     @include('partials.navbar')
 
-    <div id="transition-wipe" class="position-fixed inset-0 z-index-50" aria-hidden="true"></div>
+    <div id="transition-wipe" class="pixel-wave-overlay" aria-hidden="true">
+        <div class="pixel-wave-grid" data-pixel-grid></div>
+        <div class="pixel-wave-avatar" data-pixel-avatar>
+            <x-svg-brand-solid class="pixel-wave-avatar-svg" />
+        </div>
+    </div>
+    <noscript><style>#transition-wipe { display: none !important; }</style></noscript>
 
     <main data-barba="container" 
           data-barba-namespace="@yield('namespace', 'default')"

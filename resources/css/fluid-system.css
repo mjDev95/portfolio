@@ -55,6 +55,13 @@
     --fluid-h6: clamp(0.75rem, 1.2vw, 0.85rem);
 
     /* Medidas de componentes interactivos fluidos */
+    --fluid-nav-toggle-size: clamp(4em, 5.5vw, 5em);
+    --fluid-drawer-link: clamp(2.85rem, 6.5vw, 6.2rem);
+    --fluid-drawer-avatar: clamp(2.75rem, 4.5vw, 3.85rem);
+    --fluid-news-card-w: clamp(16rem, 80vw, 19.5rem);
+    --fluid-news-card-media-h: clamp(8.25rem, 11.5vw, 9.75rem);
+    --fluid-news-fab-w: clamp(7.5rem, 10vw, 8.5rem);
+    --fluid-news-fab-h: clamp(3.15rem, 3.8vw, 3.9rem);
     --fluid-magnetic-circle-size: clamp(7.5rem, 12vw, 10rem);
     --fluid-editorial-row-py: clamp(1.75rem, 3.2vw, 3.25rem);
     --fluid-step-row-py: clamp(1.5rem, 2.5vw, 2.5rem);
@@ -315,12 +322,13 @@ html.is-restoring-scroll body {
     .g-lg-5 { --fluid-col-gap: var(--fluid-s-xl); --fluid-row-gap: var(--fluid-s-xl); }
 }
 
-.gap-0 { gap: 0 !important; }
-.gap-1 { gap: var(--fluid-s-xs) !important; }
-.gap-2 { gap: var(--fluid-s-sm) !important; }
-.gap-3 { gap: var(--fluid-s-md) !important; }
-.gap-4 { gap: var(--fluid-s-lg) !important; }
-.gap-5 { gap: var(--fluid-s-xl) !important; }
+.gap-0   { gap: 0 !important; }
+.gap-2xs { gap: var(--fluid-s-2xs) !important; }
+.gap-1   { gap: var(--fluid-s-xs) !important; }
+.gap-2   { gap: var(--fluid-s-sm) !important; }
+.gap-3   { gap: var(--fluid-s-md) !important; }
+.gap-4   { gap: var(--fluid-s-lg) !important; }
+.gap-5   { gap: var(--fluid-s-xl) !important; }
 
 /* ─────────────────────────────────────────
    5. SPACING UTILITIES (fluidas, sin overrides por breakpoint)
@@ -332,12 +340,13 @@ html.is-restoring-scroll body {
 .p-lg { padding: var(--fluid-s-lg) !important; }
 .p-xl { padding: var(--fluid-s-xl) !important; }
 
-.px-0  { padding-inline: 0 !important; }
-.px-xs { padding-inline: var(--fluid-s-xs) !important; }
-.px-sm { padding-inline: var(--fluid-s-sm) !important; }
-.px-md { padding-inline: var(--fluid-s-md) !important; }
-.px-lg { padding-inline: var(--fluid-s-lg) !important; }
-.px-xl { padding-inline: var(--fluid-s-xl) !important; }
+.px-0      { padding-inline: 0 !important; }
+.px-xs     { padding-inline: var(--fluid-s-xs) !important; }
+.px-sm     { padding-inline: var(--fluid-s-sm) !important; }
+.px-md     { padding-inline: var(--fluid-s-md) !important; }
+.px-lg     { padding-inline: var(--fluid-s-lg) !important; }
+.px-xl     { padding-inline: var(--fluid-s-xl) !important; }
+.px-gutter { padding-inline: var(--fluid-gutter-x) !important; }
 
 .py-0  { padding-block: 0 !important; }
 .py-xs { padding-block: var(--fluid-s-xs) !important; }
@@ -577,6 +586,8 @@ p {
     font-weight: 600;
 }
 
+.text-fluid-xs   { font-size: var(--fluid-text-xs); }
+.text-fluid-sm   { font-size: var(--fluid-text-sm); }
 .text-fluid-base { font-size: var(--fluid-text-base); }
 .text-fluid-md   { font-size: var(--fluid-text-md); }
 .text-fluid-lg   { font-size: var(--fluid-text-lg); }
@@ -730,9 +741,9 @@ p {
     .d-lg-flex   { display: flex !important; }
 }
 
-.w-100 { width: 100% !important; }
+.w-100 { width: 100% !important; box-sizing: border-box; }
 .w-auto { width: auto !important; }
-.h-100 { height: 100% !important; }
+.h-100 { height: 100% !important; box-sizing: border-box; }
 .h-auto { height: auto !important; }
 .vh-100 { height: 100vh !important; }
 .min-vh-100 { min-height: 100vh !important; }

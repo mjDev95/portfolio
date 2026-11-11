@@ -6,10 +6,13 @@
 
 @section('content')
 <div class="position-relative">
-    {{-- 0. Hero Curtain con Editorial integrado sobre la transición de portal --}}
+    {{-- 0. Hero Curtain: Split-Screen Inverted ScrollTrigger Reveal con Portal Zoom --}}
     @include('partials.home.hero-curtain')
 
-    {{-- 1. Servicios / What I do? (Editorial Cards Stack) --}}
+    {{-- 1. Hero Editorial & Estadísticas Monumentales (Flujo natural con margen negativo fluido) --}}
+    @include('partials.home.hero-editorial')
+
+    {{-- 2. Servicios / What I do? (Editorial Cards Stack) --}}
     @include('partials.home.services')
 
     {{-- 3. Casos Seleccionados (Editorial Rows & CMS CPTs) --}}
@@ -18,7 +21,7 @@
     {{-- 4. Metodología & Trayectoria en 4 Pasos (Wabi-Sabi) --}}
     @include('partials.home.methodology')
 
-    {{-- 5. Artículos & Ensayos Técnicos (Blog Editorial) --}}
-    @include('partials.home.blog-editorial')
+    {{-- 5. Widget Flotante de Última Publicación (Latest News Pill) --}}
+    @include('partials.home.latest-news-pill')
 </div>
 @endsection
